@@ -14,29 +14,33 @@ struct ForumCinemas {
         self.client = client
     }
 
-    func start() {
-        getShowings().whenSuccess { print($0.count) }
+    func getMovies() -> EventLoopFuture<[Movie]> {
+        getAllShowings().map { showings in
+            self.createMovies(from: showings)
+        }
     }
 
-    private func getShowings() -> EventLoopFuture<[ForumShowing]> {
+    private func createMovies(from showings: [ForumShowing]) -> [Movie] {
+        var movies = [Movie]()
+
+        showings.forEach { showing in
+            if let movie = movies.first(where: { $0.originalTitle == showing.originalTitle }) {
+                guard let newShowing = showing.convertToShowing() else { return }
+                movie.showings.append(newShowing)
+            } else {
+                guard let newMovie = showing.convertToMovie() else { return }
+                movies.append(newMovie)
+            }
+        }
+
+        return movies
+    }
+
+    private func getAllShowings() -> EventLoopFuture<[ForumShowing]> {
         return getAreas().flatMap { areas in
             areas.map { area in
                 self.getShowings(in: area)
             }.flatten(on: self.client.eventLoop).map { $0.flatMap { $0 } }
-        }
-    }
-
-    private func getAreas() -> EventLoopFuture<[Area]> {
-        let uri = URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
-
-        return client.get(uri).map { res in
-            do {
-                let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
-                return service.areas
-            } catch {
-                print("LOG: \(error)")
-                return []
-            }
         }
     }
 
@@ -55,6 +59,20 @@ struct ForumCinemas {
                 }
 
                 return showings
+            } catch {
+                print("LOG: \(error)")
+                return []
+            }
+        }
+    }
+
+    private func getAreas() -> EventLoopFuture<[Area]> {
+        let uri = URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
+
+        return client.get(uri).map { res in
+            do {
+                let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
+                return service.areas
             } catch {
                 print("LOG: \(error)")
                 return []
@@ -86,6 +104,21 @@ struct ForumCinemas {
             case date = "dttmShowStart"
             case venue = "Theatre"
             case url = "ShowURL"
+        }
+
+        func convertToShowing() -> Showing? {
+            guard let city = self.area?.name else { return nil }
+            guard let date = self.date.convertToDate() else { return nil }
+
+            return Showing(city: city, date: date, venue: self.venue, is3D: false, url: self.url)
+        }
+
+        func convertToMovie() -> Movie? {
+            guard let showing = self.convertToShowing() else { return nil }
+            let genres = self.genres.split(separator: ",").map { String($0) }
+
+            return Movie(title: self.title, originalTitle: self.originalTitle, year: String(self.year), duration: String(self.duration),
+                         ageRating: self.ageRating, genres: genres, plot: nil, poster: nil, showings: [showing])
         }
     }
 
