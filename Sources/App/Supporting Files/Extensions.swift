@@ -14,8 +14,8 @@ extension String {
         guard let timeZone = TimeZone(identifier: "Europe/Vilnius") else { fatalError("TimeZone not found!") }
         dateFormatter.timeZone = timeZone
 
-        // ForumCinemas format: 19.09.2019 11:00
-        dateFormatter.dateFormat = "dd'.'MM'.'yyyy' 'HH':'mm"
+        // ForumCinemas, Multikino format: 2019-09-26T17:30:00
+        dateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss"
         if let date = dateFormatter.date(from: self) {
             return date
         }
