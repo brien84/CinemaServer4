@@ -22,4 +22,14 @@ extension String {
 
         return nil
     }
+
+    // Returns part of the `String` between the provided `String` parameters.
+    //
+    // If parameters are nil, the string is sliced from the beginning to the end.
+    func slice(from: String?, to: String?) -> String? {
+        guard let rangeFrom = from == nil ? startIndex : range(of: from!)?.upperBound else { return nil }
+        guard let rangeTo = to == nil ? endIndex : range(of: to!)?.lowerBound else { return nil }
+
+        return String(self[rangeFrom..<rangeTo])
+    }
 }
