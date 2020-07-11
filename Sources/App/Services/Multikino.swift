@@ -71,8 +71,13 @@ extension Movie {
             }
         }
 
-        self.init(title: title, originalTitle: originalTitle, year: year, duration: duration,
-                  ageRating: movie.ageRating, genres: genres, plot: nil, poster: nil, showings: showings)
+        self.init(title: title,
+                  originalTitle: originalTitle,
+                  year: year,
+                  duration: duration,
+                  ageRating: movie.ageRating,
+                  genres: genres,
+                  showings: showings)
     }
 }
 
@@ -82,7 +87,11 @@ extension Showing {
         let is3D = showing.screen_type == "3D" ? true : false
         let url = "https://multikino.lt\(showing.link)"
 
-        self.init(city: "Vilnius", date: date, venue: "Multikino", is3D: is3D, url: url)
+        self.init(city: "Vilnius",
+                  date: date,
+                  venue: "Multikino",
+                  is3D: is3D,
+                  url: url)
     }
 }
 

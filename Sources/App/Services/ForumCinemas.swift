@@ -38,7 +38,7 @@ struct ForumCinemas {
 
     // Returns array of `ForumShowing` from all areas.
     private func getShowings() -> EventLoopFuture<[ForumShowing]> {
-        return getAreas().flatMap { areas in
+        getAreas().flatMap { areas in
             areas.map { area in
                 self.getShowings(in: area)
             }.flatten(on: self.client.eventLoop).map { $0.flatMap { $0 } }
@@ -112,9 +112,13 @@ extension Movie {
         // `Genre0, Genre1` -> `Genre0,Genre1` -> `[Genre0, Genre1]`
         let genres = showing.genres.replacingOccurrences(of: ", ", with: ",").split(separator: ",").map { String($0) }
 
-        self.init(title: showing.title, originalTitle: showing.originalTitle, year: year,
-                  duration: duration, ageRating: ageRating, genres: genres,
-                  plot: nil, poster: nil, showings: [newShowing])
+        self.init(title: showing.title,
+                  originalTitle: showing.originalTitle,
+                  year: year,
+                  duration: duration,
+                  ageRating: ageRating,
+                  genres: genres,
+                  showings: [newShowing])
     }
 }
 
@@ -123,7 +127,11 @@ extension Showing {
         guard let city = showing.area?.name else { return nil }
         guard let date = showing.date.convertToDate() else { return nil }
 
-        self.init(city: city, date: date, venue: showing.venue, is3D: false, url: showing.url)
+        self.init(city: city,
+                  date: date,
+                  venue: showing.venue,
+                  is3D: false,
+                  url: showing.url)
     }
 }
 

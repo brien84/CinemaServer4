@@ -15,7 +15,7 @@ struct Cinamon {
     }
 
     func getMovies() -> EventLoopFuture<[Movie]> {
-        client.get(uri).map { res in
+        client.get(apiURI).map { res in
             do {
                 let service = try JSONDecoder().decode(CinamonService.self, from: res.body ?? ByteBuffer())
 
@@ -31,7 +31,7 @@ struct Cinamon {
 }
 
 extension Cinamon {
-    private var uri: URI {
+    private var apiURI: URI {
         URI(string: "https://cinamonkino.com/api/page/movies?cinema_id=77139293&timezone=Europe%2FTallinn&locale=lt")
     }
 }
@@ -44,11 +44,13 @@ extension Application {
 
 extension Movie {
     fileprivate convenience init(from movie: CinamonMovie, on screens: [String]) {
+        // `2020-01-01` -> `2020`
         let year: String? = {
             guard let substring = movie.year?.split(separator: "-").first else { return nil }
             return String(substring)
         }()
 
+        // `69` -> `69 min`
         let duration: String? = {
             guard let movieDuration = movie.duration else { return nil }
             return String(movieDuration) + " min"
@@ -73,8 +75,6 @@ extension Movie {
                   duration: duration,
                   ageRating: movie.ageRating,
                   genres: genres,
-                  plot: nil,
-                  poster: nil,
                   showings: showings)
     }
 }

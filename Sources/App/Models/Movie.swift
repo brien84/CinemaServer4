@@ -44,7 +44,7 @@ final class Movie: Model, Content {
     init() { }
 
     init(id: UUID? = nil, title: String?, originalTitle: String?, year: String?, duration: String?,
-         ageRating: String?, genres: [String]?, plot: String?, poster: String?, showings: [Showing] = []) {
+         ageRating: String?, genres: [String]?, plot: String? = nil, poster: String? = nil, showings: [Showing] = []) {
         self.id = id
         self.title = title
         self.originalTitle = originalTitle
