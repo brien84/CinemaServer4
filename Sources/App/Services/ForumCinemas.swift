@@ -47,9 +47,7 @@ struct ForumCinemas {
 
     // Returns array of `ForumShowing` from specific area.
     private func getShowings(in area: Area) -> EventLoopFuture<[ForumShowing]> {
-        let uri = URI(string: "http://m.forumcinemas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(area.id)")
-
-        return client.get(uri).map { res in
+        client.get(makeShowingsURI(in: area)).map { res in
             do {
                 let service = try JSONDecoder().decode(ShowingService.self, from: res.body ?? ByteBuffer())
 
@@ -69,9 +67,7 @@ struct ForumCinemas {
     }
 
     private func getAreas() -> EventLoopFuture<[Area]> {
-        let uri = URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
-
-        return client.get(uri).map { res in
+        client.get(areasURI).map { res in
             do {
                 let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
                 return service.areas
@@ -80,6 +76,16 @@ struct ForumCinemas {
                 return []
             }
         }
+    }
+}
+
+extension ForumCinemas {
+    private var areasURI: URI {
+        URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
+    }
+
+    private func makeShowingsURI(in area: Area) -> URI {
+        URI(string: "http://m.forumcinemas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(area.id)")
     }
 }
 
