@@ -15,7 +15,7 @@ struct ForumCinemas {
     }
 
     func getMovies() -> EventLoopFuture<[Movie]> {
-        getAllShowings().map { showings in
+        getShowings().map { showings in
             self.createMovies(from: showings)
         }
     }
@@ -25,10 +25,10 @@ struct ForumCinemas {
 
         showings.forEach { showing in
             if let movie = movies.first(where: { $0.originalTitle == showing.originalTitle }) {
-                guard let newShowing = showing.convertToShowing() else { return }
+                guard let newShowing = Showing(from: showing) else { return }
                 movie.showings.append(newShowing)
             } else {
-                guard let newMovie = showing.convertToMovie() else { return }
+                guard let newMovie = Movie(from: showing) else { return }
                 movies.append(newMovie)
             }
         }
@@ -36,7 +36,8 @@ struct ForumCinemas {
         return movies
     }
 
-    private func getAllShowings() -> EventLoopFuture<[ForumShowing]> {
+    // Returns array of `ForumShowing` from all areas.
+    private func getShowings() -> EventLoopFuture<[ForumShowing]> {
         return getAreas().flatMap { areas in
             areas.map { area in
                 self.getShowings(in: area)
@@ -44,6 +45,7 @@ struct ForumCinemas {
         }
     }
 
+    // Returns array of `ForumShowing` from specific area.
     private func getShowings(in area: Area) -> EventLoopFuture<[ForumShowing]> {
         let uri = URI(string: "http://m.forumcinemas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(area.id)")
 
@@ -79,78 +81,93 @@ struct ForumCinemas {
             }
         }
     }
-
-    // MARK: - Decodable Helpers
-
-    private struct ForumShowing: Decodable {
-        let title: String
-        let originalTitle: String
-        let year: Int
-        let ageRating: String
-        let duration: Int
-        let genres: String
-        let date: String
-        let venue: String
-        let url: String
-        var area: Area?
-
-        private enum CodingKeys: String, CodingKey {
-            case title = "Title"
-            case originalTitle = "OriginalTitle"
-            case year = "ProductionYear"
-            case ageRating = "RatingLabel"
-            case duration = "LengthInMinutes"
-            case genres = "Genres"
-            case date = "dttmShowStart"
-            case venue = "Theatre"
-            case url = "ShowURL"
-        }
-
-        func convertToShowing() -> Showing? {
-            guard let city = self.area?.name else { return nil }
-            guard let date = self.date.convertToDate() else { return nil }
-
-            return Showing(city: city, date: date, venue: self.venue, is3D: false, url: self.url)
-        }
-
-        func convertToMovie() -> Movie? {
-            guard let showing = self.convertToShowing() else { return nil }
-            let genres = self.genres.split(separator: ",").map { String($0) }
-
-            return Movie(title: self.title, originalTitle: self.originalTitle, year: String(self.year), duration: String(self.duration),
-                         ageRating: self.ageRating, genres: genres, plot: nil, poster: nil, showings: [showing])
-        }
-    }
-
-    private struct ShowingService: Decodable {
-        let showings: [ForumShowing]
-
-        private enum CodingKeys: String, CodingKey {
-             case showings = "Shows"
-        }
-    }
-
-    private struct Area: Decodable {
-        let id: Int
-        let name: String
-
-        private enum CodingKeys: String, CodingKey {
-            case id = "ID"
-            case name = "Name"
-        }
-    }
-
-    private struct AreaService: Decodable {
-        let areas: [Area]
-
-        private enum CodingKeys: String, CodingKey {
-            case areas = "TheatreAreas"
-        }
-    }
 }
 
 extension Application {
     var forumCinemas: ForumCinemas {
         .init(client: self.client)
+    }
+}
+
+extension Movie {
+    fileprivate convenience init?(from showing: ForumShowing) {
+        guard let newShowing = Showing(from: showing) else { return nil }
+
+        let year = String(showing.year)
+        let duration = String(showing.duration) + " min"
+
+        var ageRating = showing.ageRating
+
+        // `N18` -> `N-18`
+        if ageRating.starts(with: "N") {
+            ageRating.insert("-", at: ageRating.index(ageRating.startIndex, offsetBy: 1))
+        }
+
+        // `Genre0, Genre1` -> `Genre0,Genre1` -> `[Genre0, Genre1]`
+        let genres = showing.genres.replacingOccurrences(of: ", ", with: ",").split(separator: ",").map { String($0) }
+
+        self.init(title: showing.title, originalTitle: showing.originalTitle, year: year,
+                  duration: duration, ageRating: ageRating, genres: genres,
+                  plot: nil, poster: nil, showings: [newShowing])
+    }
+}
+
+extension Showing {
+    fileprivate convenience init?(from showing: ForumShowing) {
+        guard let city = showing.area?.name else { return nil }
+        guard let date = showing.date.convertToDate() else { return nil }
+
+        self.init(city: city, date: date, venue: showing.venue, is3D: false, url: showing.url)
+    }
+}
+
+private struct ShowingService: Decodable {
+    let showings: [ForumShowing]
+
+    private enum CodingKeys: String, CodingKey {
+         case showings = "Shows"
+    }
+}
+
+private struct ForumShowing: Decodable {
+    let title: String
+    let originalTitle: String
+    let year: Int
+    let ageRating: String
+    let duration: Int
+    let genres: String
+    let date: String
+    let venue: String
+    let url: String
+    var area: Area?
+
+    private enum CodingKeys: String, CodingKey {
+        case title = "Title"
+        case originalTitle = "OriginalTitle"
+        case year = "ProductionYear"
+        case ageRating = "RatingLabel"
+        case duration = "LengthInMinutes"
+        case genres = "Genres"
+        case date = "dttmShowStart"
+        case venue = "Theatre"
+        case url = "ShowURL"
+    }
+}
+
+private struct AreaService: Decodable {
+    let areas: [Area]
+
+    private enum CodingKeys: String, CodingKey {
+        case areas = "TheatreAreas"
+    }
+}
+
+private struct Area: Decodable {
+    let id: Int
+    let name: String
+
+    private enum CodingKeys: String, CodingKey {
+        case id = "ID"
+        case name = "Name"
     }
 }
