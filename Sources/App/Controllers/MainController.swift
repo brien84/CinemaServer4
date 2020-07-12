@@ -47,7 +47,7 @@ struct MainController {
         var mergedMovies = [Movie]()
 
         movies.forEach { movie in
-            if let existingMovie = mergedMovies.first(where: { $0.originalTitle == movie.originalTitle }) {
+            if let existingMovie = mergedMovies.first(where: { $0 == movie }) {
                 existingMovie.showings.append(contentsOf: movie.showings)
             } else {
                 mergedMovies.append(movie)

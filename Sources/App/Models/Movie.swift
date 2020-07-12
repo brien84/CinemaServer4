@@ -78,3 +78,13 @@ struct CreateMovies: Migration {
         database.schema("movies").delete()
     }
 }
+
+extension Movie: Equatable {
+    static func == (lhs: Movie, rhs: Movie) -> Bool {
+        return lhs.originalTitle?.lowercased() == rhs.originalTitle?.lowercased()
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+    }
+}
