@@ -7,7 +7,9 @@
 
 import Vapor
 
-struct Multikino {
+struct Multikino: TitleCustomization {
+    private(set) var cinemaIdentifier = "Multikino"
+
     private let client: Client
 
     init(client: Client) {
@@ -19,9 +21,9 @@ struct Multikino {
             do {
                 let multiService = try JSONDecoder().decode(MovieService.self, from: res.body ?? ByteBuffer())
 
-                return multiService.movies.compactMap { movie in
-                    Movie(from: movie)
-                }
+                let movies = multiService.movies.compactMap { Movie(from: $0) }
+
+                return movies.map { self.customizeOriginalTitle(for: $0) }
             } catch {
                 print("LOG: \(error)")
                 return []

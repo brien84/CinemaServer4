@@ -7,7 +7,9 @@
 
 import Vapor
 
-struct Cinamon {
+struct Cinamon: TitleCustomization {
+    private(set) var cinemaIdentifier = "Cinamon"
+
     private let client: Client
 
     init(client: Client) {
@@ -19,9 +21,9 @@ struct Cinamon {
             do {
                 let service = try JSONDecoder().decode(CinamonService.self, from: res.body ?? ByteBuffer())
 
-                return service.movies.map { movie in
-                    Movie(from: movie, on: service.screens)
-                }
+                let movies = service.movies.map { Movie(from: $0, on: service.screens) }
+
+                return movies.map { self.customizeOriginalTitle(for: $0) }
             } catch {
                 print("LOG: \(error)")
                 return []

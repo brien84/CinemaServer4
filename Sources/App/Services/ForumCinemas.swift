@@ -7,7 +7,9 @@
 
 import Vapor
 
-struct ForumCinemas {
+struct ForumCinemas: TitleCustomization {
+    private(set) var cinemaIdentifier = "ForumCinemas"
+
     private let client: Client
 
     init(client: Client) {
@@ -16,7 +18,9 @@ struct ForumCinemas {
 
     func getMovies() -> EventLoopFuture<[Movie]> {
         getShowings().map { showings in
-            self.createMovies(from: showings)
+            let movies = self.createMovies(from: showings)
+            
+            return movies.map { self.customizeOriginalTitle(for: $0) }
         }
     }
 
