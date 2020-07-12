@@ -4,18 +4,18 @@
 <dict>
 	<key>Cinamon</key>
 	<dict>
-		<key>stringToFindInOriginalTitle</key>
-		<string>newValue</string>
+		<key>findValue</key>
+		<string>replaceWith</string>
 	</dict>
 	<key>ForumCinemas</key>
 	<dict>
-		<key>stringToFindInOriginalTitle</key>
-		<string>newValue</string>
+		<key>findValue</key>
+		<string>replaceWith</string>
 	</dict>
 	<key>Multikino</key>
 	<dict>
-		<key>stringToFindInOriginalTitle</key>
-		<string>newValue</string>
+		<key>findValue</key>
+		<string>replaceWith</string>
 	</dict>
 </dict>
 </plist>
