@@ -22,8 +22,8 @@ struct MainController {
     }
 
     func start() {
-        getMovies().whenSuccess {
-            print($0.count)
+        getMovies().whenSuccess { movies in
+            let mergedMovies = self.merge(movies)
         }
     }
 
@@ -41,5 +41,19 @@ struct MainController {
                 }
             }
         }
+    }
+
+    private func merge(_ movies: [Movie]) -> [Movie] {
+        var mergedMovies = [Movie]()
+
+        movies.forEach { movie in
+            if let existingMovie = mergedMovies.first(where: { $0.originalTitle == movie.originalTitle }) {
+                existingMovie.showings.append(contentsOf: movie.showings)
+            } else {
+                mergedMovies.append(movie)
+            }
+        }
+
+        return mergedMovies
     }
 }
