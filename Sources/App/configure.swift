@@ -18,3 +18,7 @@ public func configure(_ app: Application) throws {
     let controller = MainController(app: app)
     controller.start()
 }
+
+struct Config {
+    static let postersURL = URL(string: "http://localhost:8080/posters/")
+}
