@@ -8,7 +8,7 @@
 import Vapor
 
 struct ForumCinemas: MovieCustomization {
-    private(set) var cinemaIdentifier = "ForumCinemas"
+    private(set) var cinemaIdentifier: String? = "ForumCinemas"
 
     private let client: Client
 

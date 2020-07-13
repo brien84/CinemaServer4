@@ -8,13 +8,15 @@
 import Vapor
 
 protocol MovieCustomization {
-    var cinemaIdentifier: String { get }
+    var cinemaIdentifier: String? { get }
 
     func applyProfile(to movie: Movie) -> Movie
     func customizeOriginalTitle(for movie: Movie) -> Movie
 }
 
 extension MovieCustomization {
+    var cinemaIdentifier: String? { nil }
+
     // Replaces values of `Movie` properties with new values from `Profiles.plist` file.
     func applyProfile(to movie: Movie) -> Movie {
         guard let profiles = loadProfiles() else {
@@ -77,6 +79,11 @@ extension MovieCustomization {
     }
 
     private func readOriginalTitlesPlist() -> [String: String]? {
+        guard let cinemaIdentifier = cinemaIdentifier else {
+            print("`cinemaIdentifier` is nil!")
+            return nil
+        }
+        
         let publicDirectory = DirectoryConfiguration.detect().publicDirectory
         let url = URL(fileURLWithPath: publicDirectory + "OriginalTitles.plist")
         guard let data = try? Data(contentsOf: url) else { return nil }
