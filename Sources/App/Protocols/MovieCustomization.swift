@@ -51,7 +51,23 @@ extension MovieCustomization {
             movie.plot = plot
         }
 
+        applyPoster(to: movie)
+
         return movie
+    }
+
+    private func applyPoster(to movie: Movie) {
+        let publicDirectory = URL(fileURLWithPath: "\(DirectoryConfiguration.detect().publicDirectory)/Posters")
+        let posterPaths = try? FileManager().contentsOfDirectory(at: publicDirectory, includingPropertiesForKeys: nil)
+
+        let originalTitle = movie.originalTitle?.replacingOccurrences(of: ":", with: "").lowercased()
+
+        if let posterPath = posterPaths?.first(where: { $0.fileNameWithoutExtension == originalTitle }) {
+            let url = Config.postersURL?.appendingPathComponent(posterPath.fileNameWithExtension)
+            movie.poster = url?.absoluteString
+        } else {
+            movie.poster = nil
+        }
     }
 
     private func loadProfiles() -> [String: AnyObject]? {
@@ -93,5 +109,15 @@ extension MovieCustomization {
                                                                          format: .none) as? [String: AnyObject]
 
         return rootDictionary?[cinemaIdentifier] as? [String: String]
+    }
+}
+
+extension URL {
+    fileprivate var fileNameWithoutExtension: String {
+        self.deletingPathExtension().lastPathComponent.lowercased()
+    }
+
+    fileprivate var fileNameWithExtension: String {
+        self.lastPathComponent.lowercased()
     }
 }
