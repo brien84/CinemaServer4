@@ -95,20 +95,13 @@ extension MovieCustomization {
     }
 
     private func readOriginalTitlesPlist() -> [String: String]? {
-        guard let cinemaIdentifier = cinemaIdentifier else {
-            print("`cinemaIdentifier` is nil!")
-            return nil
-        }
-        
         let publicDirectory = DirectoryConfiguration.detect().publicDirectory
         let url = URL(fileURLWithPath: publicDirectory + "OriginalTitles.plist")
         guard let data = try? Data(contentsOf: url) else { return nil }
 
-        let rootDictionary = try? PropertyListSerialization.propertyList(from: data,
-                                                                         options: .mutableContainers,
-                                                                         format: .none) as? [String: AnyObject]
-
-        return rootDictionary?[cinemaIdentifier] as? [String: String]
+        return try? PropertyListSerialization.propertyList(from: data,
+                                                           options: .mutableContainers,
+                                                           format: .none) as? [String: String]
     }
 }
 
