@@ -7,7 +7,7 @@
 
 import Vapor
 
-struct MainController {
+struct MainController: MovieCustomization {
     private var app: Application
 
     private var forum: ForumCinemas
