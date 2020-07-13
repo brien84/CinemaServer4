@@ -8,8 +8,6 @@
 import Vapor
 
 struct Cinamon: MovieCustomization {
-    private(set) var cinemaIdentifier: String? = "Cinamon"
-
     private let client: Client
 
     init(client: Client) {

@@ -8,15 +8,11 @@
 import Vapor
 
 protocol MovieCustomization {
-    var cinemaIdentifier: String? { get }
-
     func applyProfile(to movie: Movie) -> Movie
     func customizeOriginalTitle(for movie: Movie) -> Movie
 }
 
 extension MovieCustomization {
-    var cinemaIdentifier: String? { nil }
-
     // Replaces values of `Movie` properties with new values from `Profiles.plist` file.
     func applyProfile(to movie: Movie) -> Movie {
         guard let profiles = loadProfiles() else {

@@ -8,8 +8,6 @@
 import Vapor
 
 struct Multikino: MovieCustomization {
-    private(set) var cinemaIdentifier: String? = "Multikino"
-
     private let client: Client
 
     init(client: Client) {
