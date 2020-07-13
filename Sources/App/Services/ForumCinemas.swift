@@ -148,12 +148,12 @@ private struct ShowingService: Decodable {
 }
 
 private struct ForumShowing: Decodable {
-    let title: String
-    let originalTitle: String
-    let year: Int
-    let ageRating: String
-    let duration: Int
-    let genres: String
+    let title: String?
+    let originalTitle: String?
+    let year: Int?
+    let ageRating: String?
+    let duration: Int?
+    let genres: String?
     let date: String
     let venue: String
     let url: String
