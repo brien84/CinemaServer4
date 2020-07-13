@@ -103,18 +103,18 @@ extension Movie {
     fileprivate convenience init?(from showing: ForumShowing) {
         guard let newShowing = Showing(from: showing) else { return nil }
 
-        let year = String(showing.year)
-        let duration = String(showing.duration) + " min"
+        let year = showing.year == nil ? nil : String(showing.year!)
+        let duration = showing.duration == nil ? nil : String(showing.duration!) + " min"
 
         var ageRating = showing.ageRating
 
         // `N18` -> `N-18`
-        if ageRating.starts(with: "N") {
-            ageRating.insert("-", at: ageRating.index(ageRating.startIndex, offsetBy: 1))
+        if ageRating?.starts(with: "N") ?? false {
+            ageRating!.insert("-", at: ageRating!.index(ageRating!.startIndex, offsetBy: 1))
         }
 
         // `Genre0, Genre1` -> `Genre0,Genre1` -> `[Genre0, Genre1]`
-        let genres = showing.genres.replacingOccurrences(of: ", ", with: ",").split(separator: ",").map { String($0) }
+        let genres = showing.genres?.replacingOccurrences(of: ", ", with: ",").split(separator: ",").map { String($0) }
 
         self.init(title: showing.title,
                   originalTitle: showing.originalTitle,
