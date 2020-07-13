@@ -1,5 +1,6 @@
 import Fluent
 import FluentSQLiteDriver
+import SendGrid
 import Vapor
 
 // configures your application
@@ -12,6 +13,10 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateMovies())
     app.migrations.add(CreateShowings())
 
+    // sendgrid setup
+    Environment.process.SENDGRID_API_KEY = Config.sendGridKey
+    app.sendgrid.initialize()
+
     // register routes
     try routes(app)
 
@@ -21,4 +26,7 @@ public func configure(_ app: Application) throws {
 
 struct Config {
     static let postersURL = URL(string: "http://localhost:8080/posters/")
+
+    static let emailAddress: String? = nil
+    static let sendGridKey: String? = nil
 }
