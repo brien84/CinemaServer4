@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>originalTitle</key>
+	<dict>
+		<key>title</key>
+		<string>newTitle</string>
+		<key>year</key>
+		<string>newYear</string>
+		<key>duration</key>
+		<string>newDuration</string>
+		<key>ageRating</key>
+		<string>newAgeRating</string>
+		<key>genres</key>
+		<array>
+			<string>genre</string>
+		</array>
+		<key>plot</key>
+		<string>newPlot</string>
+	</dict>
+</dict>
+</plist>
