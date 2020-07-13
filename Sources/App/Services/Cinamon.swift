@@ -7,7 +7,7 @@
 
 import Vapor
 
-struct Cinamon: TitleCustomization {
+struct Cinamon: MovieCustomization {
     private(set) var cinemaIdentifier = "Cinamon"
 
     private let client: Client

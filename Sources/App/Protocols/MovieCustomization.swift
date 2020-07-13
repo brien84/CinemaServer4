@@ -1,5 +1,5 @@
 //
-//  TitleCustomization.swift
+//  MovieCustomization.swift
 //  
 //
 //  Created by Marius on 2020-07-08.
@@ -7,13 +7,13 @@
 
 import Vapor
 
-protocol TitleCustomization {
+protocol MovieCustomization {
     var cinemaIdentifier: String { get }
 
     func customizeOriginalTitle(for movie: Movie) -> Movie
 }
 
-extension TitleCustomization {
+extension MovieCustomization {
     // Modifies `Movie`s `originalTitle` property by replacing provided values
     // with new values from `OriginalTitles.plist` file.
     func customizeOriginalTitle(for movie: Movie) -> Movie {

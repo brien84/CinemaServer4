@@ -7,7 +7,7 @@
 
 import Vapor
 
-struct Multikino: TitleCustomization {
+struct Multikino: MovieCustomization {
     private(set) var cinemaIdentifier = "Multikino"
 
     private let client: Client
