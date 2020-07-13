@@ -7,12 +7,14 @@
 
 import Vapor
 
-struct MainController: MovieCustomization {
+class MainController: MovieCustomization, MovieValidation {
     private var app: Application
 
     private var forum: ForumCinemas
     private var multikino: Multikino
     private var cinamon: Cinamon
+
+    var validationReport: String = ""
 
     init(app: Application) {
         self.app = app
