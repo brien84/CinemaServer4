@@ -17,8 +17,6 @@ extension MovieValidation {
     func validate(_ movie: Movie) -> Movie? {
         var didFailValidation = false
 
-        appendReport(with: "")
-
         guard let originalTitle = movie.originalTitle else {
             appendReport(with: "`originalTitle` is nil!")
             return nil
@@ -64,7 +62,12 @@ extension MovieValidation {
             appendReport(with: "\(originalTitle) `showings` is empty!")
         }
 
-        return didFailValidation ? nil : movie
+        if didFailValidation {
+            appendReport(with: "")
+            return nil
+        } else {
+            return movie
+        }
     }
 
     private func appendReport(with message: String) {
