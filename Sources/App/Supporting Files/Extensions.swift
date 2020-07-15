@@ -33,8 +33,16 @@ extension String {
     //
     // If parameters are nil, the string is sliced from the beginning to the end.
     func slice(from: String?, to: String?) -> String? {
-        guard let rangeFrom = from == nil ? startIndex : range(of: from!)?.upperBound else { return nil }
-        guard let rangeTo = to == nil ? endIndex : range(of: to!)?.lowerBound else { return nil }
+        var rangeFrom = startIndex
+        var rangeTo = endIndex
+
+        if let from = from, let index = range(of: from)?.upperBound {
+            rangeFrom = index
+        }
+
+        if let to = to, let index = range(of: to)?.lowerBound {
+            rangeTo = index
+        }
 
         return String(self[rangeFrom..<rangeTo])
     }
