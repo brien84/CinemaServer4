@@ -11,7 +11,6 @@ public func configure(_ app: Application) throws {
     // database setup
     app.databases.use(.sqlite(.file("db.sqlite")), as: .sqlite)
     app.migrations.add(CreateMovies())
-    app.migrations.add(CreateShowings())
 
     // sendgrid setup
     Environment.process.SENDGRID_API_KEY = Config.sendGridKey
