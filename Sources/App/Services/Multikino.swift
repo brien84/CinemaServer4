@@ -10,6 +10,8 @@ import Vapor
 struct Multikino: MovieCustomization {
     private let client: Client
 
+    private let logger = Logger(label: "Multikino")
+
     init(client: Client) {
         self.client = client
     }
@@ -23,7 +25,7 @@ struct Multikino: MovieCustomization {
 
                 return movies.map { self.customizeOriginalTitle(for: $0) }
             } catch {
-                print("LOG: \(error)")
+                self.logger.error("Multikino.getMovies: \(error)")
                 return []
             }
         }

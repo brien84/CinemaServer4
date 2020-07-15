@@ -16,6 +16,8 @@ final class MainController: MovieCustomization, MovieValidation {
     private var cinamon: Cinamon
     private var sendgrid: SendGridClient
 
+    private let logger = Logger(label: "MainController")
+
     var validationReport: String = ""
 
     init(app: Application) {
@@ -35,6 +37,8 @@ final class MainController: MovieCustomization, MovieValidation {
     }
 
     private func update() {
+        logger.notice("\(Date()) - Update is starting!")
+
         let transaction = app.db.transaction { db in
             Movie.query(on: db).delete().flatMap {
                 self.getMovies().flatMap { movies in
@@ -46,7 +50,7 @@ final class MainController: MovieCustomization, MovieValidation {
         transaction.whenComplete { result in
             switch result {
             case .success():
-                self.validationReport.append(contentsOf: "Successful update!")
+                self.validationReport.append(contentsOf: "Update is successful!")
             case .failure(let error):
                 self.validationReport = "Failed update: \(error)"
             }
@@ -94,14 +98,14 @@ final class MainController: MovieCustomization, MovieValidation {
 
     private func sendReport() {
         defer { validationReport = "" }
-        print(validationReport)
+        logger.warning("\n\(validationReport)")
 
-        guard let email = generateEmail() else { print("Couldn't generate email!"); return }
+        guard let email = generateEmail() else { logger.error("Could not generate email!"); return }
 
         do {
             _ = try sendgrid.send(email: email, on: app.client.eventLoop)
         } catch {
-            print(error)
+            logger.error("Could not send email: \(error)")
         }
     }
 
