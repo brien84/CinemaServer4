@@ -27,7 +27,28 @@ final class MainController: MovieCustomization, MovieValidation {
     }
 
     func start() {
+        update()
+    }
 
+    private func update() {
+        let transaction = app.db.transaction { db in
+            Movie.query(on: db).delete().flatMap {
+                self.getMovies().flatMap { movies in
+                    movies.map { $0.save(on: db) }.flatten(on: db.eventLoop)
+                }
+            }
+        }
+
+        transaction.whenComplete { result in
+            switch result {
+            case .success():
+                self.validationReport.append(contentsOf: "Successful update!")
+            case .failure(let error):
+                self.validationReport = "Failed update: \(error)"
+            }
+
+            self.sendReport()
+        }
     }
 
     private func getMovies() -> EventLoopFuture<[Movie]> {
@@ -69,9 +90,8 @@ final class MainController: MovieCustomization, MovieValidation {
 
     private func sendReport() {
         defer { validationReport = "" }
-        guard !validationReport.isEmpty else { return }
-
         print(validationReport)
+
         guard let email = generateEmail() else { print("Couldn't generate email!"); return }
 
         do {
