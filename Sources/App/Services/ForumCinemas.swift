@@ -103,15 +103,26 @@ extension Movie {
     fileprivate convenience init?(from showing: ForumShowing) {
         guard let newShowing = Showing(from: showing) else { return nil }
 
-        let year = showing.year == nil ? nil : String(showing.year!)
-        let duration = showing.duration == nil ? nil : String(showing.duration!) + " min"
+        let year: String? = {
+            guard let year = showing.year else { return nil }
+            return String(year)
+        }()
 
-        var ageRating = showing.ageRating
+        let duration: String? = {
+            guard let duration = showing.duration else { return nil }
+            return String(duration) + " min"
+        }()
 
-        // `N18` -> `N-18`
-        if ageRating?.starts(with: "N") ?? false {
-            ageRating!.insert("-", at: ageRating!.index(ageRating!.startIndex, offsetBy: 1))
-        }
+        let ageRating: String? = {
+            guard var ageRating = showing.ageRating else { return nil }
+
+            // `N18` -> `N-18`
+            if ageRating.starts(with: "N") {
+                ageRating.insert("-", at: ageRating.index(ageRating.startIndex, offsetBy: 1))
+            }
+
+            return ageRating
+        }()
 
         // `Genre0, Genre1` -> `Genre0,Genre1` -> `[Genre0, Genre1]`
         let genres = showing.genres?.replacingOccurrences(of: ", ", with: ",").split(separator: ",").map { String($0) }
