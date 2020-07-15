@@ -15,10 +15,7 @@ protocol MovieCustomization {
 extension MovieCustomization {
     // Replaces values of `Movie` properties with new values from `Profiles.plist` file.
     func applyProfile(to movie: Movie) -> Movie {
-        guard let profiles = loadProfiles() else {
-            print("Could not open `Profiles.plist`!")
-            return movie
-        }
+        guard let profiles = loadProfiles() else { fatalError("Could not open `Profiles.plist`!") }
 
         guard let originalTitle = movie.originalTitle else { return movie }
         guard let profile = profiles[originalTitle] as? [String: AnyObject] else { return movie }
@@ -78,10 +75,7 @@ extension MovieCustomization {
 
     // Replaces `Movie`s `originalTitle` property with new value from `OriginalTitles.plist` file.
     func customizeOriginalTitle(for movie: Movie) -> Movie {
-        guard let originalTitles = readOriginalTitlesPlist() else {
-            print("Could not open `OriginalTitles.plist`!")
-            return movie
-        }
+        guard let originalTitles = readOriginalTitlesPlist() else { fatalError("Could not open `OriginalTitles.plist`!") }
 
         for (key, value) in originalTitles {
             movie.originalTitle = movie.originalTitle?.replacingOccurrences(of: key, with: value)
