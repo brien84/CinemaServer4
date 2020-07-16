@@ -29,7 +29,7 @@ final class MainController: MovieCustomization, MovieValidation {
     }
 
     func start() {
-        app.eventLoopGroup.next().scheduleTask(in: .hours(12)) {
+        app.eventLoopGroup.next().scheduleTask(in: .hours(8)) {
             self.start()
         }
 
