@@ -144,7 +144,7 @@ extension Showing {
 
         self.init(city: city,
                   date: date,
-                  venue: showing.venue,
+                  venue: showing.venue.sanitizeVenue(),
                   is3D: false,
                   url: showing.url)
     }
@@ -198,5 +198,14 @@ private struct Area: Decodable {
     private enum CodingKeys: String, CodingKey {
         case id = "ID"
         case name = "Name"
+    }
+}
+
+extension String {
+    fileprivate func sanitizeVenue() -> String {
+        return self.replacingOccurrences(of: " (Vilniuje)", with: "")
+                   .replacingOccurrences(of: " Kaune", with: "")
+                   .replacingOccurrences(of: " Klaipėdoje", with: "")
+                   .replacingOccurrences(of: " Šiauliuose", with: "")
     }
 }
