@@ -56,7 +56,7 @@ extension MovieCustomization {
         let originalTitle = movie.originalTitle?.replacingOccurrences(of: ":", with: "").lowercased()
 
         if let posterPath = posterPaths?.first(where: { $0.fileNameWithoutExtension == originalTitle }) {
-            let url = Config.postersURL?.appendingPathComponent(posterPath.fileNameWithExtension)
+            let url = Config.postersURL?.appendingPathComponent(posterPath.lastPathComponent)
             movie.poster = url?.absoluteString
         } else {
             movie.poster = nil
@@ -98,9 +98,5 @@ extension MovieCustomization {
 extension URL {
     fileprivate var fileNameWithoutExtension: String {
         self.deletingPathExtension().lastPathComponent.lowercased()
-    }
-
-    fileprivate var fileNameWithExtension: String {
-        self.lastPathComponent.lowercased()
     }
 }
