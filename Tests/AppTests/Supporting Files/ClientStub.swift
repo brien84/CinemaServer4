@@ -7,7 +7,9 @@
 
 import Vapor
 
+/// Files are located in `Tests/AppTests/Supporting Files/TestData/`.
 enum TestData: String {
+    case cinamonBadData, cinamonValid
     case noResponse
 }
 
