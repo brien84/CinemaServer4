@@ -1,0 +1,1167 @@
+{
+
+  "TEST DATA DESCRIPTION": "In order to test decoding behaviour, some movies and showings are missing properties.",
+
+  "films": [
+    {
+      "original_s_count": 4,
+      "sortable": 0,
+      "showings": [
+        {
+          "date_prefix": "Rytoj",
+          "date_day": "pirmadienis",
+          "date_short": "Pr 28.09",
+          "date_long": "pirmadienis 28 rugsėjo",
+          "date_time": "2020-09-28",
+          "date_formatted": "<abbr title='pirmadienis'>Pr</abbr> 28  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139291",
+              "version_id": "1",
+              "time": "18:45",
+              "screen_type": "2D",
+              "screen_number": "2",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-28T18:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3015/139291",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139307",
+              "version_id": "1",
+              "time": "21:45",
+              "screen_type": "2D",
+              "screen_number": "5",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-28T21:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3015/139307",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-28T18:45:00",
+          "cdate": "2020-09-27T21:09:30.3442886+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        },
+        {
+          "date_prefix": "",
+          "date_day": "antradienis",
+          "date_short": "An 29.09",
+          "date_long": "antradienis 29 rugsėjo",
+          "date_time": "2020-09-29",
+          "date_formatted": "<abbr title='antradienis'>An</abbr> 29  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139323",
+              "version_id": "1",
+              "time": "18:45",
+              "screen_type": "2D",
+              "screen_number": "2",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-29T18:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3015/139323",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139353",
+              "version_id": "1",
+              "time": "21:45",
+              "screen_type": "2D",
+              "screen_number": "1",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-29T21:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3015/139353",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-29T18:45:00",
+          "cdate": "2020-09-27T21:09:30.3442886+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        },
+        {
+          "date_prefix": "",
+          "date_day": "trečiadienis",
+          "date_short": "Tr 30.09",
+          "date_long": "trečiadienis 30 rugsėjo",
+          "date_time": "2020-09-30",
+          "date_formatted": "<abbr title='trečiadienis'>Tr</abbr> 30  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139365",
+              "version_id": "1",
+              "time": "18:45",
+              "screen_type": "2D",
+              "screen_number": "2",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-30T18:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3015/139365",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139381",
+              "version_id": "1",
+              "time": "21:45",
+              "screen_type": "2D",
+              "screen_number": "5",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-30T21:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3015/139381",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-30T18:45:00",
+          "cdate": "2020-09-27T21:09:30.3442886+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        },
+        {
+          "date_prefix": "",
+          "date_day": "ketvirtadienis",
+          "date_short": "Kt 01.10",
+          "date_long": "ketvirtadienis 01 spalio",
+          "date_time": "2020-10-01",
+          "date_formatted": "<abbr title='ketvirtadienis'>Kt</abbr> 01  <abbr title='spalis'>spalis</abbr>",
+          "times": [
+            {
+              "session_id": "139414",
+              "version_id": "1",
+              "time": "18:45",
+              "screen_type": "2D",
+              "screen_number": "4",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-10-01T18:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3015/139414",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139426",
+              "version_id": "1",
+              "time": "21:45",
+              "screen_type": "2D",
+              "screen_number": "5",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-10-01T21:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3015/139426",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-10-01T18:45:00",
+          "cdate": "2020-09-27T21:09:30.3442886+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        }
+      ],
+      "film_page_name": "grenlandija-greenland",
+      "title": "GRENLANDIJA: IŠLIKIMAS (Greenland)",
+      "id": "3015",
+      "image_hero": "",
+      "image_poster": "https://media.multikino.lt/thumbnails/50/rc/RjYxRTA3/eyJ0aHVtYm5haWwiOnsic2l6ZSI6WyIxMDAwMCIsIjQ3MiJdLCJtb2RlIjoiaW5zZXQifX0=/uploads/images/films_and_events/greenland-led-1080x1920_fea2ad133c.jpg",
+      "cert_image": "/-/media/images/certificates/lt_n-13.png",
+      "cert_desc": null,
+      "synopsis_short": "Apokaliptinis trileris „Grenlandija: išlikimas“: paskutinės Žemės valandos prieš smogiant kometai. Vienintėlė saugi vieta - Grenlandija.",
+      "info_release": "14.08.2020",
+      "info_runningtime_visible": true,
+      "info_runningtime": "119 min.",
+      "info_age": "N-13",
+      "pegi_class": "",
+      "pegi_href": "/informationen/fsk-und-jugendschutz",
+      "info_director": "Ric Roman Waugh",
+      "info_cast": null,
+      "availablecopy": "REZERVUOTI / PIRKTI BILIETĄ",
+      "videolink": "/filmai/grenlandija-islikimas-greenland/trailer",
+      "filmlink": "/filmai/grenlandija-islikimas-greenland",
+      "timeslink": "/filmai/grenlandija-islikimas-greenland/times",
+      "video": "",
+      "hidden": false,
+      "coming_soon": false,
+      "comming_soon": false,
+      "announcement": false,
+      "virtual_reality": false,
+      "young_adult_tag": false,
+      "genres": {
+        "active": true
+      },
+      "tags": {
+        "names": [],
+        "active": true
+      },
+      "categories": {
+        "names": [],
+        "active": true
+      },
+      "showing_type": {
+        "name": "Filmai",
+        "active": true
+      },
+      "rank_votes": "25",
+      "rank_value": "8.24",
+      "promo_labels": {
+        "names": [],
+        "position": "",
+        "isborder": false
+      },
+      "ReleaseDate": "2020-08-14T00:00:00Z",
+      "type": "Film Details",
+      "wantsee": "<span>38</span> Žmonių nori pamatyti",
+      "showwantsee": false,
+      "newsletterurl": "/FilmAndEvent/WantToSeeSubscribe/3015",
+      "always_in_QB": false,
+      "priority_value": 100,
+      "available3D": false,
+      "selected3D": false,
+      "distributor": null,
+      "title_synonyms": [],
+      "happy": false,
+      "mobile_poster_image": "https://media.multikino.lt/uploads/images/films/1_c9e1fe5ae9.jpg"
+    },
+    {
+      "original_s_count": 3,
+      "sortable": 5,
+      "showings": [
+        {
+          "date_prefix": "Rytoj",
+          "date_day": "pirmadienis",
+          "date_short": "Pr 28.09",
+          "date_long": "pirmadienis 28 rugsėjo",
+          "date_time": "2020-09-28",
+          "date_formatted": "<abbr title='pirmadienis'>Pr</abbr> 28  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139294",
+              "version_id": "3",
+              "time": "14:45",
+              "screen_number": "3",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "LT",
+                  "fullname": "2D, LT"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-28T14:45:00",
+          "cdate": "2020-09-27T21:09:30.363291+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        },
+        {
+          "date_prefix": "",
+          "date_day": "antradienis",
+          "date_short": "An 29.09",
+          "date_long": "antradienis 29 rugsėjo",
+          "date_time": "2020-09-29",
+          "date_formatted": "<abbr title='antradienis'>An</abbr> 29  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139326",
+              "version_id": "3",
+              "time": "14:45",
+              "screen_type": "2D",
+              "screen_number": "3",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "LT",
+                  "fullname": "2D, LT"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-29T14:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3050/139326",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-29T14:45:00",
+          "cdate": "2020-09-27T21:09:30.363291+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        },
+        {
+          "date_prefix": "",
+          "date_day": "trečiadienis",
+          "date_short": "Tr 30.09",
+          "date_long": "trečiadienis 30 rugsėjo",
+          "date_time": "2020-09-30",
+          "date_formatted": "<abbr title='trečiadienis'>Tr</abbr> 30  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139368",
+              "version_id": "3",
+              "time": "14:45",
+              "screen_type": "2D",
+              "screen_number": "3",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "LT",
+                  "fullname": "2D, LT"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-30T14:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/3050/139368",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-30T14:45:00",
+          "cdate": "2020-09-27T21:09:30.363291+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        }
+      ],
+      "show_showings": true,
+      "film_page_name": "pilis",
+      "title": "PILIS",
+      "id": "3050",
+      "image_hero": "",
+      "image_poster": "https://media.multikino.lt/thumbnails/50/rc/RUI5Mjc2/eyJ0aHVtYm5haWwiOnsic2l6ZSI6WyIxMDAwMCIsIjQ3MiJdLCJtb2RlIjoiaW5zZXQifX0=/uploads/images/films_and_events/pilis_5efd81b41d.jpg",
+      "cert_image": "/-/media/images/certificates/lt_n-13.png",
+      "cert_desc": null,
+      "synopsis_short": "Tai nuoširdus ir jautrus pasakojimas apie trijų kartų moteris, kupinas juokingų situacijų bei dramatiškų išgyvenimų.v",
+      "info_release": "11.09.2020",
+      "info_runningtime_visible": true,
+      "info_runningtime": "91 min.",
+      "info_age": "N-13",
+      "pegi_class": "",
+      "pegi_href": "/informationen/fsk-und-jugendschutz",
+      "info_director": "Lina Lužytė",
+      "info_cast": null,
+      "availablecopy": "REZERVUOTI / PIRKTI BILIETĄ",
+      "videolink": "/filmai/pilis/trailer",
+      "filmlink": "/filmai/pilis",
+      "timeslink": "/filmai/pilis/times",
+      "video": "",
+      "hidden": false,
+      "coming_soon": false,
+      "comming_soon": false,
+      "announcement": false,
+      "virtual_reality": false,
+      "young_adult_tag": false,
+      "genres": {
+        "names": [
+          {
+            "name": "Drama",
+            "url": "/rusis/drama",
+            "highlighted": false
+          }
+        ],
+        "active": true
+      },
+      "tags": {
+        "names": [],
+        "active": true
+      },
+      "categories": {
+        "names": [],
+        "active": true
+      },
+      "showing_type": {
+        "name": "Filmai",
+        "active": true
+      },
+      "rank_votes": "4",
+      "rank_value": "5",
+      "promo_labels": {
+        "names": [],
+        "position": "",
+        "isborder": false
+      },
+      "ReleaseDate": "2020-09-11T00:00:00Z",
+      "type": "Film Details",
+      "wantsee": "<span>5</span> Žmonių nori pamatyti",
+      "showwantsee": false,
+      "newsletterurl": "/FilmAndEvent/WantToSeeSubscribe/3050",
+      "always_in_QB": false,
+      "priority_value": 100,
+      "available3D": false,
+      "selected3D": false,
+      "distributor": null,
+      "title_synonyms": [],
+      "happy": false,
+      "mobile_poster_image": ""
+    },
+    {
+      "original_s_count": 4,
+      "sortable": 1,
+      "showings": [
+        {
+          "date_prefix": "Rytoj",
+          "date_day": "pirmadienis",
+          "date_short": "Pr 28.09",
+          "date_long": "pirmadienis 28 rugsėjo",
+          "date_time": "2020-09-28",
+          "date_formatted": "<abbr title='pirmadienis'>Pr</abbr> 28  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139298",
+              "version_id": "1",
+              "time": "11:15",
+              "screen_type": "2D",
+              "screen_number": "4",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-28T11:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139298",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139314",
+              "version_id": "1",
+              "time": "12:45",
+              "screen_type": "2D",
+              "screen_number": "7",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-28T12:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139314",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139290",
+              "version_id": "1",
+              "time": "15:15",
+              "screen_type": "2D",
+              "screen_number": "2",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-28T15:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139290",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139306",
+              "version_id": "1",
+              "time": "18:30",
+              "screen_type": "2D",
+              "screen_number": "5",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-28T18:30:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139306",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139317",
+              "version_id": "1",
+              "time": "21:15",
+              "screen_type": "2D",
+              "screen_number": "6",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-28T21:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139317",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-28T11:15:00",
+          "cdate": "2020-09-27T21:09:30.370292+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        },
+        {
+          "date_prefix": "",
+          "date_day": "antradienis",
+          "date_short": "An 29.09",
+          "date_long": "antradienis 29 rugsėjo",
+          "date_time": "2020-09-29",
+          "date_formatted": "<abbr title='antradienis'>An</abbr> 29  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139330",
+              "version_id": "1",
+              "time": "11:15",
+              "screen_type": "2D",
+              "screen_number": "4",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-29T11:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139330",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139341",
+              "version_id": "1",
+              "time": "12:45",
+              "screen_type": "2D",
+              "screen_number": "7",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-29T12:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139341",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139322",
+              "version_id": "1",
+              "time": "15:15",
+              "screen_type": "2D",
+              "screen_number": "2",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-29T15:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139322",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139351",
+              "version_id": "1",
+              "time": "18:30",
+              "screen_type": "2D",
+              "screen_number": "1",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-29T18:30:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139351",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139344",
+              "version_id": "1",
+              "time": "21:15",
+              "screen_type": "2D",
+              "screen_number": "6",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-29T21:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139344",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-29T11:15:00",
+          "cdate": "2020-09-27T21:09:30.370292+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        },
+        {
+          "date_prefix": "",
+          "date_day": "trečiadienis",
+          "date_short": "Tr 30.09",
+          "date_long": "trečiadienis 30 rugsėjo",
+          "date_time": "2020-09-30",
+          "date_formatted": "<abbr title='trečiadienis'>Tr</abbr> 30  <abbr title='rugsėjis'>rugsėjis</abbr>",
+          "times": [
+            {
+              "session_id": "139372",
+              "version_id": "1",
+              "time": "11:00",
+              "screen_type": "2D",
+              "screen_number": "4",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-30T11:00:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139372",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139388",
+              "version_id": "1",
+              "time": "12:45",
+              "screen_type": "2D",
+              "screen_number": "7",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-30T12:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139388",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139364",
+              "version_id": "1",
+              "time": "15:15",
+              "screen_type": "2D",
+              "screen_number": "2",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-30T15:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139364",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139380",
+              "version_id": "1",
+              "time": "18:30",
+              "screen_type": "2D",
+              "screen_number": "5",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-30T18:30:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139380",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139391",
+              "version_id": "1",
+              "time": "21:15",
+              "screen_type": "2D",
+              "screen_number": "6",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-09-30T21:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139391",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-09-30T11:00:00",
+          "cdate": "2020-09-27T21:09:30.370292+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        },
+        {
+          "date_prefix": "",
+          "date_day": "ketvirtadienis",
+          "date_short": "Kt 01.10",
+          "date_long": "ketvirtadienis 01 spalio",
+          "date_time": "2020-10-01",
+          "date_formatted": "<abbr title='ketvirtadienis'>Kt</abbr> 01  <abbr title='spalis'>spalis</abbr>",
+          "times": [
+            {
+              "session_id": "139408",
+              "version_id": "1",
+              "time": "11:00",
+              "screen_type": "2D",
+              "screen_number": "2",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-10-01T11:00:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139408",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139405",
+              "version_id": "1",
+              "time": "12:45",
+              "screen_type": "2D",
+              "screen_number": "7",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-10-01T12:45:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139405",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139413",
+              "version_id": "1",
+              "time": "15:15",
+              "screen_type": "2D",
+              "screen_number": "4",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-10-01T15:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139413",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139425",
+              "version_id": "1",
+              "time": "18:30",
+              "screen_type": "2D",
+              "screen_number": "6",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-10-01T18:30:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139425",
+              "is_limit_reached": false
+            },
+            {
+              "session_id": "139417",
+              "version_id": "1",
+              "time": "21:15",
+              "screen_type": "2D",
+              "screen_number": "2",
+              "lang": null,
+              "tags": [
+                {
+                  "name": "Titrai",
+                  "fullname": "2D, Titrai"
+                }
+              ],
+              "event_info": null,
+              "hidden": false,
+              "date": "2020-10-01T21:15:00",
+              "kids_club": false,
+              "first_class": false,
+              "promo_types": [],
+              "happy_price": null,
+              "peak_pricing": false,
+              "happy_tag": null,
+              "link": "/pirkti-bilieta/santrauka/1001/2988/139417",
+              "is_limit_reached": false
+            }
+          ],
+          "date": "2020-10-01T11:00:00",
+          "cdate": "2020-09-27T21:09:30.3712896+02:00",
+          "clone": true,
+          "is_peak_pricing": false
+        }
+      ],
+      "show_showings": true,
+      "film_page_name": "tenet",
+      "title": "TENET",
+      "id": "2988",
+      "image_hero": "",
+      "image_poster": "https://media.multikino.lt/thumbnails/50/rc/RUM5QzI3/eyJ0aHVtYm5haWwiOnsic2l6ZSI6WyIxMDAwMCIsIjQ3MiJdLCJtb2RlIjoiaW5zZXQifX0=/uploads/images/films_and_events/tenet-digi-1080x1920-lt_eb63b5c3ca.jpg",
+      "cert_image": "/-/media/images/certificates/lt_n-13.png",
+      "cert_desc": null,
+      "synopsis_short": "Žiūrovus visame pasaulyje pribloškusio kino filmo „Pradžia“ (Inception) dešimties metų jubiliejaus proga, originalusis kino standartus laužantis režisierius Christopheris Nolanas sugrįžta su nauja realybę į šipulius daužančia juosta „Tenet“.",
+      "info_release": "26.08.2020",
+      "info_runningtime_visible": true,
+      "info_runningtime": "150 min.",
+      "info_age": "N-13",
+      "pegi_class": "",
+      "pegi_href": "/informationen/fsk-und-jugendschutz",
+      "info_director": "Christopher Nolan",
+      "info_cast": null,
+      "availablecopy": "REZERVUOTI / PIRKTI BILIETĄ",
+      "videolink": "/filmai/tenet/trailer",
+      "filmlink": "/filmai/tenet",
+      "timeslink": "/filmai/tenet/times",
+      "video": "",
+      "hidden": false,
+      "coming_soon": false,
+      "comming_soon": false,
+      "announcement": false,
+      "virtual_reality": false,
+      "young_adult_tag": false,
+      "genres": {
+        "names": [
+          {
+            "name": "Trileris",
+            "url": "/rusis/trileris",
+            "highlighted": false
+          },
+          {
+            "name": "Veiksmo",
+            "url": "/rusis/veiksmo",
+            "highlighted": false
+          },
+          {
+            "name": "Mokslinė fantastika",
+            "url": "/rusis/moksline-fantastika",
+            "highlighted": false
+          }
+        ],
+        "active": true
+      },
+      "tags": {
+        "names": [],
+        "active": true
+      },
+      "categories": {
+        "names": [],
+        "active": true
+      },
+      "showing_type": {
+        "name": "Filmai",
+        "active": true
+      },
+      "rank_votes": "39",
+      "rank_value": "7.05",
+      "promo_labels": {
+        "names": [],
+        "position": "",
+        "isborder": false
+      },
+      "ReleaseDate": "2020-08-26T00:00:00Z",
+      "type": "Film Details",
+      "wantsee": "<span>148</span> Žmonių nori pamatyti",
+      "showwantsee": false,
+      "newsletterurl": "/FilmAndEvent/WantToSeeSubscribe/2988",
+      "always_in_QB": false,
+      "priority_value": 100,
+      "available3D": false,
+      "selected3D": false,
+      "distributor": null,
+      "title_synonyms": [],
+      "happy": false,
+      "mobile_poster_image": "https://media.multikino.lt/uploads/images/films/1_f72e06ec78.jpg"
+    }
+  ],
+  "cdate": "2020-09-27_21:18:06.7600",
+  "SiteRootPath": "/sitecore/content/VueLT",
+  "Site": "website-lt",
+  "Lang": "lt"
+}

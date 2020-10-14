@@ -11,6 +11,7 @@ import Vapor
 enum TestData: String {
     case cinamonBadData, cinamonValid
     case forumCinemasBadData, forumCinemasNoShowings, forumCinemasValid
+    case multikinoBadData, multikinoValid
     case noResponse
 }
 
