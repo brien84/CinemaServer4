@@ -1,6 +1,6 @@
 //
 //  Movie.swift
-//  
+//
 //
 //  Created by Marius on 2020-07-07.
 //
@@ -17,7 +17,7 @@ final class Movie: Model, Content {
     @Field(key: "title")
     var title: String?
 
-    @Field(key: "originalTitle")
+    @Field(key: "original_title")
     var originalTitle: String?
 
     @Field(key: "year")
@@ -26,7 +26,7 @@ final class Movie: Model, Content {
     @Field(key: "duration")
     var duration: String?
 
-    @Field(key: "ageRating")
+    @Field(key: "age_rating")
     var ageRating: String?
 
     @Field(key: "genres")
@@ -38,13 +38,13 @@ final class Movie: Model, Content {
     @Field(key: "poster")
     var poster: String?
 
-    @Field(key: "showings")
+    @Children(for: \.$movie)
     var showings: [Showing]
 
     init() { }
 
     init(id: UUID? = nil, title: String?, originalTitle: String?, year: String?, duration: String?,
-         ageRating: String?, genres: [String]?, plot: String? = nil, poster: String? = nil, showings: [Showing] = []) {
+         ageRating: String?, genres: [String]?, plot: String? = nil, poster: String? = nil) {
         self.id = id
         self.title = title
         self.originalTitle = originalTitle
@@ -54,7 +54,6 @@ final class Movie: Model, Content {
         self.genres = genres
         self.plot = plot
         self.poster = poster
-        self.showings = showings
     }
 }
 
@@ -62,15 +61,14 @@ struct CreateMovies: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         database.schema("movies")
             .id()
-            .field("title", .string, .required)
-            .field("originalTitle", .string, .required)
-            .field("year", .string, .required)
-            .field("duration", .string, .required)
-            .field("ageRating", .string, .required)
-            .field("genres", .array(of: .string), .required)
-            .field("plot", .string, .required)
-            .field("poster", .string, .required)
-            .field("showings", .array(of: .custom(Showing.self)), .required)
+            .field("title", .string)
+            .field("original_title", .string)
+            .field("year", .string)
+            .field("duration", .string)
+            .field("age_rating", .string)
+            .field("genres", .array(of: .string))
+            .field("plot", .string)
+            .field("poster", .string)
             .create()
     }
 
