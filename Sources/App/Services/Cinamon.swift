@@ -10,8 +10,6 @@ import Vapor
 struct Cinamon: MovieCustomization {
     private let client: Client
 
-    private let logger = Logger(label: "Cinamon")
-
     init(client: Client) {
         self.client = client
     }
@@ -25,7 +23,6 @@ struct Cinamon: MovieCustomization {
 
                 return movies.map { self.customizeOriginalTitle(for: $0) }
             } catch {
-                self.logger.error("Cinamon.getMovies: \(error)")
                 return []
             }
         }

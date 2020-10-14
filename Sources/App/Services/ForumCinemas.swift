@@ -10,8 +10,6 @@ import Vapor
 struct ForumCinemas: MovieCustomization {
     private let client: Client
 
-    private let logger = Logger(label: "ForumCinemas")
-
     init(client: Client) {
         self.client = client
     }
@@ -64,7 +62,6 @@ struct ForumCinemas: MovieCustomization {
 
                 return showings
             } catch {
-                self.logger.error("ForumCinemas.getShowings: \(error)")
                 return []
             }
         }
@@ -76,7 +73,6 @@ struct ForumCinemas: MovieCustomization {
                 let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
                 return service.areas
             } catch {
-                self.logger.error("ForumCinemas.getAreas: \(error)")
                 return []
             }
         }
