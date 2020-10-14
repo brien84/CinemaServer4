@@ -1,0 +1,20 @@
+{
+  "TheatreAreas": [
+    {
+      "ID": 1011,
+      "Name": "Vilnius"
+    },
+    {
+      "ID": 1012,
+      "Name": "Kaunas"
+    },
+    {
+      "ID": 1015,
+      "Name": "Klaipėda"
+    },
+    {
+      "ID": 1014,
+      "Name": "Šiauliai"
+    }
+  ]
+}
