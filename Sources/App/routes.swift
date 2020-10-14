@@ -2,7 +2,7 @@ import Vapor
 
 func routes(_ app: Application) throws {
     app.get("all") { req in
-        Movie.query(on: req.db).all()
+        Movie.query(on: req.db).with(\.$showings).all()
     }
 
     app.get("posters", ":fileName") { req -> Response in
