@@ -41,52 +41,47 @@ extension Application {
     }
 }
 
+// MARK: - Decodable Helpers
+
 extension Movie {
-    fileprivate convenience init(from movie: CinamonMovie, on screens: [String]) {
+    fileprivate convenience init(from cinamonMovie: CinamonMovie) {
         // `2020-01-01` -> `2020`
         let year: String? = {
-            guard let substring = movie.year?.split(separator: "-").first else { return nil }
+            guard let substring = cinamonMovie.year?.split(separator: "-").first else { return nil }
             return String(substring)
         }()
 
         // `69` -> `69 min`
         let duration: String? = {
-            guard let movieDuration = movie.duration else { return nil }
+            guard let movieDuration = cinamonMovie.duration else { return nil }
             return String(movieDuration) + " min"
         }()
 
         let genres: [String]? = {
-            guard let genre = movie.genre?.name else { return nil }
+            guard let genre = cinamonMovie.genre?.name else { return nil }
             return [genre]
         }()
 
-        let showings = movie.showings.compactMap { showing -> Showing? in
-            if screens.contains(showing.screen) {
-                return Showing(from: showing)
-            } else {
-                return nil
-            }
-        }
-
-        self.init(title: movie.title,
-                  originalTitle: movie.originalTitle,
+        self.init(title: cinamonMovie.title,
+                  originalTitle: cinamonMovie.originalTitle,
                   year: year,
                   duration: duration,
-                  ageRating: movie.ageRating,
-                  genres: genres,
-                  showings: showings)
+                  ageRating: cinamonMovie.ageRating,
+                  genres: genres)
     }
 }
 
 extension Showing {
-    fileprivate convenience init?(from showing: CinamonShowing) {
-        guard let date = showing.showtime.convertToDate() else { return nil }
+    fileprivate convenience init?(from cinamonShowing: CinamonShowing) {
+        guard let date = cinamonShowing.showtime?.convertToDate() else { return nil }
+        guard let is3D = cinamonShowing.is3D else { return nil }
+        guard let pid = cinamonShowing.pid else { return nil }
 
         self.init(city: "Kaunas",
                   date: date,
                   venue: "Cinamon",
-                  is3D: showing.is3D,
-                  url: "https://cinamonkino.com/mega/seat-plan/\(showing.pid)/lt")
+                  is3D: is3D,
+                  url: "https://cinamonkino.com/mega/seat-plan/\(pid)/lt")
     }
 }
 
