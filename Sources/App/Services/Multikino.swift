@@ -62,35 +62,28 @@ extension Movie {
         // `69 min.` -> `69 min`
         let duration = movie.duration?.replacingOccurrences(of: ".", with: "")
 
-        let genres = movie.genres?.names.map { $0.name }
-
-        let showings = movie.showingServices.flatMap { service in
-            service.showings.compactMap { showing in
-                Showing(from: showing)
-            }
-        }
+        let genres = movie.genres?.names?.compactMap { $0.name }
 
         self.init(title: title,
                   originalTitle: originalTitle,
                   year: year,
                   duration: duration,
                   ageRating: movie.ageRating,
-                  genres: genres,
-                  showings: showings)
+                  genres: genres)
     }
 }
 
 extension Showing {
-    fileprivate convenience init?(from showing: MultikinoShowing) {
-        guard let date = showing.date.convertToDate() else { return nil }
-        let is3D = showing.screen_type == "3D" ? true : false
-        let url = "https://multikino.lt\(showing.link)"
+    fileprivate convenience init?(from multikinoShowing: MultikinoShowing) {
+        guard let date = multikinoShowing.date?.convertToDate() else { return nil }
+        guard let url = multikinoShowing.url else { return nil }
+        let is3D = multikinoShowing.screenType == "3D" ? true : false
 
         self.init(city: "Vilnius",
                   date: date,
                   venue: "Multikino",
                   is3D: is3D,
-                  url: url)
+                  url: "https://multikino.lt\(url)")
     }
 }
 
