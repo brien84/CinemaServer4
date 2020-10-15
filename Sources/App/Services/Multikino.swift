@@ -1,17 +1,20 @@
 //
 //  Multikino.swift
-//  
+//
 //
 //  Created by Marius on 2020-07-09.
 //
 
+import Fluent
 import Vapor
 
 struct Multikino: MovieCustomization {
     private let client: Client
+    private let db: Database
 
-    init(client: Client) {
+    init(client: Client, database: Database) {
         self.client = client
+        self.db = database
     }
 
     func getMovies() -> EventLoopFuture<[Movie]> {
@@ -37,7 +40,7 @@ extension Multikino {
 
 extension Application {
     var multikino: Multikino {
-        .init(client: self.client)
+        .init(client: self.client, database: self.db)
     }
 }
 

@@ -1,17 +1,20 @@
 //
 //  ForumCinemas.swift
-//  
+//
 //
 //  Created by Marius on 2020-07-07.
 //
 
+import Fluent
 import Vapor
 
 struct ForumCinemas: MovieCustomization {
     private let client: Client
+    private let db: Database
 
-    init(client: Client) {
+    init(client: Client, database: Database) {
         self.client = client
+        self.db = database
     }
 
     func getMovies() -> EventLoopFuture<[Movie]> {
@@ -91,7 +94,7 @@ extension ForumCinemas {
 
 extension Application {
     var forumCinemas: ForumCinemas {
-        .init(client: self.client)
+        .init(client: self.client, database: self.db)
     }
 }
 
