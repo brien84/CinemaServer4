@@ -95,22 +95,22 @@ extension Application {
     }
 }
 
-extension Movie {
-    fileprivate convenience init?(from showing: ForumShowing) {
-        guard let newShowing = Showing(from: showing) else { return nil }
+// MARK: - Decodable Helpers
 
+extension Movie {
+    fileprivate convenience init(from forumShowing: ForumShowing) {
         let year: String? = {
-            guard let year = showing.year else { return nil }
+            guard let year = forumShowing.year else { return nil }
             return String(year)
         }()
 
         let duration: String? = {
-            guard let duration = showing.duration else { return nil }
+            guard let duration = forumShowing.duration else { return nil }
             return String(duration) + " min"
         }()
 
         let ageRating: String? = {
-            guard var ageRating = showing.ageRating else { return nil }
+            guard var ageRating = forumShowing.ageRating else { return nil }
 
             // `N18` -> `N-18`
             if ageRating.starts(with: "N") {
@@ -121,28 +121,29 @@ extension Movie {
         }()
 
         // `Genre0, Genre1` -> `Genre0,Genre1` -> `[Genre0, Genre1]`
-        let genres = showing.genres?.replacingOccurrences(of: ", ", with: ",").split(separator: ",").map { String($0) }
+        let genres = forumShowing.genres?.replacingOccurrences(of: ", ", with: ",").split(separator: ",").map { String($0) }
 
-        self.init(title: showing.title,
-                  originalTitle: showing.originalTitle,
+        self.init(title: forumShowing.title,
+                  originalTitle: forumShowing.originalTitle,
                   year: year,
                   duration: duration,
                   ageRating: ageRating,
-                  genres: genres,
-                  showings: [newShowing])
+                  genres: genres)
     }
 }
 
 extension Showing {
-    fileprivate convenience init?(from showing: ForumShowing) {
-        guard let city = showing.area?.name else { return nil }
-        guard let date = showing.date.convertToDate() else { return nil }
+    fileprivate convenience init?(from forumShowing: ForumShowing) {
+        guard let city = forumShowing.area?.name else { return nil }
+        guard let date = forumShowing.date?.convertToDate() else { return nil }
+        guard let venue = forumShowing.venue else { return nil }
+        guard let url = forumShowing.url else { return nil }
 
         self.init(city: city,
                   date: date,
-                  venue: showing.venue.sanitizeVenue(),
+                  venue: venue.sanitizeVenue(),
                   is3D: false,
-                  url: showing.url)
+                  url: url)
     }
 }
 
