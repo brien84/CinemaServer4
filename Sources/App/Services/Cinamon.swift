@@ -93,7 +93,7 @@ extension Showing {
 private struct CinamonService: Decodable {
     let movies: [CinamonMovie]
 
-    // `Screens` contains local theater IDs, which are used to filter out local showings,
+    // `screens` contain local theater IDs, which we use to filter out local showings,
     // since API returns showings from theaters across multiple countries.
     let screens: [String]
 }
@@ -123,10 +123,10 @@ private struct CinamonMovie: Decodable {
 }
 
 private struct CinamonShowing: Decodable {
-    let pid: Int
-    let screen: String
-    let showtime: String
-    let is3D: Bool
+    let pid: Int?
+    let screen: String?
+    let showtime: String?
+    let is3D: Bool?
 
     private enum CodingKeys: String, CodingKey {
         case pid
