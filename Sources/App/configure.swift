@@ -1,4 +1,3 @@
-import Fluent
 import FluentSQLiteDriver
 import SendGrid
 import Vapor
@@ -8,20 +7,29 @@ public func configure(_ app: Application) throws {
     // uncomment to serve files from /Public folder
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
-    // database setup
-    app.databases.use(.sqlite(.file("db.sqlite")), as: .sqlite)
-    app.migrations.add(CreateMovies())
-    app.migrations.add(CreateShowings())
+    // register routes
+    try routes(app)
 
     // sendgrid setup
     Environment.process.SENDGRID_API_KEY = Config.sendGridKey
     app.sendgrid.initialize()
 
-    // register routes
-    try routes(app)
+    databaseSetup(app)
 
     let controller = MainController(app: app)
     controller.start()
+}
+
+private func databaseSetup(_ app: Application) {
+    switch app.environment {
+    case .testing:
+        app.databases.use(.sqlite(.file("test.sqlite"), maxConnectionsPerEventLoop: 10), as: .sqlite)
+    default:
+        app.databases.use(.sqlite(.file("db.sqlite"), maxConnectionsPerEventLoop: 10), as: .sqlite)
+    }
+
+    app.migrations.add(CreateMovies())
+    app.migrations.add(CreateShowings())
 }
 
 struct Config {
