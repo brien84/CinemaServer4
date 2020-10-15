@@ -108,7 +108,7 @@ private struct MultikinoMovie: Decodable {
     let ageRating: String?
     let year: String?
     let genres: Genres?
-    let showShowings: Bool
+    let showShowings: Bool?
     let showingServices: [ShowingService]
 
     private enum CodingKeys: String, CodingKey {
@@ -123,20 +123,15 @@ private struct MultikinoMovie: Decodable {
 }
 
 private struct Genres: Decodable {
-    let names: [Genre]
+    let names: [Genre]?
 
     struct Genre: Decodable {
-        let name: String
+        let name: String?
     }
 }
 
 private struct ShowingService: Decodable {
     let showings: [MultikinoShowing]
-
-    struct Time: Decodable {
-        let screen_type: String
-        let date: String
-    }
 
     private enum CodingKeys: String, CodingKey {
         case showings = "times"
@@ -144,7 +139,13 @@ private struct ShowingService: Decodable {
 }
 
 private struct MultikinoShowing: Decodable {
-    let screen_type: String
-    let date: String
-    let link: String
+    let date: String?
+    let url: String?
+    let screenType: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case date
+        case url = "link"
+        case screenType = "screen_type"
+    }
 }
