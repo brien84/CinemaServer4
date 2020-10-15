@@ -161,9 +161,9 @@ private struct ForumShowing: Decodable {
     let ageRating: String?
     let duration: Int?
     let genres: String?
-    let date: String
-    let venue: String
-    let url: String
+    let date: String?
+    let venue: String?
+    let url: String?
     var area: Area?
 
     private enum CodingKeys: String, CodingKey {
