@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct Cinamon {
+struct Cinamon: MovieFetching {
     private let client: Client
     private let db: Database
 
@@ -17,7 +17,7 @@ struct Cinamon {
         self.db = database
     }
 
-    func getMovies() -> EventLoopFuture<Void> {
+    func fetchMovies() -> EventLoopFuture<Void> {
         client.get(apiURI).flatMap { res in
             do {
                 let service = try JSONDecoder().decode(CinamonService.self, from: res.body ?? ByteBuffer())
