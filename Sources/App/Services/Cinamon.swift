@@ -17,18 +17,33 @@ struct Cinamon {
         self.db = database
     }
 
-    func getMovies() -> EventLoopFuture<[Movie]> {
-        client.get(apiURI).map { res in
+    func getMovies() -> EventLoopFuture<Void> {
+        client.get(apiURI).flatMap { res in
             do {
                 let service = try JSONDecoder().decode(CinamonService.self, from: res.body ?? ByteBuffer())
-
-                let movies = service.movies.map { Movie(from: $0, on: service.screens) }
-
-                return movies.map { self.customizeOriginalTitle(for: $0) }
+                return self.createMovies(from: service)
             } catch {
-                return []
+                return self.client.eventLoop.makeFailedFuture(error)
             }
         }
+    }
+
+    private func createMovies(from service: CinamonService) -> EventLoopFuture<Void> {
+        service.movies.map { serviceMovie in
+            let movie = Movie(from: serviceMovie)
+
+            let showings = serviceMovie.showings.compactMap { cinamonShowing -> Showing? in
+                guard let screen = cinamonShowing.screen else { return nil }
+                // If `service.screens` does not contain `cinamonShowing.screen`,
+                // it means that the showing is not shown in our location, thus should be discarded.
+                guard service.screens.contains(screen) else { return nil }
+                return Showing(from: cinamonShowing)
+            }
+
+            return movie.create(on: db).flatMap {
+                movie.$showings.create(showings, on: self.db)
+            }
+        }.flatten(on: db.eventLoop)
     }
 }
 
