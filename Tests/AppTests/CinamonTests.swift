@@ -13,9 +13,7 @@ final class CinamonTests: XCTestCase {
     var sut: Cinamon!
 
     override func setUp() {
-        app = Application()
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next())
-        sut = Cinamon(client: client)
+        app = try! Application.testable()
     }
 
     override func tearDown() {
@@ -23,28 +21,34 @@ final class CinamonTests: XCTestCase {
         app.shutdown()
     }
 
-    func testGetMovies() {
-        let movies = try? sut.getMovies().wait()
+    func testFetchingNoResponseThrowsError() throws {
+        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: .noResponse)
+        sut = Cinamon(client: client, database: app.db)
 
+        XCTAssertThrowsError(try sut.fetchMovies().wait())
+    }
+
+    func testFetchingValidResponse() throws {
+        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: .cinamonValid)
+        sut = Cinamon(client: client, database: app.db)
+
+        try sut.fetchMovies().wait()
+
+        let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
+        XCTAssertGreaterThan(movies.count, 0)
+        movies.forEach { XCTAssertGreaterThan($0.showings.count, 0) }
+    }
+
+    /// If response contains bad data (missing properties, incorrect values), decoder should ignore it and not throw error.
+    func testFetchingBadDataDoesNotThrow() throws {
+        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: .cinamonBadData)
+        sut = Cinamon(client: client, database: app.db)
+
+        try sut.fetchMovies().wait()
+
+        let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
+        XCTAssertGreaterThan(movies.count, 0)
+        movies.forEach { XCTAssertGreaterThan($0.showings.count, 0) }
     }
 }
 
-final class ClientStub: Client {
-
-    var eventLoop: EventLoop
-
-    init(eventLoop: EventLoop) {
-        self.eventLoop = eventLoop
-    }
-
-    func delegating(to eventLoop: EventLoop) -> Client {
-        self.eventLoop = eventLoop
-        return self
-    }
-
-    func send(_ request: ClientRequest) -> EventLoopFuture<ClientResponse> {
-        let response = ClientResponse(status: .ok)
-
-        return self.eventLoop.future(response)
-    }
-}
