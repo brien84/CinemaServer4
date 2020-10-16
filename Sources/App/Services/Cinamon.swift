@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct Cinamon: MovieCustomization {
+struct Cinamon {
     private let client: Client
     private let db: Database
 
