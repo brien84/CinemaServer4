@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct ForumCinemas: MovieCustomization {
+struct ForumCinemas {
     private let client: Client
     private let db: Database
 
