@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct Multikino: MovieCustomization {
+struct Multikino {
     private let client: Client
     private let db: Database
 
