@@ -17,18 +17,31 @@ struct Multikino {
         self.db = database
     }
 
-    func getMovies() -> EventLoopFuture<[Movie]> {
-        client.get(apiURI).map { res in
+    func getMovies() -> EventLoopFuture<Void> {
+        client.get(apiURI).flatMap { res in
             do {
-                let multiService = try JSONDecoder().decode(MovieService.self, from: res.body ?? ByteBuffer())
-
-                let movies = multiService.movies.compactMap { Movie(from: $0) }
-
-                return movies.map { self.customizeOriginalTitle(for: $0) }
+                let service = try JSONDecoder().decode(MovieService.self, from: res.body ?? ByteBuffer())
+                return self.createMovies(from: service)
             } catch {
-                return []
+                return self.client.eventLoop.makeFailedFuture(error)
             }
         }
+    }
+
+    private func createMovies(from service: MovieService) -> EventLoopFuture<Void> {
+        service.movies.compactMap { multikinoMovie -> EventLoopFuture<Void>? in
+            guard let movie = Movie(from: multikinoMovie) else { return nil }
+
+            let showings = multikinoMovie.showingServices.flatMap { service in
+                service.showings.compactMap { multikinoShowing in
+                    Showing(from: multikinoShowing)
+                }
+            }
+
+            return movie.create(on: db).flatMap {
+                movie.$showings.create(showings, on: self.db)
+            }
+        }.flatten(on: db.eventLoop)
     }
 }
 
