@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct Multikino {
+struct Multikino: MovieFetching {
     private let client: Client
     private let db: Database
 
@@ -17,7 +17,7 @@ struct Multikino {
         self.db = database
     }
 
-    func getMovies() -> EventLoopFuture<Void> {
+    func fetchMovies() -> EventLoopFuture<Void> {
         client.get(apiURI).flatMap { res in
             do {
                 let service = try JSONDecoder().decode(MovieService.self, from: res.body ?? ByteBuffer())
