@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct ForumCinemas {
+struct ForumCinemas: MovieFetching {
     private let client: Client
     private let db: Database
 
@@ -17,7 +17,7 @@ struct ForumCinemas {
         self.db = database
     }
 
-    func getMovies() -> EventLoopFuture<Void> {
+    func fetchMovies() -> EventLoopFuture<Void> {
         getForumShowings().flatMap { forumShowings in
             self.createMovies(from: forumShowings)
         }
