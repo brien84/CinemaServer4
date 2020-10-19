@@ -17,67 +17,62 @@ struct ForumCinemas {
         self.db = database
     }
 
-    func getMovies() -> EventLoopFuture<[Movie]> {
-        getShowings().map { showings in
-            let movies = self.createMovies(from: showings)
-            
-            return movies.map { self.customizeOriginalTitle(for: $0) }
+    func getMovies() -> EventLoopFuture<Void> {
+        getForumShowings().flatMap { forumShowings in
+            self.createMovies(from: forumShowings)
         }
     }
 
-    private func createMovies(from showings: [ForumShowing]) -> [Movie] {
-        var movies = [Movie]()
+    private func createMovies(from forumShowings: [ForumShowing]) -> EventLoopFuture<Void> {
+        var forumShowings = forumShowings
 
-        showings.forEach { showing in
-            if let movie = movies.first(where: { $0.originalTitle == showing.originalTitle }) {
-                guard let newShowing = Showing(from: showing) else { return }
-                movie.showings.append(newShowing)
-            } else {
-                guard let newMovie = Movie(from: showing) else { return }
-                movies.append(newMovie)
+        if let forumShowing = forumShowings.first {
+            let movieShowings = forumShowings.filter { $0.title == forumShowing.title }
+            forumShowings = forumShowings.filter { $0.title != forumShowing.title}
+
+            let movie = Movie(from: forumShowing)
+            let showings = movieShowings.compactMap { Showing(from: $0) }
+
+            return movie.create(on: db).flatMap {
+                movie.$showings.create(showings, on: self.db).flatMap {
+                    self.createMovies(from: forumShowings)
+                }
             }
+        } else {
+            return db.eventLoop.future()
         }
-
-        return movies
     }
 
-    // Returns array of `ForumShowing` from all areas.
-    private func getShowings() -> EventLoopFuture<[ForumShowing]> {
+    /// Returns array of `ForumShowing` from all areas.
+    private func getForumShowings() -> EventLoopFuture<[ForumShowing]> {
         getAreas().flatMap { areas in
             areas.map { area in
-                self.getShowings(in: area)
+                self.getForumShowings(in: area)
             }.flatten(on: self.client.eventLoop).map { $0.flatMap { $0 } }
         }
     }
 
-    // Returns array of `ForumShowing` from specific area.
-    private func getShowings(in area: Area) -> EventLoopFuture<[ForumShowing]> {
-        client.get(makeShowingsURI(in: area)).map { res in
-            do {
-                let service = try JSONDecoder().decode(ShowingService.self, from: res.body ?? ByteBuffer())
+    /// Returns array of `ForumShowing` from specific area.
+    private func getForumShowings(in area: Area) -> EventLoopFuture<[ForumShowing]> {
+        client.get(makeShowingsURI(for: area)).flatMapThrowing { res in
 
-                // Assigns `area` to each `ForumShowing` object.
-                let showings = service.showings.map { showing -> ForumShowing in
-                    var copy = showing
-                    copy.area = area
-                    return copy
-                }
+            let service = try JSONDecoder().decode(ShowingService.self, from: res.body ?? ByteBuffer())
 
-                return showings
-            } catch {
-                return []
+            // Assigns `area` to each `ForumShowing` object.
+            let showings = service.showings.map { showing -> ForumShowing in
+                var copy = showing
+                copy.area = area
+                return copy
             }
+
+            return showings
         }
     }
 
     private func getAreas() -> EventLoopFuture<[Area]> {
-        client.get(areasURI).map { res in
-            do {
-                let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
-                return service.areas
-            } catch {
-                return []
-            }
+        client.get(areasURI).flatMapThrowing { res in
+            let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
+            return service.areas
         }
     }
 }
@@ -87,7 +82,7 @@ extension ForumCinemas {
         URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
     }
 
-    private func makeShowingsURI(in area: Area) -> URI {
+    private func makeShowingsURI(for area: Area) -> URI {
         URI(string: "http://m.forumcinemas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(area.id)")
     }
 }
