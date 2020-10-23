@@ -7,6 +7,8 @@
 
 import Vapor
 
-protocol MovieFetching {
-    func fetchMovies() -> EventLoopFuture<Void>
-}
+//protocol MovieFetching {
+//    func fetchMovies() -> EventLoopFuture<Void>
+//}
+
+
