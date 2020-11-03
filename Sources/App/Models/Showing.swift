@@ -32,10 +32,9 @@ final class Showing: Model, Content {
     @Parent(key: "movie_id")
     var movie: Movie
 
-    init() { }
+    convenience init(city: String, date: Date, venue: String, is3D: Bool, url: String) {
+        self.init()
 
-    init(id: UUID? = nil, city: String, date: Date, venue: String, is3D: Bool, url: String) {
-        self.id = id
         self.city = city
         self.date = date
         self.venue = venue
