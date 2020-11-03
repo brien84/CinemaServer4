@@ -31,7 +31,7 @@ struct EmailSender: EmailSending {
 }
 
 extension Application {
-    var emailSender: EmailSending {
-        .init(db: self.db)
+    var emailSender: EmailSender {
+        .init(eventLoop: self.eventLoopGroup.next(), sendgrid: self.sendgrid.client)
     }
 }
