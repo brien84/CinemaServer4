@@ -41,11 +41,10 @@ final class Movie: Model, Content {
     @Children(for: \.$movie)
     var showings: [Showing]
 
-    init() { }
+    convenience init(title: String?, originalTitle: String?, year: String?, duration: String?,
+                     ageRating: String?, genres: [String]?, plot: String? = nil, poster: String? = nil) {
+        self.init()
 
-    init(id: UUID? = nil, title: String?, originalTitle: String?, year: String?, duration: String?,
-         ageRating: String?, genres: [String]?, plot: String? = nil, poster: String? = nil) {
-        self.id = id
         self.title = title
         self.originalTitle = originalTitle
         self.year = year
@@ -54,6 +53,16 @@ final class Movie: Model, Content {
         self.genres = genres
         self.plot = plot
         self.poster = poster
+    }
+}
+
+extension Movie: Equatable {
+    static func == (lhs: Movie, rhs: Movie) -> Bool {
+        return lhs.originalTitle?.lowercased() == rhs.originalTitle?.lowercased()
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
     }
 }
 
@@ -74,15 +83,5 @@ struct CreateMovies: Migration {
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
         database.schema("movies").delete()
-    }
-}
-
-extension Movie: Equatable {
-    static func == (lhs: Movie, rhs: Movie) -> Bool {
-        return lhs.originalTitle?.lowercased() == rhs.originalTitle?.lowercased()
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(title)
     }
 }
