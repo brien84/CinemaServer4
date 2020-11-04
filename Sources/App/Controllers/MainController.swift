@@ -8,7 +8,7 @@
 import SendGrid
 import Vapor
 
-final class MainController: MovieCustomization, MovieValidation {
+final class MainController: MovieCustomization {
     private var app: Application
 
     private var forum: ForumCinemas
@@ -69,7 +69,7 @@ final class MainController: MovieCustomization, MovieValidation {
                     movies.append(contentsOf: multiMovies)
                     movies.append(contentsOf: cinamonMovies)
 
-                    return self.validate(movies)
+                    return movies
                 }
             }
         }
@@ -79,7 +79,7 @@ final class MainController: MovieCustomization, MovieValidation {
         let merged = merge(movies)
         let profiled = merged.map { applyProfile(to: $0) }
 
-        return profiled.compactMap { validate($0) }
+        return profiled
     }
 
     private func merge(_ movies: [Movie]) -> [Movie] {
