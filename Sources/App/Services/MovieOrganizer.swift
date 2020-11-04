@@ -13,7 +13,9 @@ struct MovieOrganizer {
         mapOriginalTitles(on: db).flatMap {
             self.applyProfiles(on: db).flatMap {
                 self.mapMovieShowings(on: db).flatMap {
-                    self.cleanup(on: db)
+                    self.cleanup(on: db).flatMap {
+                        self.setPosters(on: db)
+                    }
                 }
             }
         }
@@ -112,5 +114,37 @@ struct MovieOrganizer {
             .join(Showing.self, on: \Movie.$id == \Showing.$movie.$id, method: .left)
             .filter(Showing.self, \Showing.$movie.$id == .null)
             .all().flatMap { $0.delete(on: db) }
+    }
+
+    private func setPosters(on db: Database) -> EventLoopFuture<Void> {
+        Movie.query(on: db).all().flatMap { movies in
+            movies.map { movie in
+                self.setPoster(on: movie, on: db)
+            }.flatten(on: db.eventLoop)
+        }
+    }
+
+    /// Poster images are located in `Public/Posters`. Image names should be the same as `originalTitle` property.
+    private func setPoster(on movie: Movie, on db: Database) -> EventLoopFuture<Void> {
+        let originalTitle = movie.originalTitle?.replacingOccurrences(of: ":", with: "").lowercased()
+
+        let publicDirectory = URL(fileURLWithPath: "\(DirectoryConfiguration.detect().publicDirectory)Posters")
+        guard let posterPaths = try? FileManager().contentsOfDirectory(at: publicDirectory, includingPropertiesForKeys: nil)
+            else { fatalError("Error while loading posters!") }
+
+        if let posterPath = posterPaths.first(where: { $0.fileNameWithoutExtension == originalTitle }) {
+            let url = Config.postersURL?.appendingPathComponent(posterPath.lastPathComponent)
+            movie.poster = url?.absoluteString
+            return movie.update(on: db)
+        } else {
+            return db.eventLoop.makeSucceededFuture(())
+        }
+    }
+}
+
+extension URL {
+    /// "Public/Posters/Example.png" -> "example"
+    fileprivate var fileNameWithoutExtension: String {
+        self.deletingPathExtension().lastPathComponent.lowercased()
     }
 }
