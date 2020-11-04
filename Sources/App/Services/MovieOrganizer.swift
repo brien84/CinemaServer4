@@ -8,7 +8,11 @@
 import Fluent
 import Vapor
 
-struct MovieOrganizer {
+protocol MovieOrganization {
+    func organize(on db: Database) -> EventLoopFuture<Void>
+}
+
+struct MovieOrganizer: MovieOrganization {
     func organize(on db: Database) -> EventLoopFuture<Void> {
         mapOriginalTitles(on: db).flatMap {
             self.applyProfiles(on: db).flatMap {
