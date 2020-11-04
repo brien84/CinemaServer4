@@ -10,25 +10,23 @@ import Vapor
 
 struct Multikino {
     private let client: Client
-    private let db: Database
 
-    init(client: Client, database: Database) {
+    init(client: Client) {
         self.client = client
-        self.db = database
     }
 
-    func fetchMovies() -> EventLoopFuture<Void> {
+    func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
         client.get(apiURI).flatMap { res in
             do {
                 let service = try JSONDecoder().decode(MovieService.self, from: res.body ?? ByteBuffer())
-                return self.createMovies(from: service)
+                return self.createMovies(from: service, on: db)
             } catch {
                 return self.client.eventLoop.makeFailedFuture(error)
             }
         }
     }
 
-    private func createMovies(from service: MovieService) -> EventLoopFuture<Void> {
+    private func createMovies(from service: MovieService, on db: Database) -> EventLoopFuture<Void> {
         service.movies.compactMap { multikinoMovie -> EventLoopFuture<Void>? in
             guard let movie = Movie(from: multikinoMovie) else { return nil }
 
@@ -39,7 +37,7 @@ struct Multikino {
             }
 
             return movie.create(on: db).flatMap {
-                movie.$showings.create(showings, on: self.db)
+                movie.$showings.create(showings, on: db)
             }
         }.flatten(on: db.eventLoop)
     }
@@ -53,7 +51,7 @@ extension Multikino {
 
 extension Application {
     var multikino: Multikino {
-        .init(client: self.client, database: self.db)
+        .init(client: self.client)
     }
 }
 
