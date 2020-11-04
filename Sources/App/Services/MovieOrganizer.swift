@@ -9,6 +9,9 @@ import Fluent
 import Vapor
 
 struct MovieOrganizer {
+    func organize(on db: Database) -> EventLoopFuture<Void> {
+        mapOriginalTitles(on: db)
+    }
 
     private func mapOriginalTitles(on db: Database) -> EventLoopFuture<Void> {
         Movie.query(on: db).all().flatMap { movies in
