@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct ForumCinemas {
+struct ForumCinemas: MovieAPI {
     private let client: Client
 
     init(client: Client) {

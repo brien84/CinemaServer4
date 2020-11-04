@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct Multikino {
+struct Multikino: MovieAPI {
     private let client: Client
 
     init(client: Client) {

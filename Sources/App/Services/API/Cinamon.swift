@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-struct Cinamon {
+struct Cinamon: MovieAPI {
     private let client: Client
 
     init(client: Client) {
