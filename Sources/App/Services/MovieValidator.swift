@@ -1,6 +1,6 @@
 //
 //  MovieValidator.swift
-//  
+//
 //
 //  Created by Marius on 2020-10-25.
 //
@@ -13,12 +13,38 @@ enum ValidationError: Error {
 }
 
 protocol MovieValidation {
+    func getReport() -> String
     func validate(on db: Database) -> EventLoopFuture<Void>
 }
 
 final class MovieValidator: MovieValidation {
+    private var movies = [Movie]()
+
+    func getReport() -> String {
+        var report: String
+
+        if movies.isEmpty {
+            report = "<p>All movies passed validation!</p>"
+        } else {
+            report = "<p>Movies failed validation: </p>"
+
+            movies.forEach { movie in
+                if let originalTitle = movie.originalTitle {
+                    let url = movie.showings.first?.url
+                    report.append(contentsOf: "<p><a href=\"\(url ?? "")\">\(originalTitle)</a></p>")
+                } else {
+                    report.append(contentsOf: "<p>Movie is missing originalTitle.</p>")
+                }
+            }
+        }
+
+        return report
+    }
+
     func validate(on db: Database) -> EventLoopFuture<Void> {
-        Movie.query(on: db).with(\.$showings).all().flatMap { movies in
+        movies.removeAll()
+
+        return Movie.query(on: db).with(\.$showings).all().flatMap { movies in
             movies.map {
                 self.validate(movie: $0, on: db)
             }.flatten(on: db.eventLoop)
@@ -56,6 +82,7 @@ final class MovieValidator: MovieValidation {
 
             return db.eventLoop.makeSucceededFuture(())
         } catch {
+            movies.append(movie)
             return movie.delete(on: db)
         }
     }
