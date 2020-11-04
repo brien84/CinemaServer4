@@ -10,25 +10,23 @@ import Vapor
 
 struct Cinamon {
     private let client: Client
-    private let db: Database
 
-    init(client: Client, database: Database) {
+    init(client: Client) {
         self.client = client
-        self.db = database
     }
 
-    func fetchMovies() -> EventLoopFuture<Void> {
+    func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
         client.get(apiURI).flatMap { res in
             do {
                 let service = try JSONDecoder().decode(CinamonService.self, from: res.body ?? ByteBuffer())
-                return self.createMovies(from: service)
+                return self.createMovies(from: service, on: db)
             } catch {
                 return self.client.eventLoop.makeFailedFuture(error)
             }
         }
     }
 
-    private func createMovies(from service: CinamonService) -> EventLoopFuture<Void> {
+    private func createMovies(from service: CinamonService, on db: Database) -> EventLoopFuture<Void> {
         service.movies.map { serviceMovie in
             let movie = Movie(from: serviceMovie)
 
@@ -41,7 +39,7 @@ struct Cinamon {
             }
 
             return movie.create(on: db).flatMap {
-                movie.$showings.create(showings, on: self.db)
+                movie.$showings.create(showings, on: db)
             }
         }.flatten(on: db.eventLoop)
     }
@@ -55,7 +53,7 @@ extension Cinamon {
 
 extension Application {
     var cinamon: Cinamon {
-        .init(client: self.client, database: self.db)
+        .init(client: self.client)
     }
 }
 
