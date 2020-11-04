@@ -131,5 +131,55 @@ final class MovieValidatorTests: XCTestCase {
         let count = try Movie.query(on: app.db).count().wait()
         XCTAssertEqual(count, 0)
     }
-}
 
+    func testReportContentWhenAllMoviesPassValidation() throws {
+        try sut.validate(on: app.db).wait()
+
+        let report = sut.getReport()
+        XCTAssertEqual(report, "<p>All movies passed validation!</p>")
+    }
+
+    func testReportContentWhenOriginalTitleIsMissing() throws {
+        Movie.create(title: "test", originalTitle: nil, year: "test", duration: "test",
+                                 ageRating: "test", genres: ["test"], plot: "test", poster: "test", on: app.db)
+
+        try sut.validate(on: app.db).wait()
+
+        let report = sut.getReport()
+        XCTAssertEqual(report, "<p>Movies failed validation: </p>" + "<p>Movie is missing originalTitle.</p>")
+    }
+
+    func testFailedValidationReportContainsOriginalTitleAndURL() throws {
+        let originalTitle = "title"
+        let url = "url"
+
+        let showing = Showing(city: "", date: Date(), venue: "", is3D: false, url: url)
+        Movie.create(title: "", originalTitle: originalTitle, year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", showings: [showing], on: app.db)
+
+        try sut.validate(on: app.db).wait()
+
+        let report = sut.getReport()
+        XCTAssertTrue(report.contains(originalTitle))
+        XCTAssertTrue(report.contains(url))
+    }
+
+    func testMoviesArrayIsClearedWhenValidationStarts() throws {
+        let originalTitle0 = "title0"
+        let originalTitle1 = "title1"
+
+        Movie.create(title: "", originalTitle: originalTitle0, year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+
+        try sut.validate(on: app.db).wait()
+
+        Movie.create(title: "", originalTitle: originalTitle1, year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+
+        try sut.validate(on: app.db).wait()
+
+        let report = sut.getReport()
+        XCTAssertFalse(report.contains(originalTitle0))
+        XCTAssertTrue(report.contains(originalTitle1))
+    }
+}
