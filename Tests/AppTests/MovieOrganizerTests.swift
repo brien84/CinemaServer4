@@ -134,4 +134,16 @@ final class MovieOrganizerTests: XCTestCase {
         XCTAssertEqual(movies.count, 1)
         XCTAssertEqual(movies[0].originalTitle, "Movie0")
     }
+
+    func testSettingPoster() throws {
+        // Located in `Public/Posters`
+        let posterFileName = "example.png"
+        Movie.create(originalTitle: "Example", poster: nil, on: app.db)
+
+        _ = try sut.organize(on: app.db).wait()
+
+        let movie = try Movie.query(on: app.db).first().wait()
+
+        XCTAssertEqual(movie!.poster, "\(Config.postersURL!)\(posterFileName)")
+    }
 }
