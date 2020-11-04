@@ -11,7 +11,11 @@ import Vapor
 struct MovieOrganizer {
     func organize(on db: Database) -> EventLoopFuture<Void> {
         mapOriginalTitles(on: db).flatMap {
-            self.applyProfiles(on: db)
+            self.applyProfiles(on: db).flatMap {
+                self.mapMovieShowings(on: db).flatMap {
+                    self.cleanup(on: db)
+                }
+            }
         }
     }
 
@@ -68,4 +72,45 @@ struct MovieOrganizer {
         return movie.update(on: db)
     }
 
+    private func mapMovieShowings(on db: Database) -> EventLoopFuture<Void> {
+        Movie.query(on: db).unique().all(\.$originalTitle).flatMap { titles in
+            titles.map { title in
+                Movie.query(on: db).filter(\.$originalTitle == title).all().flatMap { movies in
+                    if movies.count > 1, let title = title {
+                        return self.mapMovieShowings(with: title, on: db)
+                    } else {
+                        return db.eventLoop.makeSucceededFuture(())
+                    }
+                }
+            }.flatten(on: db.eventLoop)
+        }
+    }
+
+    /// Maps showings from movies with same `originalTitle` to a single parent movie.
+    ///
+    /// - Attention: This method does not delete movies, which are left without showings. Call `cleanup()` method afterwards!
+    private func mapMovieShowings(with originalTitle: String, on db: Database) -> EventLoopFuture<Void> {
+        Showing.query(on: db)
+            .join(Movie.self, on: \Showing.$movie.$id == \Movie.$id, method: .left)
+            .filter(Movie.self, \.$originalTitle == originalTitle)
+            .all().flatMap { showings in
+
+                guard let id = showings.first?.$movie.id
+                    else { return db.eventLoop.makeSucceededFuture(()) }
+
+                return showings.map { showing in
+                    showing.$movie.id = id
+
+                    return showing.update(on: db)
+                }.flatten(on: db.eventLoop)
+        }
+    }
+
+    /// Deletes `Movies`, which do not have any `Showing` children.
+    private func cleanup(on db: Database) -> EventLoopFuture<Void> {
+        Movie.query(on: db)
+            .join(Showing.self, on: \Movie.$id == \Showing.$movie.$id, method: .left)
+            .filter(Showing.self, \Showing.$movie.$id == .null)
+            .all().flatMap { $0.delete(on: db) }
+    }
 }
