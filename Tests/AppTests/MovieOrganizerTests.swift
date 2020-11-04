@@ -101,4 +101,37 @@ final class MovieOrganizerTests: XCTestCase {
         XCTAssertEqual(movies[0].genres, genres)
         XCTAssertEqual(movies[0].plot, plot)
     }
+
+    func testMappingMovieShowings() throws {
+        let showing0 = Showing(city: "", date: Date(), venue: "", is3D: false, url: "")
+        let showing1 = Showing(city: "", date: Date(), venue: "", is3D: false, url: "")
+        let showing2 = Showing(city: "", date: Date(), venue: "", is3D: false, url: "")
+
+        Movie.create(originalTitle: "Movie0", showings: [showing0], on: app.db)
+        Movie.create(originalTitle: "Movie1", showings: [showing1], on: app.db)
+        Movie.create(originalTitle: "Movie1", showings: [showing2], on: app.db)
+
+        _ = try sut.organize(on: app.db).wait()
+
+        let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
+        let movie0 = movies.first { $0.originalTitle == "Movie0" }
+        let movie1 = movies.first { $0.originalTitle == "Movie1" }
+
+        XCTAssertEqual(movie0?.showings.count, 1)
+        XCTAssertEqual(movie1?.showings.count, 2)
+    }
+
+    func testCleanup() throws {
+        let showing = Showing(city: "", date: Date(), venue: "", is3D: false, url: "")
+
+        Movie.create(originalTitle: "Movie0", showings: [showing], on: app.db)
+        Movie.create(originalTitle: "Movie1", showings: [], on: app.db)
+
+        _ = try sut.organize(on: app.db).wait()
+
+        let movies = try Movie.query(on: app.db).all().wait()
+
+        XCTAssertEqual(movies.count, 1)
+        XCTAssertEqual(movies[0].originalTitle, "Movie0")
+    }
 }
