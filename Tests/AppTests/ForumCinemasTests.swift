@@ -24,25 +24,25 @@ final class ForumCinemasTests: XCTestCase {
     /// `getAreas()` method should throw.
     func testFetchingNoResponseThrowsError() throws {
         let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: .noResponse)
-        sut = ForumCinemas(client: client, database: app.db)
+        sut = ForumCinemas(client: client)
 
-        XCTAssertThrowsError(try sut.fetchMovies().wait())
+        XCTAssertThrowsError(try sut.fetchMovies(on: app.db).wait())
     }
 
     /// `forumCinemasNoShowings` test data only contains a valid list of areas, so
     /// `getForumShowings(in area: Area)`  method should throw.
     func testFetchingNoShowingsResponseThrowsError() throws {
         let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: .forumCinemasNoShowings)
-        sut = ForumCinemas(client: client, database: app.db)
+        sut = ForumCinemas(client: client)
 
-        XCTAssertThrowsError(try sut.fetchMovies().wait())
+        XCTAssertThrowsError(try sut.fetchMovies(on: app.db).wait())
     }
 
     func testFetchingValidResponse() throws {
         let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: .forumCinemasValid)
-        sut = ForumCinemas(client: client, database: app.db)
+        sut = ForumCinemas(client: client)
 
-        try sut.fetchMovies().wait()
+        try sut.fetchMovies(on: app.db).wait()
 
         let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
         XCTAssertGreaterThan(movies.count, 0)
@@ -52,9 +52,10 @@ final class ForumCinemasTests: XCTestCase {
     /// If response contains bad data (missing properties, incorrect values), decoder should ignore it and not throw error.
     func testFetchingBadDataDoesNotThrow() throws {
         let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: .forumCinemasBadData)
-        sut = ForumCinemas(client: client, database: app.db)
+        sut = ForumCinemas(client: client)
 
-        try sut.fetchMovies().wait()
+        try sut.fetchMovies(on: app.db).wait()
+        
         let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
         XCTAssertGreaterThan(movies.count, 0)
     }

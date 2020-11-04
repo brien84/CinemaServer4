@@ -10,20 +10,18 @@ import Vapor
 
 struct ForumCinemas {
     private let client: Client
-    private let db: Database
 
-    init(client: Client, database: Database) {
+    init(client: Client) {
         self.client = client
-        self.db = database
     }
 
-    func fetchMovies() -> EventLoopFuture<Void> {
+    func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
         getForumShowings().flatMap { forumShowings in
-            self.createMovies(from: forumShowings)
+            self.createMovies(from: forumShowings, on: db)
         }
     }
 
-    private func createMovies(from forumShowings: [ForumShowing]) -> EventLoopFuture<Void> {
+    private func createMovies(from forumShowings: [ForumShowing], on db: Database) -> EventLoopFuture<Void> {
         var forumShowings = forumShowings
 
         if let forumShowing = forumShowings.first {
@@ -34,8 +32,8 @@ struct ForumCinemas {
             let showings = movieShowings.compactMap { Showing(from: $0) }
 
             return movie.create(on: db).flatMap {
-                movie.$showings.create(showings, on: self.db).flatMap {
-                    self.createMovies(from: forumShowings)
+                movie.$showings.create(showings, on: db).flatMap {
+                    self.createMovies(from: forumShowings, on: db)
                 }
             }
         } else {
@@ -89,7 +87,7 @@ extension ForumCinemas {
 
 extension Application {
     var forumCinemas: ForumCinemas {
-        .init(client: self.client, database: self.db)
+        .init(client: self.client)
     }
 }
 
