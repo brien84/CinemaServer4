@@ -31,6 +31,7 @@ private func databaseSetup(_ app: Application) {
     app.migrations.add(CreateMovies())
     app.migrations.add(CreateShowings())
     app.migrations.add(CreateMovieProfiles())
+    app.migrations.add(CreateTitleMappings())
 }
 
 struct Config {
