@@ -28,3 +28,11 @@ extension Movie {
         }
     }
 }
+
+extension TitleMapping {
+    static func create(originalTitle: String, newOriginalTitle: String, on db: Database) {
+        let mapping = TitleMapping(originalTitle: originalTitle, newOriginalTitle: newOriginalTitle)
+
+        try! mapping.create(on: db).wait()
+    }
+}
