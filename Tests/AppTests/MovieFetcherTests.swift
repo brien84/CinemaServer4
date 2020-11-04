@@ -24,25 +24,25 @@ final class MovieFetcherTests: XCTestCase {
     func testFetchingDoesNotThrowWhenAllServicesSucceed() throws {
         sut = MovieFetcher(cinamon: makeCinamon(true), forum: makeForum(true), multikino: makeMultikino(true))
 
-        try sut.fetch().wait()
+        try sut.fetch(on: app.db).wait()
     }
 
     func testFetchingThrowsWhenCinamonFails() throws {
         sut = MovieFetcher(cinamon: makeCinamon(false), forum: makeForum(true), multikino: makeMultikino(true))
 
-        XCTAssertThrowsError(try sut.fetch().wait())
+        XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
 
     func testFetchingThrowsWhenForumFails() throws {
         sut = MovieFetcher(cinamon: makeCinamon(true), forum: makeForum(false), multikino: makeMultikino(true))
 
-        XCTAssertThrowsError(try sut.fetch().wait())
+        XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
 
     func testFetchingThrowsWhenMultikinoFails() throws {
         sut = MovieFetcher(cinamon: makeCinamon(true), forum: makeForum(true), multikino: makeMultikino(false))
 
-        XCTAssertThrowsError(try sut.fetch().wait())
+        XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
 }
 
@@ -51,20 +51,20 @@ extension MovieFetcherTests {
         let data: TestData = isFetchingSuccessful ? .cinamonValid : .noResponse
         let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: data)
 
-        return Cinamon(client: client, database: app.db)
+        return Cinamon(client: client)
     }
 
     private func makeForum(_ isFetchingSuccessful: Bool) -> ForumCinemas {
         let data: TestData = isFetchingSuccessful ? .forumCinemasValid : .noResponse
         let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: data)
 
-        return ForumCinemas(client: client, database: app.db)
+        return ForumCinemas(client: client)
     }
 
     private func makeMultikino(_ isFetchingSuccessful: Bool) -> Multikino {
         let data: TestData = isFetchingSuccessful ? .multikinoValid : .noResponse
         let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: data)
 
-        return Multikino(client: client, database: app.db)
+        return Multikino(client: client)
     }
 }

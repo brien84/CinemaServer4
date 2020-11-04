@@ -5,10 +5,11 @@
 //  Created by Marius on 2020-10-23.
 //
 
+import Fluent
 import Vapor
 
 protocol MovieFetching {
-    func fetch() -> EventLoopFuture<Void>
+    func fetch(on db: Database) -> EventLoopFuture<Void>
 }
 
 struct MovieFetcher: MovieFetching {
@@ -22,10 +23,10 @@ struct MovieFetcher: MovieFetching {
         self.multikino = multikino
     }
 
-    func fetch() -> EventLoopFuture<Void> {
-        cinamon.fetchMovies().flatMap {
-            self.forum.fetchMovies().flatMap {
-                self.multikino.fetchMovies()
+    func fetch(on db: Database) -> EventLoopFuture<Void> {
+        cinamon.fetchMovies(on: db).flatMap {
+            self.forum.fetchMovies(on: db).flatMap {
+                self.multikino.fetchMovies(on: db)
             }
         }
     }
