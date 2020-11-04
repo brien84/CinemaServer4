@@ -29,6 +29,17 @@ extension Movie {
     }
 }
 
+extension MovieProfile {
+    static func create(title: String? = nil, originalTitle: String? = nil, year: String? = nil, duration: String? = nil,
+                       ageRating: String? = nil, genres: [String]? = nil, plot: String? = nil, on db: Database) {
+
+        let profile = MovieProfile(title: title, originalTitle: originalTitle, year: year, duration: duration,
+                                   ageRating: ageRating, genres: genres, plot: plot)
+
+        try! profile.create(on: db).wait()
+    }
+}
+
 extension TitleMapping {
     static func create(originalTitle: String, newOriginalTitle: String, on db: Database) {
         let mapping = TitleMapping(originalTitle: originalTitle, newOriginalTitle: newOriginalTitle)
