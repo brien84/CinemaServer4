@@ -6,6 +6,7 @@
 //
 
 @testable import App
+import Fluent
 import XCTVapor
 
 final class MovieFetcherTests: XCTestCase {
@@ -22,49 +23,44 @@ final class MovieFetcherTests: XCTestCase {
     }
 
     func testFetchingDoesNotThrowWhenAllServicesSucceed() throws {
-        sut = MovieFetcher(cinamon: makeCinamon(true), forum: makeForum(true), multikino: makeMultikino(true))
+        sut = MovieFetcher(cinamon: TestAPI(true), forum: TestAPI(true), multikino: TestAPI(true))
 
         try sut.fetch(on: app.db).wait()
     }
 
     func testFetchingThrowsWhenCinamonFails() throws {
-        sut = MovieFetcher(cinamon: makeCinamon(false), forum: makeForum(true), multikino: makeMultikino(true))
+        sut = MovieFetcher(cinamon: TestAPI(false), forum: TestAPI(true), multikino: TestAPI(true))
 
         XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
 
     func testFetchingThrowsWhenForumFails() throws {
-        sut = MovieFetcher(cinamon: makeCinamon(true), forum: makeForum(false), multikino: makeMultikino(true))
+        sut = MovieFetcher(cinamon: TestAPI(true), forum: TestAPI(false), multikino: TestAPI(true))
 
         XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
 
     func testFetchingThrowsWhenMultikinoFails() throws {
-        sut = MovieFetcher(cinamon: makeCinamon(true), forum: makeForum(true), multikino: makeMultikino(false))
+        sut = MovieFetcher(cinamon: TestAPI(true), forum: TestAPI(true), multikino: TestAPI(false))
 
         XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
-}
 
-extension MovieFetcherTests {
-    private func makeCinamon(_ isFetchingSuccessful: Bool) -> Cinamon {
-        let data: TestData = isFetchingSuccessful ? .cinamonValid : .noResponse
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: data)
+    // MARK: Test Helpers
 
-        return Cinamon(client: client)
-    }
+    private struct TestAPI: MovieAPI {
+        enum TestError: Error {
+            case error
+        }
 
-    private func makeForum(_ isFetchingSuccessful: Bool) -> ForumCinemas {
-        let data: TestData = isFetchingSuccessful ? .forumCinemasValid : .noResponse
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: data)
+        let isSuccess: Bool
 
-        return ForumCinemas(client: client)
-    }
+        init(_ isSuccess: Bool) {
+            self.isSuccess = isSuccess
+        }
 
-    private func makeMultikino(_ isFetchingSuccessful: Bool) -> Multikino {
-        let data: TestData = isFetchingSuccessful ? .multikinoValid : .noResponse
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), testData: data)
-
-        return Multikino(client: client)
+        func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
+            isSuccess ? db.eventLoop.makeSucceededFuture(()) : db.eventLoop.makeFailedFuture(TestError.error)
+        }
     }
 }
