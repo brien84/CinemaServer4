@@ -13,11 +13,11 @@ protocol MovieFetching {
 }
 
 struct MovieFetcher: MovieFetching {
-    private var cinamon: Cinamon
-    private var forum: ForumCinemas
-    private var multikino: Multikino
+    private var cinamon: MovieAPI
+    private var forum: MovieAPI
+    private var multikino: MovieAPI
 
-    init(cinamon: Cinamon, forum: ForumCinemas, multikino: Multikino) {
+    init(cinamon: MovieAPI, forum: MovieAPI, multikino: MovieAPI) {
         self.cinamon = cinamon
         self.forum = forum
         self.multikino = multikino
