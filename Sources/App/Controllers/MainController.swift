@@ -24,15 +24,11 @@ final class MainController: MovieCustomization {
         self.sender = sender
     }
 
-    func start() {
+    func update() -> EventLoopFuture<Void> {
         app.eventLoopGroup.next().scheduleTask(in: .hours(2)) {
-            self.start()
+            self.update()
         }
 
-        update()
-    }
-
-    private func update() {
         logger.notice("\(Date()) - Update is starting!")
 
         let transaction = app.db.transaction { db in
@@ -41,7 +37,7 @@ final class MainController: MovieCustomization {
             }
         }
 
-        transaction.whenComplete { result in
+        return transaction.flatMapAlways { result in
             switch result {
             case .success():
                 self.validationReport.append(contentsOf: "Update is successful!")
@@ -49,7 +45,7 @@ final class MainController: MovieCustomization {
                 self.validationReport = "Failed update: \(error)"
             }
 
-            _ = self.sender.send(email: self.createEmail(content: self.validationReport))
+            return self.sender.send(email: self.createEmail(content: self.validationReport))
         }
     }
 
