@@ -8,7 +8,7 @@
 import SendGrid
 import Vapor
 
-final class MainController: MovieCustomization {
+final class MainController {
     private var app: Application
 
     private let fetcher: MovieFetching
@@ -47,27 +47,6 @@ final class MainController: MovieCustomization {
 
             return self.sender.send(email: self.createEmail(content: self.validationReport))
         }
-    }
-
-    private func validate(_ movies: [Movie]) -> [Movie] {
-        let merged = merge(movies)
-        let profiled = merged.map { applyProfile(to: $0) }
-
-        return profiled
-    }
-
-    private func merge(_ movies: [Movie]) -> [Movie] {
-        var mergedMovies = [Movie]()
-
-        movies.forEach { movie in
-            if let existingMovie = mergedMovies.first(where: { $0 == movie }) {
-                existingMovie.showings.append(contentsOf: movie.showings)
-            } else {
-                mergedMovies.append(movie)
-            }
-        }
-
-        return mergedMovies
     }
 
     private func createEmail(content: String) -> SendGridEmail {
