@@ -30,7 +30,11 @@ final class MovieValidator: MovieValidation {
 
             movies.forEach { movie in
                 if let originalTitle = movie.originalTitle {
-                    let url = movie.showings.first?.url
+                    // For convenience purposes, first tries to get url from forumcinemas showing,
+                    // if one does not exist gets url from any showing.
+                    let forumShowings = movie.showings.filter({ $0.url.contains("forumcinemas") })
+                    let url = forumShowings.isEmpty ? movie.showings.first?.url : forumShowings.first?.url
+
                     report.append(contentsOf: "<p><a href=\"\(url ?? "")\">\(originalTitle)</a></p>")
                 } else {
                     report.append(contentsOf: "<p>Movie is missing originalTitle.</p>")
