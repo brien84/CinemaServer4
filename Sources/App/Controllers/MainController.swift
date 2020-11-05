@@ -16,8 +16,6 @@ final class MainController {
     private let validator: MovieValidation
     private let sender: EmailSending
 
-    private let logger = Logger(label: "MainController")
-
     init(app: Application, fetcher: MovieFetching, organizer: MovieOrganization, validator: MovieValidation, sender: EmailSending) {
         self.app = app
         self.fetcher = fetcher
@@ -31,7 +29,7 @@ final class MainController {
             self.update()
         }
 
-        logger.notice("\(Date()) - Starting update!")
+        app.logger.notice("\(Date()) - Starting update!")
 
         let transaction = app.db.transaction { db in
             Movie.query(on: db).with(\.$showings).delete().flatMap {
@@ -46,14 +44,14 @@ final class MainController {
         return transaction.flatMapAlways { result in
             switch result {
             case .success():
-                self.logger.notice("\(Date()) - Successful update.")
+                self.app.logger.notice("\(Date()) - Successful update.")
 
                 let report = self.validator.getReport()
                 let email = self.createEmail(content: report)
                 return self.sender.send(email: email)
 
             case .failure(let error):
-                self.logger.notice("\(Date()) - Failed update: \(error)")
+                self.app.logger.notice("\(Date()) - Failed update: \(error)")
 
                 let email = self.createEmail(content: "Failed update: \(error)")
                 return self.sender.send(email: email)
