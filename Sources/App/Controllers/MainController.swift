@@ -11,20 +11,16 @@ import Vapor
 final class MainController: MovieCustomization {
     private var app: Application
 
-    private var forum: ForumCinemas
-    private var multikino: Multikino
-    private var cinamon: Cinamon
+    private let fetcher: MovieFetching
     private var sendgrid: SendGridClient
 
     private let logger = Logger(label: "MainController")
 
     var validationReport: String = ""
 
-    init(app: Application) {
+    init(app: Application, fetcher: MovieFetching) {
         self.app = app
-        self.forum = app.forumCinemas
-        self.multikino = app.multikino
-        self.cinamon = app.cinamon
+        self.fetcher = fetcher
         self.sendgrid = app.sendgrid.client
     }
 
@@ -41,9 +37,7 @@ final class MainController: MovieCustomization {
 
         let transaction = app.db.transaction { db in
             Movie.query(on: db).delete().flatMap {
-                self.getMovies().flatMap { movies in
-                    movies.map { $0.save(on: db) }.flatten(on: db.eventLoop)
-                }
+                self.fetcher.fetch(on: db)
             }
         }
 
@@ -56,22 +50,6 @@ final class MainController: MovieCustomization {
             }
 
             self.sendReport()
-        }
-    }
-
-    private func getMovies() -> EventLoopFuture<[Movie]> {
-        forum.getMovies().flatMap { forumMovies in
-            self.multikino.getMovies().flatMap { multiMovies in
-                self.cinamon.getMovies().map { cinamonMovies -> [Movie] in
-                    var movies = [Movie]()
-
-                    movies.append(contentsOf: forumMovies)
-                    movies.append(contentsOf: multiMovies)
-                    movies.append(contentsOf: cinamonMovies)
-
-                    return movies
-                }
-            }
         }
     }
 
