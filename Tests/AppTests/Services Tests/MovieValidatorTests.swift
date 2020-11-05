@@ -164,6 +164,22 @@ final class MovieValidatorTests: XCTestCase {
         XCTAssertTrue(report.contains(url))
     }
 
+    func testReporterPicksForumCinemasShowingURL() throws {
+        let cinamonURL = "https://cinamonkino.com/mega/seat-plan/190310353/lt"
+        let forumURL = "https://m.forumcinemas.lt/Websales/Show/797892/"
+        let multikinoURL = "https://multikino.lt/pirkti-bilieta/santrauka/1001/3078/140713"
+
+        let cinamonShowing = Showing(city: "", date: Date(), venue: "", is3D: false, url: cinamonURL)
+        let forumShowing = Showing(city: "", date: Date(), venue: "", is3D: false, url: forumURL)
+        let multiShowing = Showing(city: "", date: Date(), venue: "", is3D: false, url: multikinoURL)
+        Movie.create(title: "", originalTitle: "test", year: "", duration: "", ageRating: "", genres: [],
+                     plot: "", poster: "", showings: [cinamonShowing, forumShowing, multiShowing], on: app.db)
+
+        try sut.validate(on: app.db).wait()
+        let report = sut.getReport()
+        XCTAssertTrue(report.contains(forumURL))
+    }
+
     func testMoviesArrayIsClearedWhenValidationStarts() throws {
         let originalTitle0 = "title0"
         let originalTitle1 = "title1"
