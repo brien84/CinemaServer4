@@ -15,19 +15,28 @@ final class MainControllerTests: XCTestCase {
     var sut: MainController!
     var fetcher: TestFetcher!
     var organizer: TestOrganizer!
+    var validator: TestValidator!
     var sender: TestSender!
 
     override func setUp() {
         app = try! Application.testable()
         fetcher = TestFetcher()
         organizer = TestOrganizer()
+        validator = TestValidator()
         sender = TestSender(eventLoop: app.eventLoopGroup.next())
-        sut = MainController(app: app, fetcher: fetcher, organizer: organizer, sender: sender)
+        sut = MainController(app: app, fetcher: fetcher, organizer: organizer, validator: validator, sender: sender)
     }
 
     override func tearDown() {
         sut = nil
         app.shutdown()
+    }
+
+    func testSuccessfulUpdate() throws {
+        try sut.update().wait()
+
+        let content = sender.getSentEmailContent()
+        XCTAssertEqual(content, "SuccessfulTest")
     }
 
     func testUpdateIsFailingIfFetchingFails() throws {
@@ -51,6 +60,15 @@ final class MainControllerTests: XCTestCase {
 
     func testUpdateIsFailingIfOrganizingFails() throws {
         organizer.isSuccess = false
+
+        try sut.update().wait()
+
+        let content = sender.getSentEmailContent()
+        XCTAssertEqual(content, "Failed update: \(TestError.error)")
+    }
+
+    func testUpdateIsFailingIfValidationFails() throws {
+        validator.isSuccess = false
 
         try sut.update().wait()
 
@@ -97,6 +115,18 @@ final class MainControllerTests: XCTestCase {
         var isSuccess = true
 
         func organize(on db: Database) -> EventLoopFuture<Void> {
+            isSuccess ? db.eventLoop.makeSucceededFuture(()) : db.eventLoop.makeFailedFuture(TestError.error)
+        }
+    }
+
+    class TestValidator: MovieValidation {
+        var isSuccess = true
+
+        func getReport() -> String {
+            isSuccess ? "SuccessfulTest" : "FailedTest"
+        }
+
+        func validate(on db: Database) -> EventLoopFuture<Void> {
             isSuccess ? db.eventLoop.makeSucceededFuture(()) : db.eventLoop.makeFailedFuture(TestError.error)
         }
     }
