@@ -28,6 +28,36 @@ final class MainControllerTests: XCTestCase {
         app.shutdown()
     }
 
+    func testUpdateIsFailingIfFetchingFails() throws {
+        fetcher.isSuccess = false
+
+        try sut.update().wait()
+
+        let content = sender.getSentEmailContent()
+        XCTAssertEqual(content, "Failed update: \(TestError.error)")
+    }
+
+    func testDatabaseIsOverwrittenWhenUpdateIsSuccessful() throws {
+        Movie.create(title: "", originalTitle: "TITLE", year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+
+        try sut.update().wait()
+
+        let count = try Movie.query(on: self.app.db).count().wait()
+        XCTAssertEqual(count, 0)
+    }
+
+    func testDatabaseTrasactionIsCancelledIfUpdateFails() throws {
+        Movie.create(title: "", originalTitle: "TITLE", year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+        fetcher.isSuccess = false
+
+        try sut.update().wait()
+
+        let count = try Movie.query(on: self.app.db).count().wait()
+        XCTAssertEqual(count, 1)
+    }
+
     func testEmailConfiguration() throws {
         try sut.update().wait()
 
