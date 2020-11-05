@@ -16,8 +16,11 @@ public func configure(_ app: Application) throws {
 
     databaseSetup(app)
 
-    let controller = MainController(app: app)
-    controller.start()
+    if app.environment != .testing {
+        let controller = MainController(app: app, fetcher: app.movieFetcher, sender: app.emailSender)
+
+        _ = controller.update()
+    }
 }
 
 private func databaseSetup(_ app: Application) {
