@@ -1,6 +1,6 @@
 //
 //  MainControllerTests.swift
-//  
+//
 //
 //  Created by Marius on 2020-10-04.
 //
@@ -14,13 +14,15 @@ final class MainControllerTests: XCTestCase {
     var app: Application!
     var sut: MainController!
     var fetcher: TestFetcher!
+    var organizer: TestOrganizer!
     var sender: TestSender!
 
     override func setUp() {
         app = try! Application.testable()
         fetcher = TestFetcher()
+        organizer = TestOrganizer()
         sender = TestSender(eventLoop: app.eventLoopGroup.next())
-        sut = MainController(app: app, fetcher: fetcher, sender: sender)
+        sut = MainController(app: app, fetcher: fetcher, organizer: organizer, sender: sender)
     }
 
     override func tearDown() {
@@ -45,6 +47,15 @@ final class MainControllerTests: XCTestCase {
 
         let count = try Movie.query(on: self.app.db).count().wait()
         XCTAssertEqual(count, 0)
+    }
+
+    func testUpdateIsFailingIfOrganizingFails() throws {
+        organizer.isSuccess = false
+
+        try sut.update().wait()
+
+        let content = sender.getSentEmailContent()
+        XCTAssertEqual(content, "Failed update: \(TestError.error)")
     }
 
     func testDatabaseTrasactionIsCancelledIfUpdateFails() throws {
@@ -78,6 +89,14 @@ final class MainControllerTests: XCTestCase {
         var isSuccess = true
 
         func fetch(on db: Database) -> EventLoopFuture<Void> {
+            isSuccess ? db.eventLoop.makeSucceededFuture(()) : db.eventLoop.makeFailedFuture(TestError.error)
+        }
+    }
+
+    class TestOrganizer: MovieOrganization {
+        var isSuccess = true
+
+        func organize(on db: Database) -> EventLoopFuture<Void> {
             isSuccess ? db.eventLoop.makeSucceededFuture(()) : db.eventLoop.makeFailedFuture(TestError.error)
         }
     }
