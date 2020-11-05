@@ -12,15 +12,17 @@ final class MainController {
     private var app: Application
 
     private let fetcher: MovieFetching
+    private let organizer: MovieOrganization
     private let sender: EmailSending
 
     private let logger = Logger(label: "MainController")
 
     var validationReport: String = ""
 
-    init(app: Application, fetcher: MovieFetching, sender: EmailSending) {
+    init(app: Application, fetcher: MovieFetching, organizer: MovieOrganization, sender: EmailSending) {
         self.app = app
         self.fetcher = fetcher
+        self.organizer = organizer
         self.sender = sender
     }
 
@@ -33,7 +35,9 @@ final class MainController {
 
         let transaction = app.db.transaction { db in
             Movie.query(on: db).delete().flatMap {
-                self.fetcher.fetch(on: db)
+                self.fetcher.fetch(on: db).flatMap {
+                    self.organizer.organize(on: db)
+                }
             }
         }
 
