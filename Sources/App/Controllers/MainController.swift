@@ -1,6 +1,6 @@
 //
 //  MainController.swift
-//  
+//
 //
 //  Created by Marius on 2020-07-07.
 //
@@ -13,16 +13,16 @@ final class MainController {
 
     private let fetcher: MovieFetching
     private let organizer: MovieOrganization
+    private let validator: MovieValidation
     private let sender: EmailSending
 
     private let logger = Logger(label: "MainController")
 
-    var validationReport: String = ""
-
-    init(app: Application, fetcher: MovieFetching, organizer: MovieOrganization, sender: EmailSending) {
+    init(app: Application, fetcher: MovieFetching, organizer: MovieOrganization, validator: MovieValidation, sender: EmailSending) {
         self.app = app
         self.fetcher = fetcher
         self.organizer = organizer
+        self.validator = validator
         self.sender = sender
     }
 
@@ -31,12 +31,14 @@ final class MainController {
             self.update()
         }
 
-        logger.notice("\(Date()) - Update is starting!")
+        logger.notice("\(Date()) - Starting update!")
 
         let transaction = app.db.transaction { db in
-            Movie.query(on: db).delete().flatMap {
+            Movie.query(on: db).with(\.$showings).delete().flatMap {
                 self.fetcher.fetch(on: db).flatMap {
-                    self.organizer.organize(on: db)
+                    self.organizer.organize(on: db).flatMap {
+                        self.validator.validate(on: db)
+                    }
                 }
             }
         }
@@ -44,12 +46,18 @@ final class MainController {
         return transaction.flatMapAlways { result in
             switch result {
             case .success():
-                self.validationReport.append(contentsOf: "Update is successful!")
-            case .failure(let error):
-                self.validationReport = "Failed update: \(error)"
-            }
+                self.logger.notice("\(Date()) - Successful update.")
 
-            return self.sender.send(email: self.createEmail(content: self.validationReport))
+                let report = self.validator.getReport()
+                let email = self.createEmail(content: report)
+                return self.sender.send(email: email)
+
+            case .failure(let error):
+                self.logger.notice("\(Date()) - Failed update: \(error)")
+
+                let email = self.createEmail(content: "Failed update: \(error)")
+                return self.sender.send(email: email)
+            }
         }
     }
 
