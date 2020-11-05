@@ -139,7 +139,7 @@ extension Showing {
                   date: date,
                   venue: venue.sanitizeVenue(),
                   is3D: false,
-                  url: url)
+                  url: url.sanitizeHTTP())
     }
 }
 
@@ -200,5 +200,9 @@ extension String {
                    .replacingOccurrences(of: " Kaune", with: "")
                    .replacingOccurrences(of: " Klaipėdoje", with: "")
                    .replacingOccurrences(of: " Šiauliuose", with: "")
+    }
+
+    fileprivate func sanitizeHTTP() -> String {
+        return self.replacingOccurrences(of: "http://", with: "https://")
     }
 }
