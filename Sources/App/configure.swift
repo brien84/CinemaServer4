@@ -16,7 +16,7 @@ public func configure(_ app: Application) throws {
 
     databaseSetup(app)
 
-    if app.environment != .testing {
+    if app.environment != .testing, !CommandLine.arguments.contains("migrate") {
         let controller = MainController(app: app,
                                         fetcher: app.movieFetcher,
                                         organizer: MovieOrganizer(),
