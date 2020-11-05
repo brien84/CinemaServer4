@@ -12,16 +12,16 @@ final class MainController: MovieCustomization {
     private var app: Application
 
     private let fetcher: MovieFetching
-    private var sendgrid: SendGridClient
+    private let sender: EmailSending
 
     private let logger = Logger(label: "MainController")
 
     var validationReport: String = ""
 
-    init(app: Application, fetcher: MovieFetching) {
+    init(app: Application, fetcher: MovieFetching, sender: EmailSending) {
         self.app = app
         self.fetcher = fetcher
-        self.sendgrid = app.sendgrid.client
+        self.sender = sender
     }
 
     func start() {
@@ -49,7 +49,7 @@ final class MainController: MovieCustomization {
                 self.validationReport = "Failed update: \(error)"
             }
 
-            self.sendReport()
+            _ = self.sender.send(email: self.createEmail(content: self.validationReport))
         }
     }
 
@@ -74,24 +74,11 @@ final class MainController: MovieCustomization {
         return mergedMovies
     }
 
-    private func sendReport() {
-        defer { validationReport = "" }
-        logger.warning("\n\(validationReport)")
-
-        guard let email = generateEmail() else { logger.error("Could not generate email!"); return }
-
-        do {
-            _ = try sendgrid.send(email: email, on: app.client.eventLoop)
-        } catch {
-            logger.error("Could not send email: \(error)")
-        }
-    }
-
-    private func generateEmail() -> SendGridEmail? {
-        guard let emailAddress = Config.emailAddress else { fatalError("`emailAddress` is nil!") }
+    private func createEmail(content: String) -> SendGridEmail {
+        guard let emailAddress = Config.emailAddress else { fatalError("`Config.emailAddress` is nil!") }
         let address = EmailAddress(email: emailAddress)
-        let content = [["type": "text/plain", "value": validationReport]]
         let personalizations = [Personalization(to: [address])]
+        let content = [["type": "text/html", "value": content]]
 
         return SendGridEmail(personalizations: personalizations, from: address, subject: "Validation report", content: content)
     }
