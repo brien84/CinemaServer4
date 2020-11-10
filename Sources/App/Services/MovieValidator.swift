@@ -28,6 +28,13 @@ final class MovieValidator: MovieValidation {
         } else {
             report = "<p>Movies failed validation: </p>"
 
+            movies.sort {
+                guard let title0 = $0.originalTitle else { return false }
+                guard let title1 = $1.originalTitle else { return true }
+
+                return title0 < title1
+            }
+
             movies.forEach { movie in
                 if let originalTitle = movie.originalTitle {
                     // For convenience purposes, first tries to get url from forumcinemas showing,
