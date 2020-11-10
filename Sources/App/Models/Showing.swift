@@ -15,7 +15,7 @@ final class Showing: Model, Content {
     var id: UUID?
 
     @Field(key: "city")
-    var city: String
+    var city: City
 
     @Field(key: "date")
     var date: Date
@@ -32,7 +32,7 @@ final class Showing: Model, Content {
     @Parent(key: "movie_id")
     var movie: Movie
 
-    convenience init(city: String, date: Date, venue: String, is3D: Bool, url: String) {
+    convenience init(city: City, date: Date, venue: String, is3D: Bool, url: String) {
         self.init()
 
         self.city = city
@@ -41,6 +41,13 @@ final class Showing: Model, Content {
         self.is3D = is3D
         self.url = url
     }
+}
+
+enum City: String, Codable {
+    case vilnius = "Vilnius"
+    case kaunas = "Kaunas"
+    case klaipeda = "Klaipėda"
+    case siauliai = "Šiauliai"
 }
 
 struct CreateShowings: Migration {
