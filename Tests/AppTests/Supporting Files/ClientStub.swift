@@ -7,21 +7,13 @@
 
 import Vapor
 
-/// Files are located in `Tests/AppTests/Supporting Files/TestData/`.
-enum TestData: String {
-    case cinamonBadData, cinamonValid
-    case forumCinemasBadData, forumCinemasNoShowings, forumCinemasValid
-    case multikinoBadData, multikinoValid
-    case noResponse
-}
-
 final class ClientStub: Client {
     var eventLoop: EventLoop
-    var testData: TestData?
+    var data: Data?
 
-    init(eventLoop: EventLoop, testData: TestData?) {
+    init(eventLoop: EventLoop, data: Data?) {
         self.eventLoop = eventLoop
-        self.testData = testData
+        self.data = data
     }
 
     func delegating(to eventLoop: EventLoop) -> Client {
@@ -29,21 +21,16 @@ final class ClientStub: Client {
         return self
     }
 
-    /// Returns `ClientResponse` with selected `TestData` in response body.
     func send(_ request: ClientRequest) -> EventLoopFuture<ClientResponse> {
-        let body = loadTestData()
-        let response = ClientResponse(status: .ok, headers: ["Content-Type": "application/json"], body: body)
+        let response: ClientResponse
+
+        if let data = data {
+            let body = ByteBuffer(data: data)
+            response = ClientResponse(status: .ok, headers: ["Content-Type": "application/json"], body: body)
+        } else {
+            response = ClientResponse(status: .notFound, headers: ["Content-Type": "application/json"], body: ByteBuffer())
+        }
 
         return self.eventLoop.future(response)
-    }
-
-    private func loadTestData() -> ByteBuffer {
-        guard let testData = testData else { return ByteBuffer() }
-
-        let dir = DirectoryConfiguration.detect().workingDirectory
-        let url = URL(fileURLWithPath: dir + "Tests/AppTests/Supporting Files/TestData/\(testData).json")
-        let data = try? Data(contentsOf: url)
-
-        return ByteBuffer(data: data ?? Data())
     }
 }
