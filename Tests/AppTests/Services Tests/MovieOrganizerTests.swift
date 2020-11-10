@@ -103,9 +103,9 @@ final class MovieOrganizerTests: XCTestCase {
     }
 
     func testMappingMovieShowings() throws {
-        let showing0 = Showing(city: "", date: Date(), venue: "", is3D: false, url: "")
-        let showing1 = Showing(city: "", date: Date(), venue: "", is3D: false, url: "")
-        let showing2 = Showing(city: "", date: Date(), venue: "", is3D: false, url: "")
+        let showing0 = Showing(city: City.vilnius, date: Date(), venue: "", is3D: false, url: "")
+        let showing1 = Showing(city: City.vilnius, date: Date(), venue: "", is3D: false, url: "")
+        let showing2 = Showing(city: City.vilnius, date: Date(), venue: "", is3D: false, url: "")
 
         Movie.create(originalTitle: "Movie0", showings: [showing0], on: app.db)
         Movie.create(originalTitle: "Movie1", showings: [showing1], on: app.db)
@@ -122,7 +122,7 @@ final class MovieOrganizerTests: XCTestCase {
     }
 
     func testCleanup() throws {
-        let showing = Showing(city: "", date: Date(), venue: "", is3D: false, url: "")
+        let showing = Showing(city: City.vilnius, date: Date(), venue: "", is3D: false, url: "")
 
         Movie.create(originalTitle: "Movie0", showings: [showing], on: app.db)
         Movie.create(originalTitle: "Movie1", showings: [], on: app.db)

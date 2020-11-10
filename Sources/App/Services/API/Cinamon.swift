@@ -93,7 +93,7 @@ extension Showing {
         guard let is3D = cinamonShowing.is3D else { return nil }
         guard let pid = cinamonShowing.pid else { return nil }
 
-        self.init(city: "Kaunas",
+        self.init(city: City.kaunas,
                   date: date,
                   venue: "Cinamon",
                   is3D: is3D,

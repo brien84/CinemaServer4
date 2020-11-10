@@ -130,7 +130,8 @@ extension Movie {
 
 extension Showing {
     fileprivate convenience init?(from forumShowing: ForumShowing) {
-        guard let city = forumShowing.area?.name else { return nil }
+        guard let area = forumShowing.area?.name,
+              let city = City(rawValue: area) else { return nil }
         guard let date = forumShowing.date?.convertToDate() else { return nil }
         guard let venue = forumShowing.venue else { return nil }
         guard let url = forumShowing.url else { return nil }
