@@ -153,7 +153,7 @@ final class MovieValidatorTests: XCTestCase {
         let originalTitle = "title"
         let url = "url"
 
-        let showing = Showing(city: City.vilnius, date: Date(), venue: "", is3D: false, url: url)
+        let showing = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: url)
         Movie.create(title: "", originalTitle: originalTitle, year: "", duration: "",
                      ageRating: "", genres: [], plot: "", poster: "", showings: [showing], on: app.db)
 
@@ -169,9 +169,9 @@ final class MovieValidatorTests: XCTestCase {
         let forumURL = "https://m.forumcinemas.lt/Websales/Show/797892/"
         let multikinoURL = "https://multikino.lt/pirkti-bilieta/santrauka/1001/3078/140713"
 
-        let cinamonShowing = Showing(city: City.vilnius, date: Date(), venue: "", is3D: false, url: cinamonURL)
-        let forumShowing = Showing(city: City.vilnius, date: Date(), venue: "", is3D: false, url: forumURL)
-        let multiShowing = Showing(city: City.vilnius, date: Date(), venue: "", is3D: false, url: multikinoURL)
+        let cinamonShowing = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: cinamonURL)
+        let forumShowing = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: forumURL)
+        let multiShowing = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: multikinoURL)
         Movie.create(title: "", originalTitle: "test", year: "", duration: "", ageRating: "", genres: [],
                      plot: "", poster: "", showings: [cinamonShowing, forumShowing, multiShowing], on: app.db)
 

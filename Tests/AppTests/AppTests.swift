@@ -44,7 +44,7 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings[0].city, City.vilnius)
+            XCTAssertEqual(showings[0].city, .vilnius)
         }
     }
 
@@ -63,7 +63,7 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings[0].city, City.kaunas)
+            XCTAssertEqual(showings[0].city, .kaunas)
         }
     }
 
@@ -82,7 +82,7 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings[0].city, City.klaipeda)
+            XCTAssertEqual(showings[0].city, .klaipeda)
         }
     }
 
@@ -101,7 +101,7 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings[0].city, City.siauliai)
+            XCTAssertEqual(showings[0].city, .siauliai)
         }
     }
 

@@ -93,7 +93,7 @@ extension Showing {
         guard let url = multikinoShowing.url else { return nil }
         let is3D = multikinoShowing.screenType == "3D" ? true : false
 
-        self.init(city: City.vilnius,
+        self.init(city: .vilnius,
                   date: date,
                   venue: "Multikino",
                   is3D: is3D,

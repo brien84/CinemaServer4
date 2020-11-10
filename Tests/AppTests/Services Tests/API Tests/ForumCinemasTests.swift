@@ -45,7 +45,7 @@ final class ForumCinemasTests: XCTestCase {
         XCTAssertEqual(movies[0].ageRating, "N-16")
         XCTAssertEqual(movies[0].genres, ["Trileris", "Fantastinis"])
 
-        XCTAssertEqual(movies[0].showings[0].city, City.vilnius)
+        XCTAssertEqual(movies[0].showings[0].city, .vilnius)
         XCTAssertEqual(movies[0].showings[0].date, "2020-09-26T21:00:00".convertToDate())
         XCTAssertEqual(movies[0].showings[0].venue, "Forum Cinemas Akropolis")
         XCTAssertEqual(movies[0].showings[0].is3D, false)
@@ -64,10 +64,10 @@ final class ForumCinemasTests: XCTestCase {
 
         let cities = movies[0].showings.map { $0.city }
 
-        XCTAssertTrue(cities.contains(City.vilnius))
-        XCTAssertTrue(cities.contains(City.kaunas))
-        XCTAssertTrue(cities.contains(City.klaipeda))
-        XCTAssertTrue(cities.contains(City.siauliai))
+        XCTAssertTrue(cities.contains(.vilnius))
+        XCTAssertTrue(cities.contains(.kaunas))
+        XCTAssertTrue(cities.contains(.klaipeda))
+        XCTAssertTrue(cities.contains(.siauliai))
     }
 
     func testSetsMoviePropertiesToNilIfAPIPropertiesAreMissing() throws {
