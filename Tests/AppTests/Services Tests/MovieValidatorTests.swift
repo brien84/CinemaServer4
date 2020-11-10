@@ -164,6 +164,26 @@ final class MovieValidatorTests: XCTestCase {
         XCTAssertTrue(report.contains(url))
     }
 
+    func testReportIsSorted() throws {
+        Movie.create(title: "", originalTitle: "ZZZ", year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+        Movie.create(title: "", originalTitle: "AAB", year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+        Movie.create(title: "", originalTitle: nil, year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+        Movie.create(title: "", originalTitle: "AAA", year: "", duration: "",
+                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+
+        try sut.validate(on: app.db).wait()
+
+        let report = sut.getReport()
+        XCTAssertEqual(report, "<p>Movies failed validation: </p>" +
+                               "<p><a href=\"\">AAA</a></p>" +
+                               "<p><a href=\"\">AAB</a></p>" +
+                               "<p><a href=\"\">ZZZ</a></p>" +
+                               "<p>Movie is missing originalTitle.</p>")
+    }
+
     func testReporterPicksForumCinemasShowingURL() throws {
         let cinamonURL = "https://cinamonkino.com/mega/seat-plan/190310353/lt"
         let forumURL = "https://m.forumcinemas.lt/Websales/Show/797892/"
