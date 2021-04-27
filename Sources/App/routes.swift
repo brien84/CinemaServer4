@@ -2,7 +2,7 @@ import Fluent
 import Vapor
 
 func routes(_ app: Application) throws {
-    app.get("all") { req in
+    app.get("all") { req -> EventLoopFuture<[Movie]> in
         Movie.query(on: req.db).with(\.$showings).all()
     }
 
