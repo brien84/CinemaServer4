@@ -76,7 +76,11 @@ extension Movie {
         // `69 min.` -> `69 min`
         let duration = movie.duration?.replacingOccurrences(of: ".", with: "")
 
-        let genres = movie.genres?.names?.compactMap { $0.name }
+        // `[Genre(name: " Genre0 ", Genre(name: "Genre1 "]` -> `["Genre0", "Genre1"]`
+        let genres = movie.genres?.names?.compactMap { genre -> String? in
+            guard let genre = genre.name else { return nil }
+            return genre.trimSpaces()
+        }
 
         self.init(title: title,
                   originalTitle: originalTitle,

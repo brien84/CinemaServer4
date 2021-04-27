@@ -73,9 +73,10 @@ extension Movie {
             return String(movieDuration) + " min"
         }()
 
+        // ` Genre ` -> `["Genre"]`
         let genres: [String]? = {
             guard let genre = cinamonMovie.genre?.name else { return nil }
-            return [genre]
+            return [genre.trimSpaces()]
         }()
 
         self.init(title: cinamonMovie.title,

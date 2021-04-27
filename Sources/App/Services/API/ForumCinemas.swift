@@ -116,8 +116,8 @@ extension Movie {
             return ageRating
         }()
 
-        // `Genre0, Genre1` -> `Genre0,Genre1` -> `[Genre0, Genre1]`
-        let genres = forumShowing.genres?.replacingOccurrences(of: ", ", with: ",").split(separator: ",").map { String($0) }
+        // ` Genre0, Genre1 ` -> `[Genre0, Genre1]`
+        let genres = forumShowing.genres?.split(separator: ",").map { String($0).trimSpaces() }
 
         self.init(title: forumShowing.title,
                   originalTitle: forumShowing.originalTitle,
