@@ -130,7 +130,11 @@ struct MovieOrganizer: MovieOrganization {
 
     /// Poster images are located in `Public/Posters`. Image names should be the same as `originalTitle` property.
     private func setPoster(on movie: Movie, on db: Database) -> EventLoopFuture<Void> {
-        let originalTitle = movie.originalTitle?.replacingOccurrences(of: ":", with: "").lowercased()
+        let originalTitle = movie.originalTitle?
+                .replacingOccurrences(of: ":", with: "")
+                .replacingOccurrences(of: "?", with: "")
+                .replacingOccurrences(of: "/", with: "")
+                .lowercased()
 
         let publicDirectory = URL(fileURLWithPath: "\(DirectoryConfiguration.detect().publicDirectory)Posters")
         guard let posterPaths = try? FileManager().contentsOfDirectory(at: publicDirectory, includingPropertiesForKeys: nil)
