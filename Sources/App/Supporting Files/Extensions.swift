@@ -29,6 +29,18 @@ extension String {
         return nil
     }
 
+    // Removes " " characters at the beginning and the end of the `String`.
+    //
+    // Example: ` Hello World ` -> `Hello World`
+    func trimSpaces() -> String {
+        var string = self
+
+        if string.first == " " { string = String(string.dropFirst()) }
+        if string.last == " " { string = String(string.dropLast()) }
+
+        return string
+    }
+
     // Returns part of the `String` between the provided `String` parameters.
     //
     // If parameters are nil, the string is sliced from the beginning to the end.
