@@ -17,7 +17,7 @@ final class AppTests: XCTestCase {
         Movie.create(title: "", originalTitle: "", year: "", duration: "", ageRating: "",
                      genres: [], plot: "", poster: "", showings: [showing], on: sut.db)
 
-        try sut.test(.GET, "all") { res in
+        try sut.test(.GET, "all", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let movies = try res.content.decode([Movie].self)
@@ -26,7 +26,7 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-        }
+        })
     }
 
     func testVilniusRoute() throws {
@@ -38,14 +38,14 @@ final class AppTests: XCTestCase {
         Movie.create(title: "", originalTitle: "", year: "", duration: "", ageRating: "",
                      genres: [], plot: "", poster: "", showings: showings, on: sut.db)
 
-        try sut.test(.GET, "vilnius") { res in
+        try sut.test(.GET, "vilnius", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
             XCTAssertEqual(showings[0].city, .vilnius)
-        }
+        })
     }
 
     func testKaunasRoute() throws {
@@ -57,14 +57,14 @@ final class AppTests: XCTestCase {
         Movie.create(title: "", originalTitle: "", year: "", duration: "", ageRating: "",
                      genres: [], plot: "", poster: "", showings: showings, on: sut.db)
 
-        try sut.test(.GET, "kaunas") { res in
+        try sut.test(.GET, "kaunas", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
             XCTAssertEqual(showings[0].city, .kaunas)
-        }
+        })
     }
 
     func testKlaipedaRoute() throws {
@@ -76,14 +76,14 @@ final class AppTests: XCTestCase {
         Movie.create(title: "", originalTitle: "", year: "", duration: "", ageRating: "",
                      genres: [], plot: "", poster: "", showings: showings, on: sut.db)
 
-        try sut.test(.GET, "klaipeda") { res in
+        try sut.test(.GET, "klaipeda", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
             XCTAssertEqual(showings[0].city, .klaipeda)
-        }
+        })
     }
 
     func testSiauliaiRoute() throws {
@@ -95,21 +95,21 @@ final class AppTests: XCTestCase {
         Movie.create(title: "", originalTitle: "", year: "", duration: "", ageRating: "",
                      genres: [], plot: "", poster: "", showings: showings, on: sut.db)
 
-        try sut.test(.GET, "siauliai") { res in
+        try sut.test(.GET, "siauliai", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
             XCTAssertEqual(showings[0].city, .siauliai)
-        }
+        })
     }
 
     func testPostersRoute() throws {
-        try sut.test(.GET, "posters/example.png") { res in
+        try sut.test(.GET, "posters/example.png", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
             XCTAssertEqual(res.content.contentType, HTTPMediaType.png)
-        }
+        })
     }
 
     // MARK: Test Helpers
