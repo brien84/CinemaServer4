@@ -100,10 +100,10 @@ final class MultikinoTests: XCTestCase {
                         "genres": {
                             "names": [
                                 {
-                                    "name": "Trileris"
+                                    "name": " Trileris "
                                 },
                                 {
-                                    "name": "Veiksmo"
+                                    "name": "Veiksmo "
                                 }
                             ]
                         },
@@ -135,10 +135,10 @@ final class MultikinoTests: XCTestCase {
                         "genres": {
                             "names": [
                                 {
-                                    "name": "Trileris"
+                                    "name": " Trileris "
                                 },
                                 {
-                                    "name": "Veiksmo"
+                                    "name": "Veiksmo "
                                 }
                             ]
                         },
@@ -170,10 +170,10 @@ final class MultikinoTests: XCTestCase {
                         "genres": {
                             "names": [
                                 {
-                                    "name": "Trileris"
+                                    "name": " Trileris "
                                 },
                                 {
-                                    "name": "Veiksmo"
+                                    "name": "Veiksmo "
                                 }
                             ]
                         },
@@ -205,10 +205,10 @@ final class MultikinoTests: XCTestCase {
                         "genres": {
                             "names": [
                                 {
-                                    "name": "Trileris"
+                                    "name": " Trileris "
                                 },
                                 {
-                                    "name": "Veiksmo"
+                                    "name": "Veiksmo "
                                 }
                             ]
                         },

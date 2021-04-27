@@ -100,7 +100,7 @@ final class CinamonTests: XCTestCase {
                         "runtime": 81,
                         "rating": "N-7",
                         "genre": {
-                            "name": "Animacinis"
+                            "name": " Animacinis "
                         },
 
                         "sessions": [
@@ -130,7 +130,7 @@ final class CinamonTests: XCTestCase {
                         "runtime": 81,
                         "rating": "N-7",
                         "genre": {
-                            "name": "Animacinis"
+                            "name": " Animacinis "
                         },
 
                         "sessions": [
@@ -160,7 +160,7 @@ final class CinamonTests: XCTestCase {
                         "runtime": 81,
                         "rating": "N-7",
                         "genre": {
-                            "name": "Animacinis"
+                            "name": " Animacinis "
                         },
 
                         "sessions": [
@@ -190,7 +190,7 @@ final class CinamonTests: XCTestCase {
                         "runtime": 81,
                         "rating": "N-7",
                         "genre": {
-                            "name": "Animacinis"
+                            "name": " Animacinis "
                         },
 
                         "sessions": [

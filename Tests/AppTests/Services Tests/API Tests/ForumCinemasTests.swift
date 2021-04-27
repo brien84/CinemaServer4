@@ -113,7 +113,7 @@ final class ForumCinemasTests: XCTestCase {
                         "ProductionYear": 2020,
                         "LengthInMinutes": 103,
                         "RatingLabel": "N16",
-                        "Genres": "Trileris, Fantastinis",
+                        "Genres": " Trileris, Fantastinis ",
                         "dttmShowStart": "2020-09-26T21:00:00",
                         "Theatre": "Forum Cinemas Akropolis (Vilniuje)",
                         "ShowURL": "http://m.forumcinemas.lt/Websales/Show/790854/"
@@ -150,7 +150,7 @@ final class ForumCinemasTests: XCTestCase {
                         "ProductionYear": 2020,
                         "LengthInMinutes": 103,
                         "RatingLabel": "N16",
-                        "Genres": "Trileris, Fantastinis",
+                        "Genres": " Trileris, Fantastinis ",
                         "dttmShowStart": "2020-09-26T21:00:00",
                         "Theatre": "Forum Cinemas Akropolis (Vilniuje)",
                         "ShowURL": "http://m.forumcinemas.lt/Websales/Show/790854/"
@@ -175,7 +175,7 @@ final class ForumCinemasTests: XCTestCase {
                         "ProductionYear": 2020,
                         "LengthInMinutes": 103,
                         "RatingLabel": "N16",
-                        "Genres": "Trileris, Fantastinis",
+                        "Genres": " Trileris, Fantastinis ",
                         "dttmShowStart": "2020-09-26T21:00:00",
                         "Theatre": "Forum Cinemas Akropolis (Vilniuje)",
                         "ShowURL": "http://m.forumcinemas.lt/Websales/Show/790854/"
@@ -200,7 +200,7 @@ final class ForumCinemasTests: XCTestCase {
                         "ProductionYear": 2020,
                         "LengthInMinutes": 103,
                         "RatingLabel": "N16",
-                        "Genres": "Trileris, Fantastinis",
+                        "Genres": " Trileris, Fantastinis ",
                         "dttmShowStart": "2020-09-26T21:00:00",
                         "Theatre": null,
                         "ShowURL": "http://m.forumcinemas.lt/Websales/Show/790854/"
