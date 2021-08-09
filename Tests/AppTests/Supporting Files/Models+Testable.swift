@@ -7,6 +7,7 @@
 
 @testable import App
 import Fluent
+import Foundation
 
 extension Movie {
     static func create(title: String? = nil, originalTitle: String? = nil, year: String? = nil,
