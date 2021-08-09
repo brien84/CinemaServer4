@@ -56,6 +56,7 @@ extension String {
             rangeTo = index
         }
 
+        guard rangeFrom <= rangeTo else { return self }
         return String(self[rangeFrom..<rangeTo])
     }
 }
