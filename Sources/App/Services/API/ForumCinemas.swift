@@ -119,12 +119,14 @@ extension Movie {
         // ` Genre0, Genre1 ` -> `[Genre0, Genre1]`
         let genres = forumShowing.genres?.split(separator: ",").map { String($0).trimSpaces() }
 
-        self.init(title: forumShowing.title,
-                  originalTitle: forumShowing.originalTitle,
-                  year: year,
-                  duration: duration,
-                  ageRating: ageRating,
-                  genres: genres)
+        self.init(
+            title: forumShowing.title,
+            originalTitle: forumShowing.originalTitle,
+            year: year,
+            duration: duration,
+            ageRating: ageRating,
+            genres: genres
+        )
     }
 }
 
@@ -135,12 +137,15 @@ extension Showing {
         guard let date = forumShowing.date?.convertToDate() else { return nil }
         guard let venue = forumShowing.venue else { return nil }
         guard let url = forumShowing.url else { return nil }
+        let is3D = forumShowing.is3D == "3D" ? true : false
 
-        self.init(city: city,
-                  date: date,
-                  venue: venue.sanitizeVenue(),
-                  is3D: false,
-                  url: url.sanitizeHTTP())
+        self.init(
+            city: city,
+            date: date,
+            venue: venue.sanitizeVenue(),
+            is3D: is3D,
+            url: url.sanitizeHTTP()
+        )
     }
 }
 
@@ -162,6 +167,7 @@ private struct ForumShowing: Decodable {
     let date: String?
     let venue: String?
     let url: String?
+    let is3D: String?
     var area: Area?
 
     private enum CodingKeys: String, CodingKey {
@@ -174,6 +180,7 @@ private struct ForumShowing: Decodable {
         case date = "dttmShowStart"
         case venue = "Theatre"
         case url = "ShowURL"
+        case is3D = "PresentationMethod"
     }
 }
 
