@@ -10,24 +10,29 @@ public func configure(_ app: Application) throws {
     // register routes
     try routes(app)
 
-    // sendgrid setup
+    // sendgrid configuration
     Environment.process.SENDGRID_API_KEY = Config.sendGridKey
     app.sendgrid.initialize()
 
-    databaseSetup(app)
+    // HTTPClient configuration
+    app.http.client.configuration.httpVersion = .http1Only
+
+    databaseConfiguration(app)
 
     if app.environment != .testing, !CommandLine.arguments.contains("migrate") {
-        let controller = MainController(app: app,
-                                        fetcher: app.movieFetcher,
-                                        organizer: MovieOrganizer(),
-                                        validator: MovieValidator(),
-                                        sender: app.emailSender)
+        let controller = MainController(
+                            app: app,
+                            fetcher: app.movieFetcher,
+                            organizer: MovieOrganizer(),
+                            validator: MovieValidator(),
+                            sender: app.emailSender
+                         )
 
         _ = controller.update()
     }
 }
 
-private func databaseSetup(_ app: Application) {
+private func databaseConfiguration(_ app: Application) {
     switch app.environment {
     case .testing:
         app.databases.use(.sqlite(.file("test.sqlite"), maxConnectionsPerEventLoop: 10), as: .sqlite)
