@@ -208,6 +208,7 @@ extension String {
                    .replacingOccurrences(of: " Kaune", with: "")
                    .replacingOccurrences(of: " Klaipėdoje", with: "")
                    .replacingOccurrences(of: " Šiauliuose", with: "")
+                   .replacingOccurrences(of: " Vingis", with: "")
     }
 
     fileprivate func sanitizeHTTP() -> String {
