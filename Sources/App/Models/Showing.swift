@@ -34,20 +34,12 @@ final class Showing: Model, Content {
 
     convenience init(city: City, date: Date, venue: String, is3D: Bool, url: String) {
         self.init()
-
         self.city = city
         self.date = date
         self.venue = venue
         self.is3D = is3D
         self.url = url
     }
-}
-
-enum City: String, Codable {
-    case vilnius = "Vilnius"
-    case kaunas = "Kaunas"
-    case klaipeda = "Klaipėda"
-    case siauliai = "Šiauliai"
 }
 
 struct CreateShowings: Migration {
