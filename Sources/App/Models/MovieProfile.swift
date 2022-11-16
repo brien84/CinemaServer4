@@ -37,10 +37,12 @@ final class MovieProfile: Model, Content {
     @Field(key: "plot")
     var plot: String?
 
-    convenience init(title: String?, originalTitle: String?, year: String?, duration: String?,
-                     ageRating: String?, genres: [String]?, plot: String?) {
+    convenience init(
+        title: String?, originalTitle: String?, year: String?,
+        duration: String?, ageRating: String?, genres: [String]?,
+        plot: String?
+    ) {
         self.init()
-
         self.title = title
         self.originalTitle = originalTitle
         self.year = year
@@ -52,7 +54,6 @@ final class MovieProfile: Model, Content {
 
     convenience init(from movie: Movie) {
         self.init()
-
         self.title = movie.title
         self.originalTitle = movie.originalTitle
         self.year = movie.year
