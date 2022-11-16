@@ -26,7 +26,6 @@ final class TitleMapping: Model, Content {
 
     convenience init(originalTitle: String, newOriginalTitle: String) {
         self.init()
-
         self.originalTitle = originalTitle
         self.newOriginalTitle = newOriginalTitle
     }
