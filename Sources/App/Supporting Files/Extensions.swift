@@ -44,6 +44,10 @@ extension String {
         return string
     }
 
+    func sanitizeHTTP() -> String {
+        return self.replacingOccurrences(of: "http://", with: "https://")
+    }
+
     /// Returns part of the `String` between the provided `String` parameters.
     ///
     /// If parameters are nil, the string is sliced from the beginning to the end.

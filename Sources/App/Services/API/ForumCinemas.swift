@@ -210,8 +210,4 @@ extension String {
                    .replacingOccurrences(of: " Šiauliuose", with: "")
                    .replacingOccurrences(of: " Vingis", with: "")
     }
-
-    fileprivate func sanitizeHTTP() -> String {
-        return self.replacingOccurrences(of: "http://", with: "https://")
-    }
 }
