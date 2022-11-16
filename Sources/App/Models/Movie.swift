@@ -41,10 +41,12 @@ final class Movie: Model, Content {
     @Children(for: \.$movie)
     var showings: [Showing]
 
-    convenience init(title: String?, originalTitle: String?, year: String?, duration: String?,
-                     ageRating: String?, genres: [String]?, plot: String? = nil, poster: String? = nil) {
+    convenience init(
+        title: String?, originalTitle: String?, year: String?,
+        duration: String?, ageRating: String?, genres: [String]?,
+        plot: String? = nil, poster: String? = nil
+    ) {
         self.init()
-
         self.title = title
         self.originalTitle = originalTitle
         self.year = year
@@ -58,7 +60,7 @@ final class Movie: Model, Content {
 
 extension Movie: Equatable {
     static func == (lhs: Movie, rhs: Movie) -> Bool {
-        return lhs.originalTitle?.lowercased() == rhs.originalTitle?.lowercased()
+        lhs.originalTitle?.lowercased() == rhs.originalTitle?.lowercased()
     }
 
     func hash(into hasher: inout Hasher) {
