@@ -12,4 +12,5 @@ enum City: String, Codable {
     case kaunas = "Kaunas"
     case klaipeda = "Klaipėda"
     case siauliai = "Šiauliai"
+    case panevezys = "Panevėžys"
 }
