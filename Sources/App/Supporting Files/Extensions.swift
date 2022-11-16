@@ -8,13 +8,16 @@
 import Foundation
 
 extension String {
+    /// Capitalizes first `Character` in the `String`.
+    var firstCapitalized: String { prefix(1).capitalized + dropFirst() }
+
     func convertToDate() -> Date? {
         let dateFormatter = DateFormatter()
 
         guard let timeZone = TimeZone(identifier: "Europe/Vilnius") else { fatalError("TimeZone not found!") }
         dateFormatter.timeZone = timeZone
 
-        // ForumCinemas, Multikino format: 2019-09-26T17:30:00
+        // ForumCinemas, Multikino, Apollo format: 2019-09-26T17:30:00
         dateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss"
         if let date = dateFormatter.date(from: self) {
             return date
@@ -29,9 +32,9 @@ extension String {
         return nil
     }
 
-    // Removes " " characters at the beginning and the end of the `String`.
-    //
-    // Example: ` Hello World ` -> `Hello World`
+    /// Removes " " characters at the beginning and the end of the `String`.
+    ///
+    /// Example: ` Hello World ` -> `Hello World`
     func trimSpaces() -> String {
         var string = self
 
@@ -41,9 +44,9 @@ extension String {
         return string
     }
 
-    // Returns part of the `String` between the provided `String` parameters.
-    //
-    // If parameters are nil, the string is sliced from the beginning to the end.
+    /// Returns part of the `String` between the provided `String` parameters.
+    ///
+    /// If parameters are nil, the string is sliced from the beginning to the end.
     func slice(from: String?, to: String?) -> String? {
         var rangeFrom = startIndex
         var rangeTo = endIndex
