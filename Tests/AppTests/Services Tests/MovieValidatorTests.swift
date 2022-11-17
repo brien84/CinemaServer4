@@ -262,26 +262,9 @@ final class MovieValidatorTests: XCTestCase {
         let originalTitle = "title"
         let url = "url"
 
-        let showing = Showing(
-            city: .vilnius,
-            date: Date(),
-            venue: "",
-            is3D: false,
-            url: url
-        )
+        let showing = Showing(city: .vilnius, url: url)
 
-        Movie.create(
-            title: "",
-            originalTitle: originalTitle,
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            showings: [showing],
-            on: app.db
-        )
+        Movie.create(originalTitle: originalTitle, showings: [showing], on: app.db)
 
         try sut.validate(on: app.db).wait()
 
@@ -291,53 +274,10 @@ final class MovieValidatorTests: XCTestCase {
     }
 
     func testReportIsSorted() throws {
-        Movie.create(
-            title: "",
-            originalTitle: "ZZZ",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            on: app.db
-        )
-
-        Movie.create(
-            title: "",
-            originalTitle: "AAB",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            on: app.db
-        )
-
-        Movie.create(
-            title: "",
-            originalTitle: nil,
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            on: app.db
-        )
-
-        Movie.create(
-            title: "",
-            originalTitle: "AAA",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            on: app.db
-        )
+        Movie.create(originalTitle: "ZZZ", on: app.db)
+        Movie.create(originalTitle: "AAB", on: app.db)
+        Movie.create(originalTitle: nil, on: app.db)
+        Movie.create(originalTitle: "AAA", on: app.db)
 
         try sut.validate(on: app.db).wait()
 
@@ -350,44 +290,19 @@ final class MovieValidatorTests: XCTestCase {
     }
 
     func testReporterPicksForumCinemasShowingURL() throws {
+        let apolloURL = "https://www.apollokinas.lt/websales/show/305141"
         let cinamonURL = "https://cinamonkino.com/mega/seat-plan/190310353/lt"
         let forumURL = "https://m.forumcinemas.lt/Websales/Show/797892/"
         let multikinoURL = "https://multikino.lt/pirkti-bilieta/santrauka/1001/3078/140713"
 
-        let cinamonShowing = Showing(
-            city: .vilnius,
-            date: Date(),
-            venue: "",
-            is3D: false,
-            url: cinamonURL
-        )
-
-        let forumShowing = Showing(
-            city: .vilnius,
-            date: Date(),
-            venue: "",
-            is3D: false,
-            url: forumURL
-        )
-
-        let multiShowing = Showing(
-            city: .vilnius,
-            date: Date(),
-            venue: "",
-            is3D: false,
-            url: multikinoURL
-        )
+        let apolloShowing = Showing(city: .panevezys, url: apolloURL)
+        let cinamonShowing = Showing(city: .vilnius, url: cinamonURL)
+        let forumShowing = Showing(city: .vilnius, url: forumURL)
+        let multiShowing = Showing(city: .vilnius, url: multikinoURL)
 
         Movie.create(
-            title: "",
             originalTitle: "test",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            showings: [cinamonShowing, forumShowing, multiShowing],
+            showings: [apolloShowing, cinamonShowing, forumShowing, multiShowing],
             on: app.db
         )
 
@@ -400,32 +315,10 @@ final class MovieValidatorTests: XCTestCase {
         let originalTitle0 = "title0"
         let originalTitle1 = "title1"
 
-        Movie.create(
-            title: "",
-            originalTitle: originalTitle0,
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            on: app.db
-        )
-
+        Movie.create(originalTitle: originalTitle0, on: app.db)
         try sut.validate(on: app.db).wait()
 
-        Movie.create(
-            title: "",
-            originalTitle: originalTitle1,
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            on: app.db
-        )
-
+        Movie.create(originalTitle: originalTitle1, on: app.db)
         try sut.validate(on: app.db).wait()
 
         let report = sut.getReport()

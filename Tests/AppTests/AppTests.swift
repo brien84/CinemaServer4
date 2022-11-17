@@ -13,20 +13,7 @@ final class AppTests: XCTestCase {
     }
 
     func testAllRoute() throws {
-        let showing = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: "")
-
-        Movie.create(
-            title: "",
-            originalTitle: "",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            showings: [showing],
-            on: sut.db
-        )
+        Movie.create(showings: [Showing(city: .vilnius)], on: sut.db)
 
         try sut.test(.GET, "all", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
@@ -42,24 +29,14 @@ final class AppTests: XCTestCase {
 
     func testVilniusRoute() throws {
         let showings = [
-            Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .kaunas, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .klaipeda, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .siauliai, date: Date(), venue: "", is3D: false, url: "")
+            Showing(city: .vilnius),
+            Showing(city: .kaunas),
+            Showing(city: .klaipeda),
+            Showing(city: .siauliai),
+            Showing(city: .panevezys)
         ]
 
-        Movie.create(
-            title: "",
-            originalTitle: "",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            showings: showings,
-            on: sut.db
-        )
+        Movie.create(showings: showings, on: sut.db)
 
         try sut.test(.GET, "vilnius", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
@@ -73,24 +50,14 @@ final class AppTests: XCTestCase {
 
     func testKaunasRoute() throws {
         let showings = [
-            Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .kaunas, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .klaipeda, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .siauliai, date: Date(), venue: "", is3D: false, url: "")
+            Showing(city: .vilnius),
+            Showing(city: .kaunas),
+            Showing(city: .klaipeda),
+            Showing(city: .siauliai),
+            Showing(city: .panevezys)
         ]
 
-        Movie.create(
-            title: "",
-            originalTitle: "",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            showings: showings,
-            on: sut.db
-        )
+        Movie.create(showings: showings, on: sut.db)
 
         try sut.test(.GET, "kaunas", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
@@ -104,24 +71,14 @@ final class AppTests: XCTestCase {
 
     func testKlaipedaRoute() throws {
         let showings = [
-            Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .kaunas, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .klaipeda, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .siauliai, date: Date(), venue: "", is3D: false, url: "")
+            Showing(city: .vilnius),
+            Showing(city: .kaunas),
+            Showing(city: .klaipeda),
+            Showing(city: .siauliai),
+            Showing(city: .panevezys)
         ]
 
-        Movie.create(
-            title: "",
-            originalTitle: "",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            showings: showings,
-            on: sut.db
-        )
+        Movie.create(showings: showings, on: sut.db)
 
         try sut.test(.GET, "klaipeda", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
@@ -135,24 +92,14 @@ final class AppTests: XCTestCase {
 
     func testSiauliaiRoute() throws {
         let showings = [
-            Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .kaunas, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .klaipeda, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .siauliai, date: Date(), venue: "", is3D: false, url: "")
+            Showing(city: .vilnius),
+            Showing(city: .kaunas),
+            Showing(city: .klaipeda),
+            Showing(city: .siauliai),
+            Showing(city: .panevezys)
         ]
 
-        Movie.create(
-            title: "",
-            originalTitle: "",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            showings: showings,
-            on: sut.db
-        )
+        Movie.create(showings: showings, on: sut.db)
 
         try sut.test(.GET, "siauliai", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
@@ -167,25 +114,14 @@ final class AppTests: XCTestCase {
 
     func testPanevezysRoute() throws {
         let showings = [
-            Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .kaunas, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .klaipeda, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .siauliai, date: Date(), venue: "", is3D: false, url: ""),
-            Showing(city: .panevezys, date: Date(), venue: "", is3D: false, url: "")
+            Showing(city: .vilnius),
+            Showing(city: .kaunas),
+            Showing(city: .klaipeda),
+            Showing(city: .siauliai),
+            Showing(city: .panevezys)
         ]
 
-        Movie.create(
-            title: "",
-            originalTitle: "",
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            showings: showings,
-            on: sut.db
-        )
+        Movie.create(showings: showings, on: sut.db)
 
         try sut.test(.GET, "panevezys", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)

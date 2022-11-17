@@ -25,6 +25,7 @@ final class MovieOrganizerTests: XCTestCase {
     func testMappingOriginalTitles() throws {
         let currentTitle = "TestTitle"
         let newTitle = "NewTestTitle"
+
         Movie.create(originalTitle: currentTitle, on: app.db)
         TitleMapping.create(originalTitle: currentTitle, newOriginalTitle: newTitle, on: app.db)
 
@@ -73,28 +74,8 @@ final class MovieOrganizerTests: XCTestCase {
     func testNewProfileIsNotCreatedIfOneAlreadyExists() throws {
         let originalTitle = "TestTitle"
 
-        MovieProfile.create(
-            title: "",
-            originalTitle: originalTitle,
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            on: app.db
-        )
-
-        Movie.create(
-            title: "",
-            originalTitle: originalTitle,
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [],
-            plot: "",
-            poster: "",
-            on: app.db
-        )
+        MovieProfile.create(originalTitle: originalTitle, on: app.db)
+        Movie.create(originalTitle: originalTitle, on: app.db)
 
         _ = try sut.organize(on: app.db).wait()
 
@@ -111,16 +92,7 @@ final class MovieOrganizerTests: XCTestCase {
         let genres = ["TestGenre"]
         let plot = "TestPlot"
 
-        Movie.create(
-            title: "",
-            originalTitle: originalTitle,
-            year: "",
-            duration: "",
-            ageRating: "",
-            genres: [""],
-            plot: "",
-            on: app.db
-        )
+        Movie.create(originalTitle: originalTitle, on: app.db)
 
         MovieProfile.create(
             title: title,
@@ -148,9 +120,9 @@ final class MovieOrganizerTests: XCTestCase {
     }
 
     func testMappingMovieShowings() throws {
-        let showing0 = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: "")
-        let showing1 = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: "")
-        let showing2 = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: "")
+        let showing0 = Showing(city: .vilnius)
+        let showing1 = Showing(city: .vilnius)
+        let showing2 = Showing(city: .vilnius)
 
         Movie.create(originalTitle: "Movie0", showings: [showing0], on: app.db)
         Movie.create(originalTitle: "Movie1", showings: [showing1], on: app.db)
