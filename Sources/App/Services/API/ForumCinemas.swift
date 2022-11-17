@@ -135,14 +135,13 @@ extension Showing {
         guard let area = forumShowing.area?.name,
               let city = City(rawValue: area) else { return nil }
         guard let date = forumShowing.date?.convertToDate() else { return nil }
-        guard let venue = forumShowing.venue else { return nil }
         guard let url = forumShowing.url else { return nil }
         let is3D = forumShowing.is3D == "3D" ? true : false
 
         self.init(
             city: city,
             date: date,
-            venue: venue.sanitizeVenue(),
+            venue: "Forum Cinemas",
             is3D: is3D,
             url: url.sanitizeHTTP()
         )
@@ -199,15 +198,5 @@ private struct Area: Decodable {
     private enum CodingKeys: String, CodingKey {
         case id = "ID"
         case name = "Name"
-    }
-}
-
-extension String {
-    fileprivate func sanitizeVenue() -> String {
-        return self.replacingOccurrences(of: " (Vilniuje)", with: "")
-                   .replacingOccurrences(of: " Kaune", with: "")
-                   .replacingOccurrences(of: " Klaipėdoje", with: "")
-                   .replacingOccurrences(of: " Šiauliuose", with: "")
-                   .replacingOccurrences(of: " Vingis", with: "")
     }
 }
