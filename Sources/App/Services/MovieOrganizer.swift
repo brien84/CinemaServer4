@@ -15,10 +15,10 @@ protocol MovieOrganization {
 struct MovieOrganizer: MovieOrganization {
     func organize(on db: Database) -> EventLoopFuture<Void> {
         mapOriginalTitles(on: db).flatMap {
-            self.applyProfiles(on: db).flatMap {
-                self.mapMovieShowings(on: db).flatMap {
-                    self.cleanup(on: db).flatMap {
-                        self.setPosters(on: db)
+            applyProfiles(on: db).flatMap {
+                mapMovieShowings(on: db).flatMap {
+                    cleanup(on: db).flatMap {
+                        setPosters(on: db)
                     }
                 }
             }
@@ -28,7 +28,7 @@ struct MovieOrganizer: MovieOrganization {
     private func mapOriginalTitles(on db: Database) -> EventLoopFuture<Void> {
         Movie.query(on: db).all().flatMap { movies in
             movies.map { movie in
-                self.mapOriginalTitle(on: movie, on: db)
+                mapOriginalTitle(on: movie, on: db)
             }.flatten(on: db.eventLoop)
         }
     }
@@ -51,7 +51,7 @@ struct MovieOrganizer: MovieOrganization {
     private func applyProfiles(on db: Database) -> EventLoopFuture<Void> {
         Movie.query(on: db).all().flatMap { movies in
             movies.map { movie in
-                self.applyProfile(on: movie, on: db)
+                applyProfile(on: movie, on: db)
             }.flatten(on: db.eventLoop)
         }
     }
@@ -60,7 +60,7 @@ struct MovieOrganizer: MovieOrganization {
     private func applyProfile(on movie: Movie, on db: Database) -> EventLoopFuture<Void> {
         MovieProfile.query(on: db).filter(\.$originalTitle == movie.originalTitle).first().flatMap { profile in
             if let profile = profile {
-                return self.apply(profile: profile, on: movie, on: db)
+                return apply(profile: profile, on: movie, on: db)
             } else {
                 return MovieProfile(from: movie).save(on: db)
             }
@@ -83,7 +83,7 @@ struct MovieOrganizer: MovieOrganization {
             titles.map { title in
                 Movie.query(on: db).filter(\.$originalTitle == title).all().flatMap { movies in
                     if movies.count > 1, let title = title {
-                        return self.mapMovieShowings(with: title, on: db)
+                        return mapMovieShowings(with: title, on: db)
                     } else {
                         return db.eventLoop.makeSucceededFuture(())
                     }
@@ -106,7 +106,6 @@ struct MovieOrganizer: MovieOrganization {
 
                 return showings.map { showing in
                     showing.$movie.id = id
-
                     return showing.update(on: db)
                 }.flatten(on: db.eventLoop)
         }
@@ -123,7 +122,7 @@ struct MovieOrganizer: MovieOrganization {
     private func setPosters(on db: Database) -> EventLoopFuture<Void> {
         Movie.query(on: db).all().flatMap { movies in
             movies.map { movie in
-                self.setPoster(on: movie, on: db)
+                setPoster(on: movie, on: db)
             }.flatten(on: db.eventLoop)
         }
     }

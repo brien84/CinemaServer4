@@ -49,12 +49,21 @@ final class MainControllerTests: XCTestCase {
     }
 
     func testDatabaseIsOverwrittenWhenUpdateIsSuccessful() throws {
-        Movie.create(title: "", originalTitle: "TITLE", year: "", duration: "",
-                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+        Movie.create(
+            title: "",
+            originalTitle: "TITLE",
+            year: "",
+            duration: "",
+            ageRating: "",
+            genres: [],
+            plot: "",
+            poster: "",
+            on: app.db
+        )
 
         try sut.update().wait()
 
-        let count = try Movie.query(on: self.app.db).count().wait()
+        let count = try Movie.query(on: app.db).count().wait()
         XCTAssertEqual(count, 0)
     }
 
@@ -77,13 +86,23 @@ final class MainControllerTests: XCTestCase {
     }
 
     func testDatabaseTrasactionIsCancelledIfUpdateFails() throws {
-        Movie.create(title: "", originalTitle: "TITLE", year: "", duration: "",
-                     ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+        Movie.create(
+            title: "",
+            originalTitle: "TITLE",
+            year: "",
+            duration: "",
+            ageRating: "",
+            genres: [],
+            plot: "",
+            poster: "",
+            on: app.db
+        )
+
         fetcher.isSuccess = false
 
         try sut.update().wait()
 
-        let count = try Movie.query(on: self.app.db).count().wait()
+        let count = try Movie.query(on: app.db).count().wait()
         XCTAssertEqual(count, 1)
     }
 

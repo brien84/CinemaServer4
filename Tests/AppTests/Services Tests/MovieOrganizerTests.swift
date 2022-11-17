@@ -45,8 +45,17 @@ final class MovieOrganizerTests: XCTestCase {
         let genres = ["TestGenre"]
         let plot = "TestPlot"
 
-        Movie.create(title: title, originalTitle: originalTitle, year: year, duration: duration,
-                     ageRating: ageRating, genres: genres, plot: plot, poster: "", on: app.db)
+        Movie.create(
+            title: title,
+            originalTitle: originalTitle,
+            year: year,
+            duration: duration,
+            ageRating: ageRating,
+            genres: genres,
+            plot: plot,
+            poster: "",
+            on: app.db
+        )
 
         _ = try sut.organize(on: app.db).wait()
 
@@ -63,10 +72,29 @@ final class MovieOrganizerTests: XCTestCase {
 
     func testNewProfileIsNotCreatedIfOneAlreadyExists() throws {
         let originalTitle = "TestTitle"
-        MovieProfile.create(title: "", originalTitle: originalTitle, year: "",
-                            duration: "", ageRating: "", genres: [], plot: "", on: app.db)
-        Movie.create(title: "", originalTitle: originalTitle, year: "",
-                     duration: "", ageRating: "", genres: [], plot: "", poster: "", on: app.db)
+
+        MovieProfile.create(
+            title: "",
+            originalTitle: originalTitle,
+            year: "",
+            duration: "",
+            ageRating: "",
+            genres: [],
+            plot: "",
+            on: app.db
+        )
+
+        Movie.create(
+            title: "",
+            originalTitle: originalTitle,
+            year: "",
+            duration: "",
+            ageRating: "",
+            genres: [],
+            plot: "",
+            poster: "",
+            on: app.db
+        )
 
         _ = try sut.organize(on: app.db).wait()
 
@@ -83,10 +111,27 @@ final class MovieOrganizerTests: XCTestCase {
         let genres = ["TestGenre"]
         let plot = "TestPlot"
 
-        Movie.create(title: "", originalTitle: originalTitle, year: "",
-                     duration: "", ageRating: "", genres: [""], plot: "", on: app.db)
-        MovieProfile.create(title: title, originalTitle: originalTitle, year: year,
-                            duration: duration, ageRating: ageRating, genres: genres, plot: plot, on: app.db)
+        Movie.create(
+            title: "",
+            originalTitle: originalTitle,
+            year: "",
+            duration: "",
+            ageRating: "",
+            genres: [""],
+            plot: "",
+            on: app.db
+        )
+
+        MovieProfile.create(
+            title: title,
+            originalTitle: originalTitle,
+            year: year,
+            duration: duration,
+            ageRating: ageRating,
+            genres: genres,
+            plot: plot,
+            on: app.db
+        )
 
         _ = try sut.organize(on: app.db).wait()
 

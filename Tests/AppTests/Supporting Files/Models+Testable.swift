@@ -10,12 +10,21 @@ import Fluent
 import Foundation
 
 extension Movie {
-    static func create(title: String? = nil, originalTitle: String? = nil, year: String? = nil,
-                       duration: String? = nil, ageRating: String? = nil, genres: [String]? = nil,
-                       plot: String? = nil, poster: String? = nil, showings: [Showing]? = nil, on db: Database) {
-
-        let movie = Movie(title: title, originalTitle: originalTitle, year: year, duration: duration,
-                          ageRating: ageRating, genres: genres, plot: plot, poster: poster)
+    static func create(
+        title: String? = nil, originalTitle: String? = nil, year: String? = nil,
+        duration: String? = nil, ageRating: String? = nil, genres: [String]? = nil,
+        plot: String? = nil, poster: String? = nil, showings: [Showing]? = nil, on db: Database
+    ) {
+        let movie = Movie(
+            title: title,
+            originalTitle: originalTitle,
+            year: year,
+            duration: duration,
+            ageRating: ageRating,
+            genres: genres,
+            plot: plot,
+            poster: poster
+        )
 
         try! movie.create(on: db).wait()
 
@@ -32,11 +41,20 @@ extension Movie {
 }
 
 extension MovieProfile {
-    static func create(title: String? = nil, originalTitle: String? = nil, year: String? = nil, duration: String? = nil,
-                       ageRating: String? = nil, genres: [String]? = nil, plot: String? = nil, on db: Database) {
-
-        let profile = MovieProfile(title: title, originalTitle: originalTitle, year: year, duration: duration,
-                                   ageRating: ageRating, genres: genres, plot: plot)
+    static func create(
+        title: String? = nil, originalTitle: String? = nil, year: String? = nil,
+        duration: String? = nil, ageRating: String? = nil, genres: [String]? = nil,
+        plot: String? = nil, on db: Database
+    ) {
+        let profile = MovieProfile(
+            title: title,
+            originalTitle: originalTitle,
+            year: year,
+            duration: duration,
+            ageRating: ageRating,
+            genres: genres,
+            plot: plot
+        )
 
         try! profile.create(on: db).wait()
     }
