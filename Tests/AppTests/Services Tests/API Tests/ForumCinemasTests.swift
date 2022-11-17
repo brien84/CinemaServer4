@@ -47,8 +47,8 @@ final class ForumCinemasTests: XCTestCase {
 
         XCTAssertEqual(movies[0].showings[0].city, .vilnius)
         XCTAssertEqual(movies[0].showings[0].date, "2020-09-26T21:00:00".convertToDate())
-        XCTAssertEqual(movies[0].showings[0].venue, "Forum Cinemas Akropolis")
-        XCTAssertEqual(movies[0].showings[0].is3D, false)
+        XCTAssertEqual(movies[0].showings[0].venue, "Forum Cinemas")
+        XCTAssertEqual(movies[0].showings[0].is3D, true)
         XCTAssertEqual(movies[0].showings[0].url, "https://m.forumcinemas.lt/Websales/Show/790854/")
     }
 
@@ -81,6 +81,10 @@ final class ForumCinemasTests: XCTestCase {
         XCTAssertEqual(movies[0].showings.count, 1)
 
         XCTAssertEqual(movies[0].title, nil)
+        XCTAssertEqual(movies[0].year, nil)
+        XCTAssertEqual(movies[0].duration, nil)
+        XCTAssertEqual(movies[0].ageRating, nil)
+        XCTAssertEqual(movies[0].genres, nil)
     }
 
     func testSkipsShowingIfAPIPropertiesAreMissing() throws {
@@ -116,6 +120,7 @@ final class ForumCinemasTests: XCTestCase {
                         "Genres": " Trileris, Fantastinis ",
                         "dttmShowStart": "2020-09-26T21:00:00",
                         "Theatre": "Forum Cinemas Akropolis (Vilniuje)",
+                        "PresentationMethod": "3D",
                         "ShowURL": "http://m.forumcinemas.lt/Websales/Show/790854/"
                     }
                 ]
@@ -153,6 +158,7 @@ final class ForumCinemasTests: XCTestCase {
                         "Genres": " Trileris, Fantastinis ",
                         "dttmShowStart": "2020-09-26T21:00:00",
                         "Theatre": "Forum Cinemas Akropolis (Vilniuje)",
+                        "PresentationMethod": "3D",
                         "ShowURL": "http://m.forumcinemas.lt/Websales/Show/790854/"
                     }
                 ]
@@ -172,12 +178,13 @@ final class ForumCinemasTests: XCTestCase {
                     {
                         "Title": null,
                         "OriginalTitle": "originalTitle",
-                        "ProductionYear": 2020,
-                        "LengthInMinutes": 103,
-                        "RatingLabel": "N16",
-                        "Genres": " Trileris, Fantastinis ",
+                        "ProductionYear": null,
+                        "LengthInMinutes": null,
+                        "RatingLabel": null,
+                        "Genres": null,
                         "dttmShowStart": "2020-09-26T21:00:00",
                         "Theatre": "Forum Cinemas Akropolis (Vilniuje)",
+                        "PresentationMethod": "3D",
                         "ShowURL": "http://m.forumcinemas.lt/Websales/Show/790854/"
                     }
                 ]
@@ -201,8 +208,9 @@ final class ForumCinemasTests: XCTestCase {
                         "LengthInMinutes": 103,
                         "RatingLabel": "N16",
                         "Genres": " Trileris, Fantastinis ",
-                        "dttmShowStart": "2020-09-26T21:00:00",
+                        "dttmShowStart": null,
                         "Theatre": null,
+                        "PresentationMethod": "3D",
                         "ShowURL": "http://m.forumcinemas.lt/Websales/Show/790854/"
                     }
                 ]
