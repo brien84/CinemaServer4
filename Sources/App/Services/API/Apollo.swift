@@ -25,11 +25,11 @@ struct Apollo: MovieAPI {
         var APIShowings = APIShowings
 
         if let APIShowing = APIShowings.first {
-            let sameTitledShowings = APIShowings.filter { $0.title == APIShowing.title }
-            APIShowings = APIShowings.filter { $0.title != APIShowing.title}
+            let sameTitleShowings = APIShowings.filter { $0.title == APIShowing.title }
+            APIShowings = APIShowings.filter { $0.title != APIShowing.title }
 
             let movie = Movie(from: APIShowing)
-            let showings = sameTitledShowings.compactMap { Showing(from: $0) }
+            let showings = sameTitleShowings.compactMap { Showing(from: $0) }
 
             return movie.create(on: db).flatMap {
                 movie.$showings.create(showings, on: db).flatMap {
