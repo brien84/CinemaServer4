@@ -52,7 +52,7 @@ struct ForumCinemas: MovieAPI {
 
     /// Returns array of `APIService.Showing` from specific `APIService.Area`.
     private func fetchAPIShowings(in area: AreaService.Area) -> EventLoopFuture<[APIService.Showing]> {
-        client.get(getShowingsURI(in: area)).flatMapThrowing { res in
+        client.get(area.url).flatMapThrowing { res in
             let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
 
             // Assigns `APIService.Area` to each `APIService.Showing` object.
@@ -67,20 +67,10 @@ struct ForumCinemas: MovieAPI {
     }
 
     private func fetchAreas() -> EventLoopFuture<[AreaService.Area]> {
-        client.get(areas).flatMapThrowing { res in
+        client.get(.areas).flatMapThrowing { res in
             let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
             return service.areas
         }
-    }
-}
-
-extension ForumCinemas {
-    private var areas: URI {
-        URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
-    }
-
-    private func getShowingsURI(in area: AreaService.Area) -> URI {
-        URI(string: "http://m.forumcinemas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(area.id)")
     }
 }
 
@@ -131,8 +121,7 @@ extension Movie {
 
 extension Showing {
     fileprivate convenience init?(from showing: APIService.Showing) {
-        guard let area = showing.area?.name,
-              let city = City(rawValue: area) else { return nil }
+        guard let city = showing.area?.city else { return nil }
         guard let date = showing.date?.convertToDate() else { return nil }
         guard let url = showing.url else { return nil }
 
@@ -146,6 +135,12 @@ extension Showing {
     }
 }
 
+fileprivate extension URI {
+    static var areas: URI {
+        URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
+    }
+}
+
 private struct AreaService: Decodable {
     let areas: [AreaService.Area]
 
@@ -156,6 +151,14 @@ private struct AreaService: Decodable {
     struct Area: Decodable {
         let id: Int
         let name: String
+
+        var city: City? {
+            City(rawValue: name)
+        }
+
+        var url: URI {
+            URI(string: "http://m.forumcinemas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(id)")
+        }
 
         private enum CodingKeys: String, CodingKey {
             case id = "ID"
