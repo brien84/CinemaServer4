@@ -60,6 +60,20 @@ extension MovieProfile {
     }
 }
 
+extension Showing {
+    convenience init(
+        city: City = .vilnius, date: Date = Date(),
+        venue: String = "", is3D: Bool = false, url: String = ""
+    ) {
+        self.init()
+        self.city = city
+        self.date = date
+        self.venue = venue
+        self.is3D = is3D
+        self.url = url
+    }
+}
+
 extension TitleMapping {
     static func create(originalTitle: String, newOriginalTitle: String, on db: Database) {
         let mapping = TitleMapping(originalTitle: originalTitle, newOriginalTitle: newOriginalTitle)
