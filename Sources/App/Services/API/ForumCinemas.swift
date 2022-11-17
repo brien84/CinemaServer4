@@ -33,7 +33,7 @@ struct ForumCinemas: MovieAPI {
 
             return movie.create(on: db).flatMap {
                 movie.$showings.create(showings, on: db).flatMap {
-                    self.createMovies(from: APIShowings, on: db)
+                    createMovies(from: APIShowings, on: db)
                 }
             }
         } else {
@@ -51,7 +51,7 @@ struct ForumCinemas: MovieAPI {
     }
 
     /// Returns array of `APIService.Showing` from specific `APIService.Area`.
-    private func fetchAPIShowings(in area: APIService.Area) -> EventLoopFuture<[APIService.Showing]> {
+    private func fetchAPIShowings(in area: AreaService.Area) -> EventLoopFuture<[APIService.Showing]> {
         client.get(getShowingsURI(in: area)).flatMapThrowing { res in
             let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
 
@@ -66,9 +66,9 @@ struct ForumCinemas: MovieAPI {
         }
     }
 
-    private func fetchAreas() -> EventLoopFuture<[APIService.Area]> {
+    private func fetchAreas() -> EventLoopFuture<[AreaService.Area]> {
         client.get(areas).flatMapThrowing { res in
-            let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
+            let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
             return service.areas
         }
     }
@@ -79,7 +79,7 @@ extension ForumCinemas {
         URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
     }
 
-    private func getShowingsURI(in area: APIService.Area) -> URI {
+    private func getShowingsURI(in area: AreaService.Area) -> URI {
         URI(string: "http://m.forumcinemas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(area.id)")
     }
 }
@@ -146,13 +146,11 @@ extension Showing {
     }
 }
 
-private struct APIService: Decodable {
-    let areas: [APIService.Area]
-    let showings: [APIService.Showing]
+private struct AreaService: Decodable {
+    let areas: [AreaService.Area]
 
     private enum CodingKeys: String, CodingKey {
         case areas = "TheatreAreas"
-        case showings = "Shows"
     }
 
     struct Area: Decodable {
@@ -164,9 +162,17 @@ private struct APIService: Decodable {
             case name = "Name"
         }
     }
+}
+
+private struct APIService: Decodable {
+    let showings: [APIService.Showing]
+
+    private enum CodingKeys: String, CodingKey {
+        case showings = "Shows"
+    }
 
     struct Showing: Decodable {
-        var area: Area?
+        var area: AreaService.Area?
 
         let ageRating: String?
         let date: String?
