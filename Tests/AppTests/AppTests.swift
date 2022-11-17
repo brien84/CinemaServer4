@@ -72,10 +72,12 @@ final class AppTests: XCTestCase {
     }
 
     func testKaunasRoute() throws {
-        let showings = [Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: ""),
-                        Showing(city: .kaunas, date: Date(), venue: "", is3D: false, url: ""),
-                        Showing(city: .klaipeda, date: Date(), venue: "", is3D: false, url: ""),
-                        Showing(city: .siauliai, date: Date(), venue: "", is3D: false, url: "")]
+        let showings = [
+            Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: ""),
+            Showing(city: .kaunas, date: Date(), venue: "", is3D: false, url: ""),
+            Showing(city: .klaipeda, date: Date(), venue: "", is3D: false, url: ""),
+            Showing(city: .siauliai, date: Date(), venue: "", is3D: false, url: "")
+        ]
 
         Movie.create(
             title: "",
@@ -160,6 +162,39 @@ final class AppTests: XCTestCase {
             
             XCTAssertEqual(showings.count, 1)
             XCTAssertEqual(showings[0].city, .siauliai)
+        })
+    }
+
+    func testPanevezysRoute() throws {
+        let showings = [
+            Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: ""),
+            Showing(city: .kaunas, date: Date(), venue: "", is3D: false, url: ""),
+            Showing(city: .klaipeda, date: Date(), venue: "", is3D: false, url: ""),
+            Showing(city: .siauliai, date: Date(), venue: "", is3D: false, url: ""),
+            Showing(city: .panevezys, date: Date(), venue: "", is3D: false, url: "")
+        ]
+
+        Movie.create(
+            title: "",
+            originalTitle: "",
+            year: "",
+            duration: "",
+            ageRating: "",
+            genres: [],
+            plot: "",
+            poster: "",
+            showings: showings,
+            on: sut.db
+        )
+
+        try sut.test(.GET, "panevezys", afterResponse:  { res in
+            XCTAssertEqual(res.status, .ok)
+
+            let service = try res.content.decode([ShowingService].self)
+            let showings = service.flatMap { $0.showings }
+
+            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings[0].city, .panevezys)
         })
     }
 
