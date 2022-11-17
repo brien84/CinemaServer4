@@ -16,48 +16,47 @@ struct ForumCinemas: MovieAPI {
     }
 
     func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
-        getForumShowings().flatMap { forumShowings in
-            self.createMovies(from: forumShowings, on: db)
+        fetchAPIShowings().flatMap { showings in
+            createMovies(from: showings, on: db)
         }
     }
 
-    private func createMovies(from forumShowings: [ForumShowing], on db: Database) -> EventLoopFuture<Void> {
-        var forumShowings = forumShowings
+    private func createMovies(from APIShowings: [APIService.Showing], on db: Database) -> EventLoopFuture<Void> {
+        var APIShowings = APIShowings
 
-        if let forumShowing = forumShowings.first {
-            let movieShowings = forumShowings.filter { $0.title == forumShowing.title }
-            forumShowings = forumShowings.filter { $0.title != forumShowing.title}
+        if let APIShowing = APIShowings.first {
+            let sameTitleShowings = APIShowings.filter { $0.title == APIShowing.title }
+            APIShowings = APIShowings.filter { $0.title != APIShowing.title }
 
-            let movie = Movie(from: forumShowing)
-            let showings = movieShowings.compactMap { Showing(from: $0) }
+            let movie = Movie(from: APIShowing)
+            let showings = sameTitleShowings.compactMap { Showing(from: $0) }
 
             return movie.create(on: db).flatMap {
                 movie.$showings.create(showings, on: db).flatMap {
-                    self.createMovies(from: forumShowings, on: db)
+                    self.createMovies(from: APIShowings, on: db)
                 }
             }
         } else {
-            return db.eventLoop.future()
+            return db.eventLoop.makeSucceededVoidFuture()
         }
     }
 
-    /// Returns array of `ForumShowing` from all areas.
-    private func getForumShowings() -> EventLoopFuture<[ForumShowing]> {
-        getAreas().flatMap { areas in
+    /// Returns array of `APIService.Showing` from all `APIService.Area`.
+    private func fetchAPIShowings() -> EventLoopFuture<[APIService.Showing]> {
+        fetchAreas().flatMap { areas in
             areas.map { area in
-                self.getForumShowings(in: area)
-            }.flatten(on: self.client.eventLoop).map { $0.flatMap { $0 } }
+                fetchAPIShowings(in: area)
+            }.flatten(on: client.eventLoop).map { $0.flatMap { $0 } }
         }
     }
 
-    /// Returns array of `ForumShowing` from specific area.
-    private func getForumShowings(in area: Area) -> EventLoopFuture<[ForumShowing]> {
-        client.get(makeShowingsURI(for: area)).flatMapThrowing { res in
+    /// Returns array of `APIService.Showing` from specific `APIService.Area`.
+    private func fetchAPIShowings(in area: APIService.Area) -> EventLoopFuture<[APIService.Showing]> {
+        client.get(getShowingsURI(in: area)).flatMapThrowing { res in
+            let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
 
-            let service = try JSONDecoder().decode(ShowingService.self, from: res.body ?? ByteBuffer())
-
-            // Assigns `area` to each `ForumShowing` object.
-            let showings = service.showings.map { showing -> ForumShowing in
+            // Assigns `APIService.Area` to each `APIService.Showing` object.
+            let showings = service.showings.map { showing in
                 var copy = showing
                 copy.area = area
                 return copy
@@ -67,20 +66,20 @@ struct ForumCinemas: MovieAPI {
         }
     }
 
-    private func getAreas() -> EventLoopFuture<[Area]> {
-        client.get(areasURI).flatMapThrowing { res in
-            let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
+    private func fetchAreas() -> EventLoopFuture<[APIService.Area]> {
+        client.get(areas).flatMapThrowing { res in
+            let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
             return service.areas
         }
     }
 }
 
 extension ForumCinemas {
-    private var areasURI: URI {
+    private var areas: URI {
         URI(string: "http://m.forumcinemas.lt/xml/TheatreAreas/?format=json")
     }
 
-    private func makeShowingsURI(for area: Area) -> URI {
+    private func getShowingsURI(in area: APIService.Area) -> URI {
         URI(string: "http://m.forumcinemas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(area.id)")
     }
 }
@@ -94,19 +93,19 @@ extension Application {
 // MARK: - Decodable Helpers
 
 extension Movie {
-    fileprivate convenience init(from forumShowing: ForumShowing) {
+    fileprivate convenience init(from showing: APIService.Showing) {
         let year: String? = {
-            guard let year = forumShowing.year else { return nil }
+            guard let year = showing.year else { return nil }
             return String(year)
         }()
 
         let duration: String? = {
-            guard let duration = forumShowing.duration else { return nil }
+            guard let duration = showing.duration else { return nil }
             return String(duration) + " min"
         }()
 
         let ageRating: String? = {
-            guard var ageRating = forumShowing.ageRating else { return nil }
+            guard var ageRating = showing.ageRating else { return nil }
 
             // `N18` -> `N-18`
             if ageRating.starts(with: "N") {
@@ -117,11 +116,11 @@ extension Movie {
         }()
 
         // ` Genre0, Genre1 ` -> `[Genre0, Genre1]`
-        let genres = forumShowing.genres?.split(separator: ",").map { String($0).trimSpaces() }
+        let genres = showing.genres?.split(separator: ",").map { String($0).trimSpaces() }
 
         self.init(
-            title: forumShowing.title,
-            originalTitle: forumShowing.originalTitle,
+            title: showing.title,
+            originalTitle: showing.originalTitle,
             year: year,
             duration: duration,
             ageRating: ageRating,
@@ -131,72 +130,66 @@ extension Movie {
 }
 
 extension Showing {
-    fileprivate convenience init?(from forumShowing: ForumShowing) {
-        guard let area = forumShowing.area?.name,
+    fileprivate convenience init?(from showing: APIService.Showing) {
+        guard let area = showing.area?.name,
               let city = City(rawValue: area) else { return nil }
-        guard let date = forumShowing.date?.convertToDate() else { return nil }
-        guard let url = forumShowing.url else { return nil }
-        let is3D = forumShowing.is3D == "3D" ? true : false
+        guard let date = showing.date?.convertToDate() else { return nil }
+        guard let url = showing.url else { return nil }
 
         self.init(
             city: city,
             date: date,
             venue: "Forum Cinemas",
-            is3D: is3D,
+            is3D: showing.is3D == "3D",
             url: url.sanitizeHTTP()
         )
     }
 }
 
-private struct ShowingService: Decodable {
-    let showings: [ForumShowing]
-
-    private enum CodingKeys: String, CodingKey {
-         case showings = "Shows"
-    }
-}
-
-private struct ForumShowing: Decodable {
-    let title: String?
-    let originalTitle: String?
-    let year: Int?
-    let ageRating: String?
-    let duration: Int?
-    let genres: String?
-    let date: String?
-    let venue: String?
-    let url: String?
-    let is3D: String?
-    var area: Area?
-
-    private enum CodingKeys: String, CodingKey {
-        case title = "Title"
-        case originalTitle = "OriginalTitle"
-        case year = "ProductionYear"
-        case ageRating = "RatingLabel"
-        case duration = "LengthInMinutes"
-        case genres = "Genres"
-        case date = "dttmShowStart"
-        case venue = "Theatre"
-        case url = "ShowURL"
-        case is3D = "PresentationMethod"
-    }
-}
-
-private struct AreaService: Decodable {
-    let areas: [Area]
+private struct APIService: Decodable {
+    let areas: [APIService.Area]
+    let showings: [APIService.Showing]
 
     private enum CodingKeys: String, CodingKey {
         case areas = "TheatreAreas"
+        case showings = "Shows"
     }
-}
 
-private struct Area: Decodable {
-    let id: Int
-    let name: String
+    struct Area: Decodable {
+        let id: Int
+        let name: String
 
-    private enum CodingKeys: String, CodingKey {
-        case id = "ID"
-        case name = "Name"
+        private enum CodingKeys: String, CodingKey {
+            case id = "ID"
+            case name = "Name"
+        }
+    }
+
+    struct Showing: Decodable {
+        var area: Area?
+
+        let ageRating: String?
+        let date: String?
+        let duration: Int?
+        let genres: String?
+        let is3D: String?
+        let originalTitle: String?
+        let title: String?
+        let url: String?
+        let venue: String?
+        let year: Int?
+
+        private enum CodingKeys: String, CodingKey {
+            case ageRating = "RatingLabel"
+            case date = "dttmShowStart"
+            case duration = "LengthInMinutes"
+            case genres = "Genres"
+            case is3D = "PresentationMethod"
+            case originalTitle = "OriginalTitle"
+            case title = "Title"
+            case url = "ShowURL"
+            case venue = "Theatre"
+            case year = "ProductionYear"
+        }
     }
 }
