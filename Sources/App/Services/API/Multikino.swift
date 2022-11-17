@@ -18,21 +18,21 @@ struct Multikino: MovieAPI {
     func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
         client.get(apiURI).flatMap { res in
             do {
-                let service = try JSONDecoder().decode(MovieService.self, from: res.body ?? ByteBuffer())
-                return self.createMovies(from: service, on: db)
+                let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
+                return createMovies(from: service, on: db)
             } catch {
-                return self.client.eventLoop.makeFailedFuture(error)
+                return client.eventLoop.makeFailedFuture(error)
             }
         }
     }
 
-    private func createMovies(from service: MovieService, on db: Database) -> EventLoopFuture<Void> {
-        service.movies.compactMap { multikinoMovie -> EventLoopFuture<Void>? in
-            guard let movie = Movie(from: multikinoMovie) else { return nil }
+    private func createMovies(from service: APIService, on db: Database) -> EventLoopFuture<Void> {
+        service.movies.compactMap { apiMovie -> EventLoopFuture<Void>? in
+            guard let movie = Movie(from: apiMovie) else { return nil }
 
-            let showings = multikinoMovie.showingServices.flatMap { service in
-                service.showings.compactMap { multikinoShowing in
-                    Showing(from: multikinoShowing)
+            let showings = apiMovie.showings.flatMap { showing in
+                showing.times.compactMap { time in
+                    Showing(from: time)
                 }
             }
 
@@ -58,7 +58,7 @@ extension Application {
 // MARK: - Decodable Helpers
 
 extension Movie {
-    fileprivate convenience init?(from movie: MultikinoMovie) {
+    fileprivate convenience init?(from movie: APIService.Movie) {
         guard movie.showShowings == true else { return nil }
 
         // `Title (Original Title)` -> `Title`
@@ -82,81 +82,80 @@ extension Movie {
             return genre.trimSpaces()
         }
 
-        self.init(title: title,
-                  originalTitle: originalTitle,
-                  year: year,
-                  duration: duration,
-                  ageRating: movie.ageRating,
-                  genres: genres)
+        self.init(
+            title: title,
+            originalTitle: originalTitle,
+            year: year,
+            duration: duration,
+            ageRating: movie.ageRating,
+            genres: genres
+        )
     }
 }
 
 extension Showing {
-    fileprivate convenience init?(from multikinoShowing: MultikinoShowing) {
-        guard let date = multikinoShowing.date?.convertToDate() else { return nil }
-        guard let url = multikinoShowing.url else { return nil }
-        let is3D = multikinoShowing.screenType == "3D" ? true : false
+    fileprivate convenience init?(from time: APIService.Movie.Showings.Time) {
+        guard let date = time.date?.convertToDate() else { return nil }
+        guard let url = time.url else { return nil }
 
-        self.init(city: .vilnius,
-                  date: date,
-                  venue: "Multikino",
-                  is3D: is3D,
-                  url: "https://multikino.lt\(url)")
+        self.init(
+            city: .vilnius,
+            date: date,
+            venue: "Multikino",
+            is3D: time.screenType == "3D",
+            url: "https://multikino.lt\(url)"
+        )
     }
 }
 
-private struct MovieService: Decodable {
-    let movies: [MultikinoMovie]
+private struct APIService: Decodable {
+    let movies: [APIService.Movie]
 
     private enum CodingKeys: String, CodingKey {
         case movies = "films"
     }
-}
 
-private struct MultikinoMovie: Decodable {
-    let title: String?
-    let duration: String?
-    let ageRating: String?
-    let year: String?
-    let genres: Genres?
-    let showShowings: Bool?
-    let showingServices: [ShowingService]
+    struct Movie: Decodable {
+        let title: String?
+        let duration: String?
+        let ageRating: String?
+        let year: String?
+        let genres: Movie.Genres?
+        let showShowings: Bool?
+        let showings: [Showings]
 
-    private enum CodingKeys: String, CodingKey {
-        case title
-        case duration = "info_runningtime"
-        case ageRating = "info_age"
-        case year = "info_release"
-        case genres
-        case showShowings = "show_showings"
-        case showingServices = "showings"
-    }
-}
+        private enum CodingKeys: String, CodingKey {
+            case title
+            case duration = "info_runningtime"
+            case ageRating = "info_age"
+            case year = "info_release"
+            case genres
+            case showShowings = "show_showings"
+            case showings
+        }
 
-private struct Genres: Decodable {
-    let names: [Genre]?
+        struct Genres: Decodable {
+            let names: [Genre]?
 
-    struct Genre: Decodable {
-        let name: String?
-    }
-}
+            struct Genre: Decodable {
+                let name: String?
+            }
+        }
 
-private struct ShowingService: Decodable {
-    let showings: [MultikinoShowing]
+        struct Showings: Decodable {
+            let times: [Time]
 
-    private enum CodingKeys: String, CodingKey {
-        case showings = "times"
-    }
-}
+            struct Time: Decodable {
+                let date: String?
+                let url: String?
+                let screenType: String?
 
-private struct MultikinoShowing: Decodable {
-    let date: String?
-    let url: String?
-    let screenType: String?
-
-    private enum CodingKeys: String, CodingKey {
-        case date
-        case url = "link"
-        case screenType = "screen_type"
+                private enum CodingKeys: String, CodingKey {
+                    case date
+                    case url = "link"
+                    case screenType = "screen_type"
+                }
+            }
+        }
     }
 }
