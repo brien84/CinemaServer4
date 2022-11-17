@@ -62,7 +62,10 @@ final class MultikinoTests: XCTestCase {
         XCTAssertEqual(movies.count, 1)
         XCTAssertEqual(movies[0].showings.count, 1)
 
+        XCTAssertEqual(movies[0].year, nil)
+        XCTAssertEqual(movies[0].duration, nil)
         XCTAssertEqual(movies[0].ageRating, nil)
+        XCTAssertEqual(movies[0].genres, [])
     }
 
     func testSkipsShowingIfAPIPropertiesAreMissing() throws {
@@ -129,16 +132,16 @@ final class MultikinoTests: XCTestCase {
                 "films": [
                     {
                         "title": "title (originalTitle)",
-                        "info_release": "14.08.2020",
-                        "info_runningtime": "119 min.",
+                        "info_release": null,
+                        "info_runningtime": null,
                         "info_age": null,
                         "genres": {
                             "names": [
                                 {
-                                    "name": " Trileris "
+                                    "name": null
                                 },
                                 {
-                                    "name": "Veiksmo "
+                                    "name": null
                                 }
                             ]
                         },

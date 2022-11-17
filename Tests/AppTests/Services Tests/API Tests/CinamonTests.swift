@@ -63,6 +63,10 @@ final class CinamonTests: XCTestCase {
         XCTAssertEqual(movies[0].showings.count, 1)
 
         XCTAssertEqual(movies[0].title, nil)
+        XCTAssertEqual(movies[0].year, nil)
+        XCTAssertEqual(movies[0].duration, nil)
+        XCTAssertEqual(movies[0].ageRating, nil)
+        XCTAssertEqual(movies[0].genres, nil)
     }
 
     func testSkipsShowingIfAPIPropertiesAreMissing() throws {
@@ -126,11 +130,11 @@ final class CinamonTests: XCTestCase {
                     {
                         "name": null,
                         "original_name": "originalTitle",
-                        "premiere_date": "2020-08-28",
-                        "runtime": 81,
-                        "rating": "N-7",
+                        "premiere_date": null,
+                        "runtime": null,
+                        "rating": null,
                         "genre": {
-                            "name": " Animacinis "
+                            "name": null
                         },
 
                         "sessions": [
