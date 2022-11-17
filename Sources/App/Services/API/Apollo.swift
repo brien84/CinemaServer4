@@ -1,6 +1,6 @@
 //
 //  Apollo.swift
-//  
+//
 //
 //  Created by Marius on 2022-11-16.
 //
@@ -16,7 +16,51 @@ struct Apollo: MovieAPI {
     }
 
     func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
-        db.eventLoop.makeSucceededVoidFuture()
+        fetchAPIShowings().flatMap { showings in
+            createMovies(from: showings, on: db)
+        }
+    }
+
+    private func createMovies(from APIShowings: [APIService.Showing], on db: Database) -> EventLoopFuture<Void> {
+        var APIShowings = APIShowings
+
+        if let APIShowing = APIShowings.first {
+            let sameTitledShowings = APIShowings.filter { $0.title == APIShowing.title }
+            APIShowings = APIShowings.filter { $0.title != APIShowing.title}
+
+            let movie = Movie(from: APIShowing)
+            let showings = sameTitledShowings.compactMap { Showing(from: $0) }
+
+            return movie.create(on: db).flatMap {
+                movie.$showings.create(showings, on: db).flatMap {
+                    createMovies(from: APIShowings, on: db)
+                }
+            }
+        } else {
+            return db.eventLoop.makeSucceededVoidFuture()
+        }
+    }
+
+    /// Returns array of `APIService.Showing` from all `APIService.Area`.
+    private func fetchAPIShowings() -> EventLoopFuture<[APIService.Showing]> {
+        APIService.Area.allCases.compactMap { area in
+            fetchAPIShowings(in: area)
+        }.flatten(on: client.eventLoop).map { $0.flatMap { $0 } }
+    }
+
+    /// Returns array of `APIService.Showing` from specific `APIService.Area`.
+    private func fetchAPIShowings(in area: APIService.Area) -> EventLoopFuture<[APIService.Showing]> {
+        client.get(area.url).flatMapThrowing { res in
+            let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
+
+            let showings = service.showings.map {
+                var copy = $0
+                copy.area = area
+                return copy
+            }
+
+            return showings
+        }
     }
 }
 
