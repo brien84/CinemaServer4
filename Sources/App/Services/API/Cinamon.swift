@@ -16,7 +16,7 @@ struct Cinamon: MovieAPI {
     }
 
     func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
-        client.get(apiURI).flatMap { res in
+        client.get(.api).flatMap { res in
             do {
                 let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
                 return createMovies(from: service, on: db)
@@ -42,12 +42,6 @@ struct Cinamon: MovieAPI {
                 movie.$showings.create(showings, on: db)
             }
         }.flatten(on: db.eventLoop)
-    }
-}
-
-extension Cinamon {
-    private var apiURI: URI {
-        URI(string: "https://cinamonkino.com/api/page/movies?cinema_id=77139293&timezone=Europe%2FTallinn&locale=lt")
     }
 }
 
@@ -103,6 +97,12 @@ extension Showing {
             is3D: is3D,
             url: "https://cinamonkino.com/mega/seat-plan/\(pid)/lt"
         )
+    }
+}
+
+private extension URI {
+    static var api: URI {
+        URI(string: "https://cinamonkino.com/api/page/movies?cinema_id=77139293&timezone=Europe%2FTallinn&locale=lt")
     }
 }
 

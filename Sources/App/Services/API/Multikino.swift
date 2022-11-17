@@ -16,7 +16,7 @@ struct Multikino: MovieAPI {
     }
 
     func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
-        client.get(apiURI).flatMap { res in
+        client.get(.api).flatMap { res in
             do {
                 let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
                 return createMovies(from: service, on: db)
@@ -40,12 +40,6 @@ struct Multikino: MovieAPI {
                 movie.$showings.create(showings, on: db)
             }
         }.flatten(on: db.eventLoop)
-    }
-}
-
-extension Multikino {
-    private var apiURI: URI {
-        URI(string: "https://multikino.lt/data/filmswithshowings/1001")
     }
 }
 
@@ -105,6 +99,12 @@ extension Showing {
             is3D: time.screenType == "3D",
             url: "https://multikino.lt\(url)"
         )
+    }
+}
+
+private extension URI {
+    static var api: URI {
+        URI(string: "https://multikino.lt/data/filmswithshowings/1001")
     }
 }
 
