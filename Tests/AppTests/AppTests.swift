@@ -141,6 +141,16 @@ final class AppTests: XCTestCase {
         })
     }
 
+    func testUpdateRoute() throws {
+        try sut.test(.GET, "update", afterResponse:  { res in
+            XCTAssertEqual(res.status, .ok)
+
+            let version = try res.content.decode(Double.self)
+
+            XCTAssertEqual(version, Config.minimumSupportediOSClientVersion)
+        })
+    }
+
     // MARK: Test Helpers
 
     struct ShowingService: Codable {
