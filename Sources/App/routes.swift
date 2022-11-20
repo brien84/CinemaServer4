@@ -32,6 +32,10 @@ func routes(_ app: Application) throws {
         return req.fileio.streamFile(at: path)
     }
 
+    app.get("update") { req -> EventLoopFuture<Double> in
+        req.eventLoop.makeSucceededFuture(Config.minimumSupportediOSClientVersion)
+    }
+
     func queryMovies(in city: City, on req: Request) -> EventLoopFuture<[Movie]> {
         Movie.query(on: req.db).with(\.$showings).all().map { movies -> [Movie] in
             movies.forEach { movie in
