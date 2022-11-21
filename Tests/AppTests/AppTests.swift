@@ -13,9 +13,14 @@ final class AppTests: XCTestCase {
     }
 
     func testAllRoute() throws {
-        Movie.create(showings: [Showing(city: .vilnius)], on: sut.db)
+        let showings = [
+            Showing(city: .vilnius),
+            Showing(city: .vilnius, venue: "Apollo")
+        ]
 
-        try sut.test(.GET, "all", afterResponse:  { res in
+        Movie.create(showings: showings, on: sut.db)
+
+        try sut.test(.GET, "all_", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let movies = try res.content.decode([Movie].self)
@@ -23,13 +28,14 @@ final class AppTests: XCTestCase {
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.count, 2)
         })
     }
 
     func testVilniusRoute() throws {
         let showings = [
             Showing(city: .vilnius),
+            Showing(city: .vilnius, venue: "Apollo"),
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
@@ -38,12 +44,12 @@ final class AppTests: XCTestCase {
 
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, "vilnius", afterResponse:  { res in
+        try sut.test(.GET, "vilnius_", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.count, 2)
             XCTAssertEqual(showings[0].city, .vilnius)
         })
     }
@@ -52,6 +58,7 @@ final class AppTests: XCTestCase {
         let showings = [
             Showing(city: .vilnius),
             Showing(city: .kaunas),
+            Showing(city: .kaunas, venue: "Apollo"),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
             Showing(city: .panevezys)
@@ -59,12 +66,12 @@ final class AppTests: XCTestCase {
 
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, "kaunas", afterResponse:  { res in
+        try sut.test(.GET, "kaunas_", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.count, 2)
             XCTAssertEqual(showings[0].city, .kaunas)
         })
     }
@@ -74,18 +81,19 @@ final class AppTests: XCTestCase {
             Showing(city: .vilnius),
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
+            Showing(city: .klaipeda, venue: "Apollo"),
             Showing(city: .siauliai),
             Showing(city: .panevezys)
         ]
 
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, "klaipeda", afterResponse:  { res in
+        try sut.test(.GET, "klaipeda_", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.count, 2)
             XCTAssertEqual(showings[0].city, .klaipeda)
         })
     }
@@ -96,18 +104,19 @@ final class AppTests: XCTestCase {
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
+            Showing(city: .siauliai, venue: "Apollo"),
             Showing(city: .panevezys)
         ]
 
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, "siauliai", afterResponse:  { res in
+        try sut.test(.GET, "siauliai_", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
-            
-            XCTAssertEqual(showings.count, 1)
+
+            XCTAssertEqual(showings.count, 2)
             XCTAssertEqual(showings[0].city, .siauliai)
         })
     }
@@ -118,18 +127,19 @@ final class AppTests: XCTestCase {
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
-            Showing(city: .panevezys)
+            Showing(city: .panevezys),
+            Showing(city: .panevezys, venue: "Apollo"),
         ]
 
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, "panevezys", afterResponse:  { res in
+        try sut.test(.GET, "panevezys_", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
 
-            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.count, 2)
             XCTAssertEqual(showings[0].city, .panevezys)
         })
     }
@@ -148,6 +158,117 @@ final class AppTests: XCTestCase {
             let version = try res.content.decode(String.self)
 
             XCTAssertEqual(version, Config.minimumSupportedClientVersion)
+        })
+    }
+
+    // MARK: - Legacy routes tests
+
+    func testLegacyAllRoute() throws {
+        let showings = [
+            Showing(city: .vilnius),
+            Showing(city: .vilnius, venue: "Apollo")
+        ]
+
+        Movie.create(showings: showings, on: sut.db)
+
+        try sut.test(.GET, "all", afterResponse:  { res in
+            XCTAssertEqual(res.status, .ok)
+
+            let movies = try res.content.decode([Movie].self)
+            XCTAssertEqual(movies.count, 1)
+
+            let service = try res.content.decode([ShowingService].self)
+            let showings = service.flatMap { $0.showings }
+            XCTAssertEqual(showings.count, 1)
+        })
+    }
+
+    func testLegacyVilniusRoute() throws {
+        let showings = [
+            Showing(city: .vilnius),
+            Showing(city: .vilnius, venue: "Apollo"),
+            Showing(city: .kaunas),
+            Showing(city: .klaipeda),
+            Showing(city: .siauliai),
+            Showing(city: .panevezys)
+        ]
+
+        Movie.create(showings: showings, on: sut.db)
+
+        try sut.test(.GET, "vilnius", afterResponse:  { res in
+            XCTAssertEqual(res.status, .ok)
+
+            let service = try res.content.decode([ShowingService].self)
+            let showings = service.flatMap { $0.showings }
+            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings[0].city, .vilnius)
+        })
+    }
+
+    func testLegacyKaunasRoute() throws {
+        let showings = [
+            Showing(city: .vilnius),
+            Showing(city: .kaunas),
+            Showing(city: .kaunas, venue: "Apollo"),
+            Showing(city: .klaipeda),
+            Showing(city: .siauliai),
+            Showing(city: .panevezys)
+        ]
+
+        Movie.create(showings: showings, on: sut.db)
+
+        try sut.test(.GET, "kaunas", afterResponse:  { res in
+            XCTAssertEqual(res.status, .ok)
+
+            let service = try res.content.decode([ShowingService].self)
+            let showings = service.flatMap { $0.showings }
+            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings[0].city, .kaunas)
+        })
+    }
+
+    func testLegacyKlaipedaRoute() throws {
+        let showings = [
+            Showing(city: .vilnius),
+            Showing(city: .kaunas),
+            Showing(city: .klaipeda),
+            Showing(city: .klaipeda, venue: "Apollo"),
+            Showing(city: .siauliai),
+            Showing(city: .panevezys)
+        ]
+
+        Movie.create(showings: showings, on: sut.db)
+
+        try sut.test(.GET, "klaipeda", afterResponse:  { res in
+            XCTAssertEqual(res.status, .ok)
+
+            let service = try res.content.decode([ShowingService].self)
+            let showings = service.flatMap { $0.showings }
+            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings[0].city, .klaipeda)
+        })
+    }
+
+    func testLegacySiauliaiRoute() throws {
+        let showings = [
+            Showing(city: .vilnius),
+            Showing(city: .kaunas),
+            Showing(city: .klaipeda),
+            Showing(city: .siauliai),
+            Showing(city: .siauliai, venue: "Apollo"),
+            Showing(city: .panevezys)
+        ]
+
+        Movie.create(showings: showings, on: sut.db)
+
+        try sut.test(.GET, "siauliai", afterResponse:  { res in
+            XCTAssertEqual(res.status, .ok)
+
+            let service = try res.content.decode([ShowingService].self)
+            let showings = service.flatMap { $0.showings }
+
+            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings[0].city, .siauliai)
         })
     }
 
