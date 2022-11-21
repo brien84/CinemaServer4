@@ -32,8 +32,8 @@ func routes(_ app: Application) throws {
         return req.fileio.streamFile(at: path)
     }
 
-    app.get("update") { req -> EventLoopFuture<Double> in
-        req.eventLoop.makeSucceededFuture(Config.minimumSupportediOSClientVersion)
+    app.get("update") { req -> EventLoopFuture<String> in
+        req.eventLoop.makeSucceededFuture(Config.minimumSupportedClientVersion)
     }
 
     func queryMovies(in city: City, on req: Request) -> EventLoopFuture<[Movie]> {

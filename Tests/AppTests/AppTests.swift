@@ -145,9 +145,9 @@ final class AppTests: XCTestCase {
         try sut.test(.GET, "update", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
-            let version = try res.content.decode(Double.self)
+            let version = try res.content.decode(String.self)
 
-            XCTAssertEqual(version, Config.minimumSupportediOSClientVersion)
+            XCTAssertEqual(version, Config.minimumSupportedClientVersion)
         })
     }
 
