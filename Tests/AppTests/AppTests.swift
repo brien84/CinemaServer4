@@ -161,7 +161,7 @@ final class AppTests: XCTestCase {
         })
     }
 
-    // MARK: - Legacy routes tests
+    // MARK: - Legacy route tests
 
     func testLegacyAllRoute() throws {
         let showings = [
