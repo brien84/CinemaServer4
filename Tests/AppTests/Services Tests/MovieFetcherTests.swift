@@ -23,31 +23,37 @@ final class MovieFetcherTests: XCTestCase {
     }
 
     func testFetchingDoesNotThrowWhenAllServicesSucceed() throws {
-        sut = MovieFetcher(apollo: TestAPI(true), cinamon: TestAPI(true), forum: TestAPI(true), multikino: TestAPI(true))
+        sut = MovieFetcher(apollo: TestAPI(true), atlantis: TestAPI(true), cinamon: TestAPI(true), forum: TestAPI(true), multikino: TestAPI(true))
 
         try sut.fetch(on: app.db).wait()
     }
 
     func testFetchingThrowsWhenApolloFails() throws {
-        sut = MovieFetcher(apollo: TestAPI(true), cinamon: TestAPI(false), forum: TestAPI(true), multikino: TestAPI(true))
+        sut = MovieFetcher(apollo: TestAPI(false), atlantis: TestAPI(true), cinamon: TestAPI(true), forum: TestAPI(true), multikino: TestAPI(true))
+
+        XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
+    }
+
+    func testFetchingThrowsWhenAtlantisFails() throws {
+        sut = MovieFetcher(apollo: TestAPI(true), atlantis: TestAPI(false), cinamon: TestAPI(true), forum: TestAPI(true), multikino: TestAPI(true))
 
         XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
 
     func testFetchingThrowsWhenCinamonFails() throws {
-        sut = MovieFetcher(apollo: TestAPI(true), cinamon: TestAPI(false), forum: TestAPI(true), multikino: TestAPI(true))
+        sut = MovieFetcher(apollo: TestAPI(true), atlantis: TestAPI(true), cinamon: TestAPI(false), forum: TestAPI(true), multikino: TestAPI(true))
 
         XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
 
     func testFetchingThrowsWhenForumFails() throws {
-        sut = MovieFetcher(apollo: TestAPI(true), cinamon: TestAPI(true), forum: TestAPI(false), multikino: TestAPI(true))
+        sut = MovieFetcher(apollo: TestAPI(true), atlantis: TestAPI(true), cinamon: TestAPI(true), forum: TestAPI(false), multikino: TestAPI(true))
 
         XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
 
     func testFetchingThrowsWhenMultikinoFails() throws {
-        sut = MovieFetcher(apollo: TestAPI(true), cinamon: TestAPI(true), forum: TestAPI(true), multikino: TestAPI(false))
+        sut = MovieFetcher(apollo: TestAPI(true), atlantis: TestAPI(true), cinamon: TestAPI(true), forum: TestAPI(true), multikino: TestAPI(false))
 
         XCTAssertThrowsError(try sut.fetch(on: app.db).wait())
     }
