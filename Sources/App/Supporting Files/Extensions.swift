@@ -29,6 +29,12 @@ extension String {
             return date
         }
 
+        // Atlantis format: 2019-09-26 17:30
+        dateFormatter.dateFormat = "yyyy'-'MM'-'dd' 'HH':'mm"
+        if let date = dateFormatter.date(from: self) {
+            return date
+        }
+
         return nil
     }
 
