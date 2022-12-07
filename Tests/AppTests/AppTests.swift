@@ -15,7 +15,7 @@ final class AppTests: XCTestCase {
     func testAllRoute() throws {
         let showings = [
             Showing(city: .vilnius),
-            Showing(city: .vilnius, venue: "Apollo")
+            Showing(city: .vilnius, venue: .apollo)
         ]
 
         Movie.create(showings: showings, on: sut.db)
@@ -35,7 +35,7 @@ final class AppTests: XCTestCase {
     func testVilniusRoute() throws {
         let showings = [
             Showing(city: .vilnius),
-            Showing(city: .vilnius, venue: "Apollo"),
+            Showing(city: .vilnius, venue: .apollo),
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
@@ -58,7 +58,7 @@ final class AppTests: XCTestCase {
         let showings = [
             Showing(city: .vilnius),
             Showing(city: .kaunas),
-            Showing(city: .kaunas, venue: "Apollo"),
+            Showing(city: .kaunas, venue: .apollo),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
             Showing(city: .panevezys)
@@ -81,7 +81,7 @@ final class AppTests: XCTestCase {
             Showing(city: .vilnius),
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
-            Showing(city: .klaipeda, venue: "Apollo"),
+            Showing(city: .klaipeda, venue: .apollo),
             Showing(city: .siauliai),
             Showing(city: .panevezys)
         ]
@@ -104,7 +104,7 @@ final class AppTests: XCTestCase {
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
-            Showing(city: .siauliai, venue: "Apollo"),
+            Showing(city: .siauliai, venue: .apollo),
             Showing(city: .panevezys)
         ]
 
@@ -128,7 +128,7 @@ final class AppTests: XCTestCase {
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
             Showing(city: .panevezys),
-            Showing(city: .panevezys, venue: "Apollo"),
+            Showing(city: .panevezys, venue: .apollo),
         ]
 
         Movie.create(showings: showings, on: sut.db)
@@ -166,7 +166,7 @@ final class AppTests: XCTestCase {
     func testLegacyAllRoute() throws {
         let showings = [
             Showing(city: .vilnius),
-            Showing(city: .vilnius, venue: "Apollo")
+            Showing(city: .vilnius, venue: .apollo)
         ]
 
         Movie.create(showings: showings, on: sut.db)
@@ -186,7 +186,7 @@ final class AppTests: XCTestCase {
     func testLegacyVilniusRoute() throws {
         let showings = [
             Showing(city: .vilnius),
-            Showing(city: .vilnius, venue: "Apollo"),
+            Showing(city: .vilnius, venue: .apollo),
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
@@ -209,7 +209,7 @@ final class AppTests: XCTestCase {
         let showings = [
             Showing(city: .vilnius),
             Showing(city: .kaunas),
-            Showing(city: .kaunas, venue: "Apollo"),
+            Showing(city: .kaunas, venue: .apollo),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
             Showing(city: .panevezys)
@@ -232,7 +232,7 @@ final class AppTests: XCTestCase {
             Showing(city: .vilnius),
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
-            Showing(city: .klaipeda, venue: "Apollo"),
+            Showing(city: .klaipeda, venue: .apollo),
             Showing(city: .siauliai),
             Showing(city: .panevezys)
         ]
@@ -255,7 +255,7 @@ final class AppTests: XCTestCase {
             Showing(city: .kaunas),
             Showing(city: .klaipeda),
             Showing(city: .siauliai),
-            Showing(city: .siauliai, venue: "Apollo"),
+            Showing(city: .siauliai, venue: .apollo),
             Showing(city: .panevezys)
         ]
 

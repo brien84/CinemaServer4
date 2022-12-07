@@ -47,7 +47,7 @@ final class CinamonTests: XCTestCase {
 
         XCTAssertEqual(movies[0].showings[0].city, .kaunas)
         XCTAssertEqual(movies[0].showings[0].date, "2020-09-15 10:15:00".convertToDate())
-        XCTAssertEqual(movies[0].showings[0].venue, "Cinamon")
+        XCTAssertEqual(movies[0].showings[0].venue, .cinamon)
         XCTAssertEqual(movies[0].showings[0].is3D, true)
         XCTAssertEqual(movies[0].showings[0].url, "https://cinamonkino.com/mega/seat-plan/1855951372/lt")
     }

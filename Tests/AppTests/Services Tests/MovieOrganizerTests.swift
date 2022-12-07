@@ -139,7 +139,7 @@ final class MovieOrganizerTests: XCTestCase {
     }
 
     func testCleanup() throws {
-        let showing = Showing(city: .vilnius, date: Date(), venue: "", is3D: false, url: "")
+        let showing = Showing(city: .vilnius, date: Date(), venue: .forum, is3D: false, url: "")
 
         Movie.create(originalTitle: "Movie0", showings: [showing], on: app.db)
         Movie.create(originalTitle: "Movie1", showings: [], on: app.db)

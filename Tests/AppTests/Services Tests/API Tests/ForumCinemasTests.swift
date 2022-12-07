@@ -47,7 +47,7 @@ final class ForumCinemasTests: XCTestCase {
 
         XCTAssertEqual(movies[0].showings[0].city, .vilnius)
         XCTAssertEqual(movies[0].showings[0].date, "2020-09-26T21:00:00".convertToDate())
-        XCTAssertEqual(movies[0].showings[0].venue, "Forum Cinemas")
+        XCTAssertEqual(movies[0].showings[0].venue, .forum)
         XCTAssertEqual(movies[0].showings[0].is3D, true)
         XCTAssertEqual(movies[0].showings[0].url, "https://m.forumcinemas.lt/Websales/Show/790854/")
     }

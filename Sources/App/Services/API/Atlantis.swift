@@ -108,7 +108,7 @@ private extension Showing {
         self.init(
             city: .siauliai,
             date: date,
-            venue: "Atlantis",
+            venue: .atlantis,
             is3D: showing.title.contains("3D") || showing.originalTitle.contains("3D"),
             url: "https://www.atlantiscinemas.lt/\(showing.url)"
         )

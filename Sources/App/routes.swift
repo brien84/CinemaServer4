@@ -3,6 +3,14 @@ import Vapor
 
 func routes(_ app: Application) throws {
 
+    app.get("posters", ":fileName") { req -> Response in
+        let fileName = req.parameters.get("fileName")
+        let path = "\(DirectoryConfiguration.detect().publicDirectory)Posters/" + (fileName ?? "")
+        return req.fileio.streamFile(at: path)
+    }
+
+    // MARK: 1.2
+
     app.get("all_") { req -> EventLoopFuture<[Movie]> in
         Movie.query(on: req.db).with(\.$showings).all()
     }
@@ -27,6 +35,12 @@ func routes(_ app: Application) throws {
         queryMovies(in: .panevezys, on: req)
     }
 
+    app.get("update") { req -> EventLoopFuture<String> in
+        req.eventLoop.makeSucceededFuture(Config.minimumSupportedClientVersion)
+    }
+
+    // MARK: 1.1.2
+
     app.get("all") { req -> EventLoopFuture<[Movie]> in
         queryAllLegacyMovies(on: req)
     }
@@ -47,16 +61,6 @@ func routes(_ app: Application) throws {
         queryLegacyMovies(in: .siauliai, on: req)
     }
 
-    app.get("posters", ":fileName") { req -> Response in
-        let fileName = req.parameters.get("fileName")
-        let path = "\(DirectoryConfiguration.detect().publicDirectory)Posters/" + (fileName ?? "")
-        return req.fileio.streamFile(at: path)
-    }
-
-    app.get("update") { req -> EventLoopFuture<String> in
-        req.eventLoop.makeSucceededFuture(Config.minimumSupportedClientVersion)
-    }
-
     func queryMovies(in city: City, on req: Request) -> EventLoopFuture<[Movie]> {
         Movie.query(on: req.db).with(\.$showings).all().map { movies -> [Movie] in
             movies.forEach { movie in
@@ -73,7 +77,7 @@ func routes(_ app: Application) throws {
     func queryAllLegacyMovies(on req: Request) -> EventLoopFuture<[Movie]> {
         Movie.query(on: req.db).with(\.$showings).all().map { movies -> [Movie] in
             movies.forEach { movie in
-                movie.$showings.value = movie.$showings.value?.filter({ $0.venue != "Apollo" })
+                movie.$showings.value = movie.$showings.value?.filter({ $0.venue != .apollo })
             }
 
             return movies.filter { $0.showings.count > 0 }

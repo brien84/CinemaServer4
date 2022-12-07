@@ -44,7 +44,7 @@ final class AtlantisTests: XCTestCase {
 
         XCTAssertEqual(movies[0].showings[0].city, .siauliai)
         XCTAssertEqual(movies[0].showings[0].date, "2022-12-06 18:50".convertToDate())
-        XCTAssertEqual(movies[0].showings[0].venue, "Atlantis")
+        XCTAssertEqual(movies[0].showings[0].venue, .atlantis)
         XCTAssertEqual(movies[0].showings[0].is3D, true)
         XCTAssertEqual(movies[0].showings[0].url, "https://www.atlantiscinemas.lt/velnio-sviesa?sdate=1670284800")
     }

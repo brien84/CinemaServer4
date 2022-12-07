@@ -128,7 +128,7 @@ private extension Showing {
         self.init(
             city: city,
             date: date,
-            venue: "Forum Cinemas",
+            venue: .forum,
             is3D: showing.is3D == "3D",
             url: url.sanitizeHTTP()
         )

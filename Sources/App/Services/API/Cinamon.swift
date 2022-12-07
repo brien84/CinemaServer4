@@ -93,7 +93,7 @@ private extension Showing {
         self.init(
             city: .kaunas,
             date: date,
-            venue: "Cinamon",
+            venue: .cinamon,
             is3D: is3D,
             url: "https://cinamonkino.com/mega/seat-plan/\(pid)/lt"
         )

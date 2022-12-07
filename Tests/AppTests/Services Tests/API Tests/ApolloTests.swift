@@ -48,7 +48,7 @@ final class ApolloTests: XCTestCase {
         XCTAssertEqual(movies[0].showings.filter { $0.city == .panevezys }.count, 1)
         XCTAssertEqual(movies[0].showings.filter { $0.city == .vilnius }.count, 1)
         XCTAssertEqual(movies[0].showings[0].date, "2022-11-16T10:30:00".convertToDate())
-        XCTAssertEqual(movies[0].showings[0].venue, "Apollo")
+        XCTAssertEqual(movies[0].showings[0].venue, .apollo)
         XCTAssertEqual(movies[0].showings[0].is3D, true)
         XCTAssertEqual(movies[0].showings[0].url, "https://www.apollokinas.lt/websales/show/305193")
     }

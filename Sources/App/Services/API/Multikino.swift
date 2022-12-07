@@ -95,7 +95,7 @@ private extension Showing {
         self.init(
             city: .vilnius,
             date: date,
-            venue: "Multikino",
+            venue: .multikino,
             is3D: time.screenType == "3D",
             url: "https://multikino.lt\(url)"
         )

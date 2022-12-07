@@ -47,7 +47,7 @@ final class MultikinoTests: XCTestCase {
 
         XCTAssertEqual(movies[0].showings[0].city, .vilnius)
         XCTAssertEqual(movies[0].showings[0].date, "2020-10-01T21:45:00".convertToDate())
-        XCTAssertEqual(movies[0].showings[0].venue, "Multikino")
+        XCTAssertEqual(movies[0].showings[0].venue, .multikino)
         XCTAssertEqual(movies[0].showings[0].is3D, true)
         XCTAssertEqual(movies[0].showings[0].url, "https://multikino.lt/pirkti-bilieta/santrauka/1001/3015/139426")
     }

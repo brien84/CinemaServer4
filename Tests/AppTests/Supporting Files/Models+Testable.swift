@@ -33,7 +33,7 @@ extension Movie {
         } else {
             // Adds one `Showing`, so movies do not get deleted, while
             // executing `cleanup()` method during `MovieOrganizer` tests.
-            let showings = [Showing(city: .vilnius, date: Date(), venue: "", is3D: true, url: "")]
+            let showings = [Showing(city: .vilnius, date: Date(), venue: .forum, is3D: true, url: "")]
             
             try! movie.$showings.create(showings, on: db).wait()
         }
@@ -63,7 +63,7 @@ extension MovieProfile {
 extension Showing {
     convenience init(
         city: City = .vilnius, date: Date = Date(),
-        venue: String = "", is3D: Bool = false, url: String = ""
+        venue: Venue = .forum, is3D: Bool = false, url: String = ""
     ) {
         self.init()
         self.city = city
