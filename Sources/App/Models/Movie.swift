@@ -42,9 +42,14 @@ final class Movie: Model, Content {
     var showings: [Showing]
 
     convenience init(
-        title: String?, originalTitle: String?, year: String?,
-        duration: String?, ageRating: String?, genres: [String]?,
-        plot: String? = nil, poster: String? = nil
+        title: String?,
+        originalTitle: String?,
+        year: String?,
+        duration: String?,
+        ageRating: String?,
+        genres: [String]?,
+        plot: String? = nil,
+        poster: String? = nil
     ) {
         self.init()
         self.title = title
