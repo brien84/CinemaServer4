@@ -21,7 +21,7 @@ final class Showing: Model, Content {
     var date: Date
 
     @Field(key: "venue")
-    var venue: String
+    var venue: Venue
 
     @Field(key: "is_3D")
     var is3D: Bool
@@ -32,7 +32,7 @@ final class Showing: Model, Content {
     @Parent(key: "movie_id")
     var movie: Movie
 
-    convenience init(city: City, date: Date, venue: String, is3D: Bool, url: String) {
+    convenience init(city: City, date: Date, venue: Venue, is3D: Bool, url: String) {
         self.init()
         self.city = city
         self.date = date
