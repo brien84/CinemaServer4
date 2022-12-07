@@ -53,8 +53,8 @@ extension Application {
 
 // MARK: - Decodable Helpers
 
-extension Movie {
-    fileprivate convenience init(from movie: APIService.Movie) {
+private extension Movie {
+    convenience init(from movie: APIService.Movie) {
         // `2020-01-01` -> `2020`
         let year: String? = {
             guard let substring = movie.year?.split(separator: "-").first else { return nil }
@@ -84,8 +84,8 @@ extension Movie {
     }
 }
 
-extension Showing {
-    fileprivate convenience init?(from showing: APIService.Movie.Showing) {
+private extension Showing {
+    convenience init?(from showing: APIService.Movie.Showing) {
         guard let date = showing.showtime?.convertToDate() else { return nil }
         guard let is3D = showing.is3D else { return nil }
         guard let pid = showing.pid else { return nil }

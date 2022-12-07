@@ -72,8 +72,8 @@ extension Application {
 
 // MARK: - Decodable Helpers
 
-extension Movie {
-    fileprivate convenience init(from showing: APIService.Showing) {
+private extension Movie {
+    convenience init(from showing: APIService.Showing) {
         let year: String? = {
             guard let year = showing.year else { return nil }
             return String(year)
@@ -109,8 +109,8 @@ extension Movie {
     }
 }
 
-extension Showing {
-    fileprivate convenience init?(from showing: APIService.Showing) {
+private extension Showing {
+    convenience init?(from showing: APIService.Showing) {
         guard let city = showing.area?.city else { return nil }
         guard let date = showing.date?.convertToDate() else { return nil }
         guard let url = showing.url else { return nil }
