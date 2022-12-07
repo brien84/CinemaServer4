@@ -291,18 +291,20 @@ final class MovieValidatorTests: XCTestCase {
 
     func testReporterPicksForumCinemasShowingURL() throws {
         let apolloURL = "https://www.apollokinas.lt/websales/show/305141"
+        let atlantisURL = "https://www.atlantiscinemas.lt/velnio-sviesa?sdate=1670284800"
         let cinamonURL = "https://cinamonkino.com/mega/seat-plan/190310353/lt"
         let forumURL = "https://m.forumcinemas.lt/Websales/Show/797892/"
         let multikinoURL = "https://multikino.lt/pirkti-bilieta/santrauka/1001/3078/140713"
 
         let apolloShowing = Showing(city: .panevezys, url: apolloURL)
+        let atlantisShowing = Showing(city: .siauliai, url: atlantisURL)
         let cinamonShowing = Showing(city: .vilnius, url: cinamonURL)
         let forumShowing = Showing(city: .vilnius, url: forumURL)
         let multiShowing = Showing(city: .vilnius, url: multikinoURL)
 
         Movie.create(
             originalTitle: "test",
-            showings: [apolloShowing, cinamonShowing, forumShowing, multiShowing],
+            showings: [apolloShowing, atlantisShowing, cinamonShowing, forumShowing, multiShowing],
             on: app.db
         )
 
