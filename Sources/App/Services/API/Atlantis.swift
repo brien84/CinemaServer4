@@ -17,7 +17,35 @@ struct Atlantis: MovieAPI {
     }
 
     func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
-        db.eventLoop.makeSucceededVoidFuture()
+        client.get(.api).flatMap { res in
+            do {
+                let body = String(buffer: res.body ?? ByteBuffer())
+                let showings = try parseShowings(from: body)
+                return createMovies(from: showings, on: db)
+            } catch {
+                return client.eventLoop.makeFailedFuture(error)
+            }
+        }
+    }
+
+    private func createMovies(from APIShowings: [APIParser.Showing], on db: Database) -> EventLoopFuture<Void> {
+        var APIShowings = APIShowings
+
+        if let APIShowing = APIShowings.first {
+            let sameTitleShowings = APIShowings.filter { $0.title == APIShowing.title }
+            APIShowings = APIShowings.filter { $0.title != APIShowing.title }
+
+            let movie = Movie(from: APIShowing)
+            let showings = sameTitleShowings.compactMap { Showing(from: $0) }
+
+            return movie.create(on: db).flatMap {
+                movie.$showings.create(showings, on: db).flatMap {
+                    createMovies(from: APIShowings, on: db)
+                }
+            }
+        } else {
+            return db.eventLoop.makeSucceededVoidFuture()
+        }
     }
 
     private func parseShowings(from string: String) throws -> [APIParser.Showing] {
