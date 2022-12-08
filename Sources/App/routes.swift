@@ -1,15 +1,140 @@
 import Fluent
 import Vapor
 
-func routes(_ app: Application) throws {
+struct Route {
+    enum Movie: CaseIterable {
+        case all
+        case vilnius
+        case kaunas
+        case klaipeda
+        case siauliai
+        case panevezys
 
-    app.get("posters", ":fileName") { req -> Response in
+        var path: PathComponent {
+            switch self {
+            case .all:
+                return PathComponent.constant("all")
+            case .vilnius:
+                return PathComponent.constant("vilnius")
+            case .kaunas:
+                return PathComponent.constant("kaunas")
+            case .klaipeda:
+                return PathComponent.constant("klaipeda")
+            case .siauliai:
+                return PathComponent.constant("siauliai")
+            case .panevezys:
+                return PathComponent.constant("panevezys")
+            }
+        }
+    }
+
+    static let posters = PathComponent.constant("posters")
+}
+
+enum SupportedVersion: String {
+    case v1_3 = "1.3"
+
+    static let error = Abort(.custom(code: 469, reasonPhrase: "Version is not supported!"))
+}
+
+func routes(_ app: Application) throws {
+    
+    app.get(Route.posters, ":fileName") { req -> Response in
         let fileName = req.parameters.get("fileName")
         let path = "\(DirectoryConfiguration.detect().publicDirectory)Posters/" + (fileName ?? "")
         return req.fileio.streamFile(at: path)
     }
 
-    // MARK: v1.2
+    func getVersion(from req: Request) throws -> SupportedVersion {
+        guard
+            let param = req.parameters.get("version"),
+            let version = SupportedVersion(rawValue: param)
+        else {
+            throw SupportedVersion.error
+        }
+
+        return version
+    }
+
+    app.get(Route.Movie.all.path, ":version") { req in
+        let version = try getVersion(from: req)
+
+        switch version {
+        case .v1_3:
+            return queryMovies(
+                in: [.vilnius, .kaunas, .klaipeda, .siauliai, .panevezys],
+                at: [.apollo, .atlantis, .cinamon, .forum, .multikino],
+                on: req
+            )
+        }
+    }
+
+    app.get(Route.Movie.vilnius.path, ":version") { req in
+        let version = try getVersion(from: req)
+
+        switch version {
+        case .v1_3:
+            return queryMovies(
+                in: [.vilnius],
+                at: [.apollo, .forum, .multikino],
+                on: req
+            )
+        }
+    }
+
+    app.get(Route.Movie.kaunas.path, ":version") { req in
+        let version = try getVersion(from: req)
+
+        switch version {
+        case .v1_3:
+            return queryMovies(
+                in: [.kaunas],
+                at: [.cinamon, .forum],
+                on: req
+            )
+        }
+    }
+
+    app.get(Route.Movie.klaipeda.path, ":version") { req in
+        let version = try getVersion(from: req)
+
+        switch version {
+        case .v1_3:
+            return queryMovies(
+                in: [.klaipeda],
+                at: [.forum],
+                on: req
+            )
+        }
+    }
+
+    app.get(Route.Movie.siauliai.path, ":version") { req in
+        let version = try getVersion(from: req)
+
+        switch version {
+        case .v1_3:
+            return queryMovies(
+                in: [.siauliai],
+                at: [.atlantis, .forum],
+                on: req
+            )
+        }
+    }
+
+    app.get(Route.Movie.panevezys.path, ":version") { req in
+        let version = try getVersion(from: req)
+
+        switch version {
+        case .v1_3:
+            return queryMovies(
+                in: [.panevezys],
+                at: [.apollo],
+                on: req
+            )
+        }
+    }
+
+    // MARK: v1.2 - Deprecated
 
     app.get("all_") { req -> EventLoopFuture<[Movie]> in
         queryMovies(
