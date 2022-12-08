@@ -184,8 +184,8 @@ func routes(_ app: Application) throws {
         )
     }
 
-    app.get("update") { req -> EventLoopFuture<String> in
-        req.eventLoop.makeSucceededFuture(Config.minimumSupportedClientVersion)
+    app.get("update") { req in
+        "1.1.2"
     }
 
     // MARK: v1.1.2 - Deprecated

@@ -227,7 +227,7 @@ final class AppTests: XCTestCase {
 
             let version = try res.content.decode(String.self)
 
-            XCTAssertEqual(version, Config.minimumSupportedClientVersion)
+            XCTAssertEqual(version, "1.1.2")
         })
     }
 

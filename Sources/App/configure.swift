@@ -51,6 +51,4 @@ struct Config {
 
     static let emailAddress: String? = nil
     static let sendGridKey: String? = nil
-
-    static let minimumSupportedClientVersion: String = "1.1.2"
 }
