@@ -12,7 +12,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0-beta"),
         .package(url: "https://github.com/vapor/fluent-sqlite-driver.git", from: "4.0.0-beta"),
         .package(url: "https://github.com/vapor-community/sendgrid.git", from: "4.0.0"),
-        .package(url: "https://github.com/pointfreeco/swift-parsing.git", from: "0.10.0")
+        .package(url: "https://github.com/pointfreeco/swift-parsing.git", from: "0.11.0")
     ],
     targets: [
         .target(
