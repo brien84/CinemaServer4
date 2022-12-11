@@ -1,36 +1,6 @@
 import Fluent
 import Vapor
 
-struct Route {
-    enum Movie: CaseIterable {
-        case all
-        case vilnius
-        case kaunas
-        case klaipeda
-        case siauliai
-        case panevezys
-
-        var path: PathComponent {
-            switch self {
-            case .all:
-                return PathComponent.constant("all")
-            case .vilnius:
-                return PathComponent.constant("vilnius")
-            case .kaunas:
-                return PathComponent.constant("kaunas")
-            case .klaipeda:
-                return PathComponent.constant("klaipeda")
-            case .siauliai:
-                return PathComponent.constant("siauliai")
-            case .panevezys:
-                return PathComponent.constant("panevezys")
-            }
-        }
-    }
-
-    static let posters = PathComponent.constant("posters")
-}
-
 enum SupportedVersion: String {
     case v1_3 = "1.3"
 
@@ -38,8 +8,8 @@ enum SupportedVersion: String {
 }
 
 func routes(_ app: Application) throws {
-    
-    app.get(Route.posters, ":fileName") { req -> Response in
+
+    app.get("posters", ":fileName") { req -> Response in
         let fileName = req.parameters.get("fileName")
         let path = "\(DirectoryConfiguration.detect().publicDirectory)Posters/" + (fileName ?? "")
         return req.fileio.streamFile(at: path)
@@ -56,79 +26,27 @@ func routes(_ app: Application) throws {
         return version
     }
 
-    app.get(Route.Movie.all.path, ":version") { req in
-        let version = try getVersion(from: req)
-
-        switch version {
-        case .v1_3:
-            return queryMovies(
-                in: [.vilnius, .kaunas, .klaipeda, .siauliai, .panevezys],
-                at: [.apollo, .atlantis, .cinamon, .forum, .multikino],
-                on: req
-            )
+    app.get(":version", ":city", ":venues") { req in
+        guard
+            let versionParam = req.parameters.get("version"),
+            let cityParam = req.parameters.get("city"),
+            let venueParams = req.parameters.get("venues")?.split(separator: ",").map({ String($0) })
+        else {
+            throw Abort(.badRequest)
         }
-    }
 
-    app.get(Route.Movie.vilnius.path, ":version") { req in
-        let version = try getVersion(from: req)
-
-        switch version {
-        case .v1_3:
-            return queryMovies(
-                in: [.vilnius],
-                at: [.apollo, .forum, .multikino],
-                on: req
-            )
+        guard let version = SupportedVersion(rawValue: versionParam) else { throw SupportedVersion.error }
+        guard let city = City(rawValue: cityParam) else { throw Abort(.badRequest) }
+        let venues = try venueParams.map {
+            guard let venue = Venue(rawValue: $0) else { throw Abort(.badRequest) }
+            return venue
         }
-    }
-
-    app.get(Route.Movie.kaunas.path, ":version") { req in
-        let version = try getVersion(from: req)
 
         switch version {
         case .v1_3:
             return queryMovies(
-                in: [.kaunas],
-                at: [.cinamon, .forum],
-                on: req
-            )
-        }
-    }
-
-    app.get(Route.Movie.klaipeda.path, ":version") { req in
-        let version = try getVersion(from: req)
-
-        switch version {
-        case .v1_3:
-            return queryMovies(
-                in: [.klaipeda],
-                at: [.forum],
-                on: req
-            )
-        }
-    }
-
-    app.get(Route.Movie.siauliai.path, ":version") { req in
-        let version = try getVersion(from: req)
-
-        switch version {
-        case .v1_3:
-            return queryMovies(
-                in: [.siauliai],
-                at: [.atlantis, .forum],
-                on: req
-            )
-        }
-    }
-
-    app.get(Route.Movie.panevezys.path, ":version") { req in
-        let version = try getVersion(from: req)
-
-        switch version {
-        case .v1_3:
-            return queryMovies(
-                in: [.panevezys],
-                at: [.apollo],
+                in: [city],
+                at: venues,
                 on: req
             )
         }
