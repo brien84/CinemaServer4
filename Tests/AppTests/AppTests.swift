@@ -13,31 +13,34 @@ final class AppTests: XCTestCase {
     }
 
     func testPostersRoute() throws {
-        try sut.test(.GET, Route.posters.description + "/example.png", afterResponse: { res in
+        try sut.test(.GET, "posters" + "/example.png", afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
             XCTAssertEqual(res.content.contentType, HTTPMediaType.png)
         })
     }
 
-    func testAllRoute() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, Route.Movie.all.path.description + "/" + SupportedVersion.v1_3.rawValue, afterResponse: { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 9)
+    func testUnknownVersionParameterThrowsVersionNotSupportedError() throws {
+        try sut.test(.GET, constructPath(nil, .vilnius, [.forum]), afterResponse: { res in
+            XCTAssertEqual(res.status, SupportedVersion.error.status)
         })
     }
 
-    func testVilniusRoute() throws {
+    func testUnknownCityParameterThrowsBadRequestError() throws {
+        try sut.test(.GET, constructPath(.v1_3, nil, [.forum]), afterResponse: { res in
+            XCTAssertEqual(res.status, HTTPResponseStatus.badRequest)
+        })
+    }
+
+    func testUnknownVenuesParameterThrowsBadRequestError() throws {
+        try sut.test(.GET, constructPath(.v1_3, .vilnius, nil), afterResponse: { res in
+            XCTAssertEqual(res.status, HTTPResponseStatus.badRequest)
+        })
+    }
+
+    func testQueryReturnsShowingsOnlyFromSpecifiedCity() throws {
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, Route.Movie.vilnius.path.description + "/" + SupportedVersion.v1_3.rawValue, afterResponse: { res in
+        try sut.test(.GET, constructPath(.v1_3, .vilnius, [.apollo, .forum, .multikino]), afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
 
             let movies = try res.content.decode([Movie].self)
@@ -50,26 +53,10 @@ final class AppTests: XCTestCase {
         })
     }
 
-    func testKaunasRoute() throws {
+    func testQueryReturnsShowingsOnlyFromSpecifiedVenues() throws {
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, Route.Movie.kaunas.path.description + "/" + SupportedVersion.v1_3.rawValue, afterResponse: { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 2)
-            XCTAssertEqual(showings.filter({ $0.city == .kaunas }).count, 2)
-        })
-    }
-
-    func testKlaipedaRoute() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, Route.Movie.klaipeda.path.description + "/" + SupportedVersion.v1_3.rawValue, afterResponse: { res in
+        try sut.test(.GET, constructPath(.v1_3, .vilnius, [.apollo]), afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
 
             let movies = try res.content.decode([Movie].self)
@@ -78,48 +65,8 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings.filter({ $0.city == .klaipeda }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .apollo }).count, 1)
         })
-    }
-
-    func testSiauliaiRoute() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, Route.Movie.siauliai.path.description + "/" + SupportedVersion.v1_3.rawValue, afterResponse: { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 2)
-            XCTAssertEqual(showings.filter({ $0.city == .siauliai }).count, 2)
-        })
-    }
-
-    func testPanevezysRoute() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, Route.Movie.panevezys.path.description + "/" + SupportedVersion.v1_3.rawValue, afterResponse: { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings.filter({ $0.city == .panevezys }).count, 1)
-        })
-    }
-
-    func testRoutesWithUnknownVersionParameterReturnErrorStatus() throws {
-        try Route.Movie.allCases.forEach {
-            try sut.test(.GET, ("\($0.path)/TESTFAIL"), afterResponse: { res in
-                XCTAssertEqual(res.status, SupportedVersion.error.status)
-            })
-        }
     }
 
     // MARK: v1.2 - Deprecated
@@ -318,6 +265,16 @@ final class AppTests: XCTestCase {
     }
 
     // MARK: Test Helpers
+
+    func constructPath(_ version: SupportedVersion?, _ city: City?, _ venues: [Venue]?) -> String {
+        """
+        \(version?.rawValue ?? "1.0")/
+        \(city?.rawValue ?? "Kupiškis")/
+        \(venues?.map { String($0.rawValue) }.joined(separator: ",") ?? "forum;multi")
+        """
+        .replacingOccurrences(of: "\n", with: "")
+        .replacingOccurrences(of: " ", with: "%20")
+    }
 
     let showings = [
         Showing(city: .vilnius, venue: .apollo),
