@@ -153,7 +153,18 @@ private struct AreaService: Decodable {
         let name: String
 
         var city: City? {
-            City(rawValue: name)
+            switch name {
+            case "Vilnius":
+                return .vilnius
+            case "Kaunas":
+                return .kaunas
+            case "Klaipėda":
+                return .klaipeda
+            case "Šiauliai":
+                return .siauliai
+            default:
+                return nil
+            }
         }
 
         var url: URI {
