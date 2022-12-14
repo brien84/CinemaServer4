@@ -19,20 +19,14 @@ final class AppTests: XCTestCase {
         })
     }
 
-    func testUnknownVersionParameterThrowsVersionNotSupportedError() throws {
-        try sut.test(.GET, constructPath(nil, .vilnius, [.forum]), afterResponse: { res in
-            XCTAssertEqual(res.status, SupportedVersion.error.status)
-        })
-    }
-
     func testUnknownCityParameterThrowsBadRequestError() throws {
-        try sut.test(.GET, constructPath(.v1_3, nil, [.forum]), afterResponse: { res in
+        try sut.test(.GET, constructPath(nil, [.forum]), afterResponse: { res in
             XCTAssertEqual(res.status, HTTPResponseStatus.badRequest)
         })
     }
 
     func testUnknownVenuesParameterThrowsBadRequestError() throws {
-        try sut.test(.GET, constructPath(.v1_3, .vilnius, nil), afterResponse: { res in
+        try sut.test(.GET, constructPath(.vilnius, nil), afterResponse: { res in
             XCTAssertEqual(res.status, HTTPResponseStatus.badRequest)
         })
     }
@@ -40,7 +34,7 @@ final class AppTests: XCTestCase {
     func testQueryReturnsShowingsOnlyFromSpecifiedCity() throws {
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, constructPath(.v1_3, .vilnius, [.apollo, .forum, .multikino]), afterResponse: { res in
+        try sut.test(.GET, constructPath(.vilnius, [.apollo, .forum, .multikino]), afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
 
             let movies = try res.content.decode([Movie].self)
@@ -56,7 +50,7 @@ final class AppTests: XCTestCase {
     func testQueryReturnsShowingsOnlyFromSpecifiedVenues() throws {
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, constructPath(.v1_3, .vilnius, [.apollo]), afterResponse: { res in
+        try sut.test(.GET, constructPath(.vilnius, [.apollo]), afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
 
             let movies = try res.content.decode([Movie].self)
@@ -266,9 +260,8 @@ final class AppTests: XCTestCase {
 
     // MARK: Test Helpers
 
-    func constructPath(_ version: SupportedVersion?, _ city: City?, _ venues: [Venue]?) -> String {
+    func constructPath(_ city: City?, _ venues: [Venue]?) -> String {
         """
-        \(version?.rawValue ?? "1.0")/
         \(city?.rawValue ?? "Kupiškis")/
         \(venues?.map { String($0.rawValue) }.joined(separator: ",") ?? "forum;multi")
         """
