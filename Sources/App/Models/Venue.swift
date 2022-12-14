@@ -8,9 +8,16 @@
 import Foundation
 
 enum Venue: String, Codable {
-    case apollo = "Apollo"
-    case atlantis = "Atlantis"
-    case cinamon = "Cinamon"
-    case forum = "Forum Cinemas"
-    case multikino = "Multikino"
+    case apollo
+    case atlantis
+    case cinamon
+    case forum
+    case multikino
+
+    // MARK: - Deprecated
+
+    case apollo_ = "Apollo"
+    case cinamon_ = "Cinamon"
+    case forum_ = "Forum Cinemas"
+    case multikino_  = "Multikino"
 }
