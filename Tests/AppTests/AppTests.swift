@@ -77,7 +77,16 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 8)
+            XCTAssertEqual(showings.filter({ $0.city == .vilnius }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .kaunas }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .klaipeda }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .siauliai }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .panevezys }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.venue == .apollo }).count, 0)
             XCTAssertEqual(showings.filter({ $0.venue == .atlantis }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.venue == .cinamon }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.venue == .multikino }).count, 0)
         })
     }
 
@@ -93,7 +102,10 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 3)
-            XCTAssertEqual(showings.filter({ $0.city == .vilnius }).count, 3)
+            XCTAssertEqual(showings.filter({ $0.city == .vilnius_ }).count, 3)
+            XCTAssertEqual(showings.filter({ $0.venue == .apollo_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .multikino_ }).count, 1)
         })
     }
 
@@ -109,7 +121,9 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 2)
-            XCTAssertEqual(showings.filter({ $0.city != .kaunas }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .kaunas_ }).count, 2)
+            XCTAssertEqual(showings.filter({ $0.venue == .cinamon_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
         })
     }
 
@@ -125,7 +139,8 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings.filter({ $0.city == .klaipeda }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.city == .klaipeda_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
         })
     }
 
@@ -141,8 +156,9 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.filter({ $0.city == .siauliai_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
             XCTAssertEqual(showings.filter({ $0.venue == .atlantis }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.city == .siauliai }).count, 1)
         })
     }
 
@@ -158,7 +174,8 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings.filter({ $0.city == .panevezys }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.city == .panevezys_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .apollo_ }).count, 1)
         })
     }
 
@@ -186,9 +203,16 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 6)
+            XCTAssertEqual(showings.filter({ $0.city == .vilnius }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .kaunas }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .klaipeda }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .siauliai }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.city == .panevezys }).count, 0)
             XCTAssertEqual(showings.filter({ $0.venue == .apollo }).count, 0)
             XCTAssertEqual(showings.filter({ $0.venue == .atlantis }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.city == .panevezys }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.venue == .cinamon }).count, 0)
+            XCTAssertEqual(showings.filter({ $0.venue == .multikino }).count, 0)
         })
     }
 
@@ -204,8 +228,9 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 2)
-            XCTAssertEqual(showings.filter({ $0.venue == .apollo }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.city == .vilnius }).count, 2)
+            XCTAssertEqual(showings.filter({ $0.city == .vilnius_ }).count, 2)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .multikino_ }).count, 1)
         })
     }
 
@@ -221,7 +246,9 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 2)
-            XCTAssertEqual(showings.filter({ $0.city == .kaunas }).count, 2)
+            XCTAssertEqual(showings.filter({ $0.city == .kaunas_ }).count, 2)
+            XCTAssertEqual(showings.filter({ $0.venue == .cinamon_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
         })
     }
 
@@ -237,7 +264,8 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings.filter({ $0.city == .klaipeda }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.city == .klaipeda_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
         })
     }
 
@@ -253,8 +281,9 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.filter({ $0.city == .siauliai_ }).count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
             XCTAssertEqual(showings.filter({ $0.venue == .atlantis }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.city == .siauliai }).count, 1)
         })
     }
 
