@@ -15,41 +15,25 @@ func routes(_ app: Application) throws {
         return req.fileio.streamFile(at: path)
     }
 
-    func getVersion(from req: Request) throws -> SupportedVersion {
+    app.get(":city", ":venues") { req in
         guard
-            let param = req.parameters.get("version"),
-            let version = SupportedVersion(rawValue: param)
-        else {
-            throw SupportedVersion.error
-        }
-
-        return version
-    }
-
-    app.get(":version", ":city", ":venues") { req in
-        guard
-            let versionParam = req.parameters.get("version"),
             let cityParam = req.parameters.get("city"),
             let venueParams = req.parameters.get("venues")?.split(separator: ",").map({ String($0) })
         else {
             throw Abort(.badRequest)
         }
 
-        guard let version = SupportedVersion(rawValue: versionParam) else { throw SupportedVersion.error }
         guard let city = City(rawValue: cityParam) else { throw Abort(.badRequest) }
         let venues = try venueParams.map {
             guard let venue = Venue(rawValue: $0) else { throw Abort(.badRequest) }
             return venue
         }
 
-        switch version {
-        case .v1_3:
-            return queryMovies(
-                in: [city],
-                at: venues,
-                on: req
-            )
-        }
+        return queryMovies(
+            in: [city],
+            at: venues,
+            on: req
+        )
     }
 
     // MARK: v1.2 - Deprecated
