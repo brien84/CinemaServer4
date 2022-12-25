@@ -119,7 +119,7 @@ private extension Showing {
             city: city,
             date: date,
             venue: .apollo,
-            is3D: showing.is3D == "3D",
+            is3D: showing.is3D?.contains("3D") ?? false,
             url: url.sanitizeHTTP()
         )
     }
