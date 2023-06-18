@@ -54,18 +54,23 @@ extension String {
         return self.replacingOccurrences(of: "http://", with: "https://")
     }
 
-    /// Returns part of the `String` between the provided `String` parameters.
+    /// Returns a substring of the `String` between the provided `String` parameters.
     ///
-    /// If parameters are nil, the string is sliced from the beginning to the end.
-    func slice(from: String?, to: String?) -> String? {
+    /// If both `from` and `to` parameters are `nil`, the entire string is returned.
+    /// If only `from` parameter is provided, the substring is sliced from the specified `from` index to the end of the string.
+    /// If only `to` parameter is provided, the substring is sliced from the beginning of the string to the specified `to` index.
+    /// If both `from` and `to` parameters are provided, the substring is sliced from the `from` index to the `to` index.
+    /// `isSlicingBackwards` indicates whether slicing should be performed backwards.
+    func slice(from: String?, to: String?, isSlicingBackwards: Bool = false) -> String? {
         var rangeFrom = startIndex
         var rangeTo = endIndex
+        let options = isSlicingBackwards ? NSString.CompareOptions.backwards : []
 
-        if let from = from, let index = range(of: from)?.upperBound {
+        if let from = from, let index = range(of: from, options: options)?.upperBound {
             rangeFrom = index
         }
 
-        if let to = to, let index = range(of: to)?.lowerBound {
+        if let to = to, let index = range(of: to, options: options)?.lowerBound {
             rangeTo = index
         }
 

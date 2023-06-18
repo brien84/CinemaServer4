@@ -59,7 +59,7 @@ private extension Movie {
         let title = movie.title?.slice(from: nil, to: " (") ?? movie.title
 
         // `Title (Original Title)` -> `Original Title`
-        let originalTitle = movie.title?.slice(from: " (", to: ")") ?? movie.title
+        let originalTitle = movie.title?.slice(from: " (", to: ")", isSlicingBackwards: true) ?? movie.title
 
         // `01.01.2020` -> `2020`
         let year: String? = {
