@@ -23,12 +23,6 @@ final class TitleMapping: Model, Content {
 
     @Field(key: "new_original_title")
     var newOriginalTitle: String
-
-    convenience init(originalTitle: String, newOriginalTitle: String) {
-        self.init()
-        self.originalTitle = originalTitle
-        self.newOriginalTitle = newOriginalTitle
-    }
 }
 
 struct CreateTitleMappings: Migration {
