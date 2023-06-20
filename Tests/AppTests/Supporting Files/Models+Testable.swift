@@ -76,7 +76,9 @@ extension Showing {
 
 extension TitleMapping {
     static func create(originalTitle: String, newOriginalTitle: String, on db: Database) {
-        let mapping = TitleMapping(originalTitle: originalTitle, newOriginalTitle: newOriginalTitle)
+        let mapping = TitleMapping()
+        mapping.originalTitle = originalTitle
+        mapping.newOriginalTitle = newOriginalTitle
 
         try! mapping.create(on: db).wait()
     }
