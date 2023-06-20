@@ -44,6 +44,7 @@ private func databaseConfiguration(_ app: Application) {
     app.migrations.add(CreateShowings())
     app.migrations.add(CreateMovieProfiles())
     app.migrations.add(CreateTitleMappings())
+    app.migrations.add(CreateGenreMappings())
 }
 
 struct Config {

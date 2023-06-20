@@ -14,14 +14,40 @@ protocol MovieOrganization {
 
 struct MovieOrganizer: MovieOrganization {
     func organize(on db: Database) -> EventLoopFuture<Void> {
-        mapOriginalTitles(on: db).flatMap {
-            applyProfiles(on: db).flatMap {
-                mapMovieShowings(on: db).flatMap {
-                    cleanup(on: db).flatMap {
-                        setPosters(on: db)
+        mapGenres(on: db).flatMap {
+            mapOriginalTitles(on: db).flatMap {
+                applyProfiles(on: db).flatMap {
+                    mapMovieShowings(on: db).flatMap {
+                        cleanup(on: db).flatMap {
+                            setPosters(on: db)
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private func mapGenres(on db: Database) -> EventLoopFuture<Void> {
+        Movie.query(on: db).all().flatMap { movies in
+            movies.map { movie in
+                mapGenres(on: movie, on: db).flatMap {
+                    movie.genres?.sort()
+                    return movie.update(on: db)
+                }
+            }.flatten(on: db.eventLoop)
+        }
+    }
+
+    private func mapGenres(on movie: Movie, on db: Database) -> EventLoopFuture<Void> {
+        return GenreMapping.query(on: db).all().flatMap { mappings in
+            mappings.map { mapping in
+                if let index = movie.genres?.firstIndex(of: mapping.genre) {
+                    movie.genres?[index] = mapping.newGenre
+                    return movie.update(on: db)
+                } else {
+                    return db.eventLoop.makeSucceededFuture(())
+                }
+            }.flatten(on: db.eventLoop)
         }
     }
 
