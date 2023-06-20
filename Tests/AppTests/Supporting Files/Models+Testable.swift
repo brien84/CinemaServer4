@@ -83,3 +83,13 @@ extension TitleMapping {
         try! mapping.create(on: db).wait()
     }
 }
+
+extension GenreMapping {
+    static func create(genre: String, newGenre: String, on db: Database) {
+        let mapping = GenreMapping()
+        mapping.genre = genre
+        mapping.newGenre = newGenre
+
+        try! mapping.create(on: db).wait()
+    }
+}

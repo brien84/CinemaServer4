@@ -22,6 +22,19 @@ final class MovieOrganizerTests: XCTestCase {
         app.shutdown()
     }
 
+    func testMappingGenres() throws {
+        let currentGenre = "CurrentGenre"
+        let newGenre = "NewGenre"
+
+        Movie.create(genres: [currentGenre, "SomeOtherGenre"], on: app.db)
+        GenreMapping.create(genre: currentGenre, newGenre: newGenre, on: app.db)
+
+        _ = try sut.organize(on: app.db).wait()
+        let movies = try Movie.query(on: app.db).all().wait()
+
+        XCTAssertEqual(movies.first!.genres, [newGenre, "SomeOtherGenre"])
+    }
+
     func testMappingOriginalTitles() throws {
         let currentTitle = "TestTitle"
         let newTitle = "NewTestTitle"
@@ -37,7 +50,7 @@ final class MovieOrganizerTests: XCTestCase {
         XCTAssertEqual(movies[0].originalTitle, newTitle)
     }
 
-    func testMovieProfileGetsCreated() throws {
+    func testCreatingMovieProfile() throws {
         let title = "TestTitle"
         let originalTitle = "TestTitle"
         let year = "TestYear"
