@@ -23,8 +23,14 @@ final class MainControllerTests: XCTestCase {
         fetcher = TestFetcher()
         organizer = TestOrganizer()
         validator = TestValidator()
-        sender = TestSender(eventLoop: app.eventLoopGroup.next())
-        sut = MainController(app: app, fetcher: fetcher, organizer: organizer, validator: validator, sender: sender)
+        sender = TestSender(eventLoop: app.eventLoopGroup.any())
+        sut = MainController(
+            app: app,
+            fetcher: fetcher,
+            organizer: organizer,
+            validator: validator,
+            sender: sender
+        )
     }
 
     override func tearDown() {
@@ -35,17 +41,7 @@ final class MainControllerTests: XCTestCase {
     func testSuccessfulUpdate() throws {
         try sut.update().wait()
 
-        let content = sender.getSentEmailContent()
-        XCTAssertEqual(content, "SuccessfulTest")
-    }
-
-    func testUpdateIsFailingIfFetchingFails() throws {
-        fetcher.isSuccess = false
-
-        try sut.update().wait()
-
-        let content = sender.getSentEmailContent()
-        XCTAssertEqual(content, "Failed update: \(TestError.error)")
+        XCTAssertEqual(sender.sentContent, validator.getReport())
     }
 
     func testDatabaseIsOverwrittenWhenUpdateIsSuccessful() throws {
@@ -60,25 +56,31 @@ final class MainControllerTests: XCTestCase {
         XCTAssertEqual(count, 0)
     }
 
-    func testUpdateIsFailingIfOrganizingFails() throws {
+    func testFailedUpdateWhenFetchingFails() throws {
+        fetcher.isSuccess = false
+
+        try sut.update().wait()
+
+        XCTAssertEqual(sender.sentContent, "Failed update: \(TestError.error)")
+    }
+
+    func testFailedUpdateWhenOrganizingFails() throws {
         organizer.isSuccess = false
 
         try sut.update().wait()
 
-        let content = sender.getSentEmailContent()
-        XCTAssertEqual(content, "Failed update: \(TestError.error)")
+        XCTAssertEqual(sender.sentContent, "Failed update: \(TestError.error)")
     }
 
-    func testUpdateIsFailingIfValidationFails() throws {
+    func testFailedUpdateWhenValidationFails() throws {
         validator.isSuccess = false
 
         try sut.update().wait()
 
-        let content = sender.getSentEmailContent()
-        XCTAssertEqual(content, "Failed update: \(TestError.error)")
+        XCTAssertEqual(sender.sentContent, "Failed update: \(TestError.error)")
     }
 
-    func testDatabaseTrasactionIsCancelledIfUpdateFails() throws {
+    func testDatabaseTrasactionIsCancelledWhenUpdateFails() throws {
         Movie.create(on: app.db)
 
         let initialCount = try Movie.query(on: app.db).count().wait()
@@ -90,16 +92,6 @@ final class MainControllerTests: XCTestCase {
 
         let count = try Movie.query(on: app.db).count().wait()
         XCTAssertEqual(count, 1)
-    }
-
-    func testEmailConfiguration() throws {
-        try sut.update().wait()
-
-        let email = sender.sentEmail
-
-        XCTAssertEqual(email?.from?.email, Config.emailAddress)
-        XCTAssertEqual(email?.personalizations?.first?.to?.first?.email, Config.emailAddress)
-        XCTAssertEqual(email?.subject, "Validation report")
     }
 
     // MARK: Test Helpers
@@ -128,7 +120,7 @@ final class MainControllerTests: XCTestCase {
         var isSuccess = true
 
         func getReport() -> String {
-            isSuccess ? "SuccessfulTest" : "FailedTest"
+            "successful report!"
         }
 
         func validate(on db: Database) -> EventLoopFuture<Void> {
@@ -138,22 +130,15 @@ final class MainControllerTests: XCTestCase {
 
     class TestSender: EmailSending {
         var eventLoop: EventLoop
-        var sentEmail: SendGridEmail?
+        var sentContent: String?
 
         init(eventLoop: EventLoop) {
             self.eventLoop = eventLoop
         }
 
-        func send(email: SendGridEmail) -> EventLoopFuture<Void> {
-            sentEmail = email
+        func send(content: String, subject: String = "") -> EventLoopFuture<Void> {
+            sentContent = content
             return eventLoop.makeSucceededFuture(())
-        }
-
-        func getSentEmailContent() -> String {
-            guard let content = sentEmail?.content?.first?["value"]
-                else { XCTFail("Could not get email content!"); return "" }
-
-            return content
         }
     }
 }
