@@ -11,8 +11,10 @@ public func configure(_ app: Application) throws {
     try routes(app)
 
     // sendgrid configuration
-    Environment.process.SENDGRID_API_KEY = Config.sendGridKey
-    app.sendgrid.initialize()
+    if let sendgridKey = Config.sendgridKey {
+        Environment.process.SENDGRID_API_KEY = sendgridKey
+        app.sendgrid.initialize()
+    }
 
     // HTTPClient configuration
     app.http.client.configuration.httpVersion = .http1Only
@@ -25,7 +27,7 @@ public func configure(_ app: Application) throws {
                             fetcher: app.movieFetcher,
                             organizer: MovieOrganizer(),
                             validator: MovieValidator(),
-                            sender: app.emailSender
+                            sender: Config.sendgridKey == nil ? nil : app.emailSender
                          )
 
         _ = controller.update()
@@ -51,5 +53,5 @@ struct Config {
     static let postersURL = URL(string: "http://localhost:8080/posters/")
 
     static let emailAddress: String? = nil
-    static let sendGridKey: String? = nil
+    static let sendgridKey: String? = nil
 }

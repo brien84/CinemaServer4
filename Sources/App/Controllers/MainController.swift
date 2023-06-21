@@ -10,13 +10,18 @@ import Vapor
 
 final class MainController {
     private var app: Application
-
     private let fetcher: MovieFetching
     private let organizer: MovieOrganization
     private let validator: MovieValidation
-    private let sender: EmailSending
+    private let sender: EmailSending?
 
-    init(app: Application, fetcher: MovieFetching, organizer: MovieOrganization, validator: MovieValidation, sender: EmailSending) {
+    init(
+        app: Application,
+        fetcher: MovieFetching,
+        organizer: MovieOrganization,
+        validator: MovieValidation,
+        sender: EmailSending?
+    ) {
         self.app = app
         self.fetcher = fetcher
         self.organizer = organizer
@@ -25,7 +30,7 @@ final class MainController {
     }
 
     func update() -> EventLoopFuture<Void> {
-        app.eventLoopGroup.next().scheduleTask(in: .hours(2)) {
+        app.eventLoopGroup.any().scheduleTask(in: .hours(2)) {
             self.update()
         }
 
@@ -45,26 +50,15 @@ final class MainController {
             switch result {
             case .success():
                 self.app.logger.notice("\(Date()) - Successful update.")
-
+                guard let sender = self.sender else { return transaction.eventLoop.makeSucceededVoidFuture() }
                 let report = self.validator.getReport()
-                let email = self.createEmail(content: report)
-                return self.sender.send(email: email)
+                return sender.send(content: report, subject: "Validation report")
 
             case .failure(let error):
                 self.app.logger.notice("\(Date()) - Failed update: \(error)")
-
-                let email = self.createEmail(content: "Failed update: \(error)")
-                return self.sender.send(email: email)
+                guard let sender = self.sender else { return transaction.eventLoop.makeSucceededVoidFuture() }
+                return sender.send(content: "Failed update: \(error)", subject: "Validation report")
             }
         }
-    }
-
-    private func createEmail(content: String) -> SendGridEmail {
-        guard let emailAddress = Config.emailAddress else { fatalError("`Config.emailAddress` is nil!") }
-        let address = EmailAddress(email: emailAddress)
-        let personalizations = [Personalization(to: [address])]
-        let content = [["type": "text/html", "value": content]]
-
-        return SendGridEmail(personalizations: personalizations, from: address, subject: "Validation report", content: content)
     }
 }
