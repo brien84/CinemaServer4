@@ -21,7 +21,7 @@ struct Multikino: MovieAPI {
                 let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
                 return createMovies(from: service, on: db)
             } catch {
-                return client.eventLoop.makeFailedFuture(error)
+                return client.eventLoop.makeFailedFuture(APIError(api: Multikino.self, error: error))
             }
         }
     }

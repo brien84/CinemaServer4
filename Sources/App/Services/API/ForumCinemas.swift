@@ -53,23 +53,31 @@ struct ForumCinemas: MovieAPI {
     /// Returns array of `APIService.Showing` from specific `APIService.Area`.
     private func fetchAPIShowings(in area: AreaService.Area) -> EventLoopFuture<[APIService.Showing]> {
         client.get(area.url).flatMapThrowing { res in
-            let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
+            do {
+                let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
 
-            // Assigns `APIService.Area` to each `APIService.Showing` object.
-            let showings = service.showings.map { showing in
-                var copy = showing
-                copy.area = area
-                return copy
+                // Assigns `APIService.Area` to each `APIService.Showing` object.
+                let showings = service.showings.map { showing in
+                    var copy = showing
+                    copy.area = area
+                    return copy
+                }
+
+                return showings
+            } catch {
+                throw APIError(api: ForumCinemas.self, error: error)
             }
-
-            return showings
         }
     }
 
     private func fetchAreas() -> EventLoopFuture<[AreaService.Area]> {
         client.get(.areas).flatMapThrowing { res in
-            let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
-            return service.areas
+            do {
+                let service = try JSONDecoder().decode(AreaService.self, from: res.body ?? ByteBuffer())
+                return service.areas
+            } catch {
+                throw APIError(api: ForumCinemas.self, error: error)
+            }
         }
     }
 }

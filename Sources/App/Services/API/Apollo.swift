@@ -51,15 +51,19 @@ struct Apollo: MovieAPI {
     /// Returns array of `APIService.Showing` from specific `APIService.Area`.
     private func fetchAPIShowings(in area: APIService.Area) -> EventLoopFuture<[APIService.Showing]> {
         client.get(area.url).flatMapThrowing { res in
-            let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
+            do {
+                let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
 
-            let showings = service.showings.map {
-                var copy = $0
-                copy.area = area
-                return copy
+                let showings = service.showings.map {
+                    var copy = $0
+                    copy.area = area
+                    return copy
+                }
+
+                return showings
+            } catch {
+                throw APIError(api: Apollo.self, error: error)
             }
-
-            return showings
         }
     }
 }

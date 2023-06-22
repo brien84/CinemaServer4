@@ -26,7 +26,7 @@ struct Atlantis: MovieAPI {
                 let showings = try APIParser.showings.parse(body)
                 return createMovies(from: showings, on: db)
             } catch {
-                return client.eventLoop.makeFailedFuture(error)
+                return client.eventLoop.makeFailedFuture(APIError(api: Atlantis.self, error: error))
             }
         }
     }
