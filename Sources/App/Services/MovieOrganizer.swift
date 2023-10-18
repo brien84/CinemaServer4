@@ -137,7 +137,7 @@ struct MovieOrganizer: MovieOrganization {
         }
     }
 
-    /// Deletes `Movies`, which do not have any `Showing` children.
+    /// Deletes all `Movies` that do not have any associated `Showing` children.
     private func cleanup(on db: Database) -> EventLoopFuture<Void> {
         Movie.query(on: db)
             .join(Showing.self, on: \Movie.$id == \Showing.$movie.$id, method: .left)
@@ -145,28 +145,25 @@ struct MovieOrganizer: MovieOrganization {
             .all().flatMap { $0.delete(on: db) }
     }
 
+    /// Sets the `poster` image for a `Movie` object.
+    ///
+    /// This function looks for an image file in the `postersDirectory` that has the same file name
+    /// as the `originalTitle` property of the `Movie` instance. If no matching image is found,
+    /// the `poster` property is left as `nil`.
     private func setPosters(on db: Database) -> EventLoopFuture<Void> {
         Movie.query(on: db).all().flatMap { movies in
-            movies.map { movie in
-                setPoster(on: movie, on: db)
+            let paths = FileManager().contentsOfPostersDirectory()
+            return movies.map { movie in
+                setPoster(to: movie, from: paths, on: db)
             }.flatten(on: db.eventLoop)
         }
     }
 
-    /// Poster images are located in `Public/Posters`. Image names should be the same as `originalTitle` property.
-    private func setPoster(on movie: Movie, on db: Database) -> EventLoopFuture<Void> {
-        let originalTitle = movie.originalTitle?
-                .replacingOccurrences(of: ":", with: "")
-                .replacingOccurrences(of: "?", with: "")
-                .replacingOccurrences(of: "/", with: "")
-                .lowercased()
+    private func setPoster(to movie: Movie, from paths: [URL], on db: Database) -> EventLoopFuture<Void> {
+        let title = movie.originalTitle?.removeSpecialCharacters()
 
-        let publicDirectory = URL(fileURLWithPath: "\(DirectoryConfiguration.detect().publicDirectory)Posters")
-        guard let posterPaths = try? FileManager().contentsOfDirectory(at: publicDirectory, includingPropertiesForKeys: nil)
-            else { fatalError("Error while loading posters!") }
-
-        if let posterPath = posterPaths.first(where: { $0.fileNameWithoutExtension == originalTitle }) {
-            let url = Config.postersURL?.appendingPathComponent(posterPath.lastPathComponent)
+        if let path = paths.first(where: { $0.lastComponentWithoutExtension == title }) {
+            let url = Config.postersURL?.appendingPathComponent(path.lastPathComponent)
             movie.poster = url?.absoluteString
             return movie.update(on: db)
         } else {
@@ -175,9 +172,41 @@ struct MovieOrganizer: MovieOrganization {
     }
 }
 
-extension URL {
-    /// "Public/Posters/Example.png" -> "example"
-    fileprivate var fileNameWithoutExtension: String {
-        self.deletingPathExtension().lastPathComponent.lowercased()
+private extension FileManager {
+    func contentsOfPostersDirectory() -> [URL] {
+        do {
+            return try contentsOfDirectory(at: .postersDirectory, includingPropertiesForKeys: nil)
+        } catch {
+            fatalError("\(error)")
+        }
+    }
+}
+
+private extension String {
+    func removeSpecialCharacters() -> String {
+        self.replacingOccurrences(of: ":", with: "")
+            .replacingOccurrences(of: "?", with: "")
+            .replacingOccurrences(of: "/", with: "")
+    }
+}
+
+private extension URL {
+    static var postersDirectory: URL {
+        publicDirectory.appendingPathComponent("Posters")
+    }
+
+    static var publicDirectory: URL {
+        URL(fileURLWithPath: DirectoryConfiguration.detect().publicDirectory)
+    }
+
+    /// Returns last path component of the `URL` without its file extension.
+    ///
+    /// Example:
+    /// ```
+    /// let fileURL = URL(fileURLWithPath: "Public/Posters/Example.png")
+    /// print(fileURL.lastComponentWithoutExtension) // prints "Example"
+    /// ```
+    var lastComponentWithoutExtension: String {
+        self.deletingPathExtension().lastPathComponent
     }
 }
