@@ -114,56 +114,8 @@ func routes(_ app: Application) throws {
 
     // MARK: v1.2 - Deprecated
 
-    app.get("all_") { req -> EventLoopFuture<[Movie]> in
-        queryLegacyMovies(
-            in: [.vilnius, .kaunas, .klaipeda, .siauliai, .panevezys],
-            at: [.apollo, .cinamon, .forum, .multikino],
-            on: req
-        )
-    }
-
-    app.get("vilnius_") { req -> EventLoopFuture<[Movie]> in
-        queryLegacyMovies(
-            in: [.vilnius],
-            at: [.apollo, .forum, .multikino],
-            on: req
-        )
-    }
-
-    app.get("kaunas_") { req -> EventLoopFuture<[Movie]> in
-        queryLegacyMovies(
-            in: [.kaunas],
-            at: [.cinamon, .forum],
-            on: req
-        )
-    }
-
-    app.get("klaipeda_") { req -> EventLoopFuture<[Movie]> in
-        queryLegacyMovies(
-            in: [.klaipeda],
-            at: [.forum],
-            on: req
-        )
-    }
-
-    app.get("siauliai_") { req -> EventLoopFuture<[Movie]> in
-        queryLegacyMovies(
-            in: [.siauliai],
-            at: [.forum],
-            on: req
-        )
-    }
-
-    app.get("panevezys_") { req -> EventLoopFuture<[Movie]> in
-        queryLegacyMovies(
-            in: [.panevezys],
-            at: [.apollo],
-            on: req
-        )
-    }
-
     app.get("update") { req in
-        "1.1.2"
+        "1.3"
     }
 
     // MARK: v1.1.2 - Deprecated
