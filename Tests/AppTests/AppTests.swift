@@ -13,9 +13,9 @@ final class AppTests: XCTestCase {
     }
 
     func testPostersRoute() throws {
-        try sut.test(.GET, "posters" + "/example.png", afterResponse: { res in
+        try sut.test(.GET, "posters" + "/Example.webp", afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
-            XCTAssertEqual(res.content.contentType, HTTPMediaType.png)
+            XCTAssertEqual(res.content.contentType, HTTPMediaType.fileExtension("webp"))
         })
     }
 

@@ -167,7 +167,7 @@ final class MovieOrganizerTests: XCTestCase {
 
     func testSettingPoster() throws {
         // Located in `Public/Posters`
-        let posterFileName = "example.png"
+        let posterFileName = "Example.webp"
         Movie.create(originalTitle: "Example", poster: nil, on: app.db)
 
         _ = try sut.organize(on: app.db).wait()
