@@ -78,7 +78,7 @@ extension Movie: Equatable {
 
 struct CreateMovies: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("movies")
+        database.schema(Movie.schema)
             .id()
             .field("title", .string)
             .field("original_title", .string)
@@ -92,6 +92,6 @@ struct CreateMovies: Migration {
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("movies").delete()
+        database.schema(Movie.schema).delete()
     }
 }

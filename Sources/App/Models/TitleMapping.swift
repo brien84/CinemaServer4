@@ -27,7 +27,7 @@ final class TitleMapping: Model, Content {
 
 struct CreateTitleMappings: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("title_mappings")
+        database.schema(TitleMapping.schema)
             .id()
             .field("original_title", .string, .required)
             .field("new_original_title", .string, .required)
@@ -35,6 +35,6 @@ struct CreateTitleMappings: Migration {
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("title_mappings").delete()
+        database.schema(TitleMapping.schema).delete()
     }
 }

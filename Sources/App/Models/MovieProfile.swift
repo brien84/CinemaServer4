@@ -66,7 +66,7 @@ final class MovieProfile: Model, Content {
 
 struct CreateMovieProfiles: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("movie_profiles")
+        database.schema(MovieProfile.schema)
             .id()
             .field("title", .string)
             .field("original_title", .string)
@@ -79,6 +79,6 @@ struct CreateMovieProfiles: Migration {
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("movie_profiles").delete()
+        database.schema(MovieProfile.schema).delete()
     }
 }

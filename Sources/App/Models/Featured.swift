@@ -38,7 +38,7 @@ final class Featured: Model, Content {
 
 struct CreateFeatured: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("featured")
+        database.schema(Featured.schema)
             .id()
             .field("label", .string, .required)
             .field("title", .string, .required)
@@ -52,6 +52,6 @@ struct CreateFeatured: Migration {
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("featured").delete()
+        database.schema(Featured.schema).delete()
     }
 }

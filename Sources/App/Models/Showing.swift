@@ -44,7 +44,7 @@ final class Showing: Model, Content {
 
 struct CreateShowings: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("showings")
+        database.schema(Showing.schema)
             .id()
             .field("city", .string)
             .field("date", .datetime)
@@ -57,6 +57,6 @@ struct CreateShowings: Migration {
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("showings").delete()
+        database.schema(Showing.schema).delete()
     }
 }

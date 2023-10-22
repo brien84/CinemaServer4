@@ -23,7 +23,7 @@ final class GenreMapping: Model, Content {
 
 struct CreateGenreMappings: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("genre_mappings")
+        database.schema(GenreMapping.schema)
             .id()
             .field("genre", .string, .required)
             .field("new_genre", .string, .required)
@@ -31,6 +31,6 @@ struct CreateGenreMappings: Migration {
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        database.schema("genre_mappings").delete()
+        database.schema(GenreMapping.schema).delete()
     }
 }
