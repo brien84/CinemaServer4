@@ -41,6 +41,9 @@ final class Movie: Model, Content {
     @Children(for: \.$movie)
     var showings: [Showing]
 
+    @OptionalChild(for: \.$movie)
+    var featured: Featured?
+
     convenience init(
         title: String?,
         originalTitle: String?,
