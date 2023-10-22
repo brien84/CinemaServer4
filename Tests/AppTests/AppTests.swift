@@ -65,127 +65,13 @@ final class AppTests: XCTestCase {
 
     // MARK: v1.2 - Deprecated
 
-    func testAllRoute_v1_2() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, "all_", afterResponse:  { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 8)
-            XCTAssertEqual(showings.filter({ $0.city == .vilnius }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.city == .kaunas }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.city == .klaipeda }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.city == .siauliai }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.city == .panevezys }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.venue == .apollo }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.venue == .atlantis }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.venue == .forum }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.venue == .cinamon }).count, 0)
-            XCTAssertEqual(showings.filter({ $0.venue == .multikino }).count, 0)
-        })
-    }
-
-    func testVilniusRoute_v1_2() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, "vilnius_", afterResponse:  { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 3)
-            XCTAssertEqual(showings.filter({ $0.city == .vilnius_ }).count, 3)
-            XCTAssertEqual(showings.filter({ $0.venue == .apollo_ }).count, 1)
-            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
-            XCTAssertEqual(showings.filter({ $0.venue == .multikino_ }).count, 1)
-        })
-    }
-
-    func testKaunasRoute_v1_2() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, "kaunas_", afterResponse:  { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 2)
-            XCTAssertEqual(showings.filter({ $0.city == .kaunas_ }).count, 2)
-            XCTAssertEqual(showings.filter({ $0.venue == .cinamon_ }).count, 1)
-            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
-        })
-    }
-
-    func testKlaipedaRoute_v1_2() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, "klaipeda_", afterResponse:  { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings.filter({ $0.city == .klaipeda_ }).count, 1)
-            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
-        })
-    }
-
-    func testSiauliaiRoute_v1_2() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, "siauliai_", afterResponse:  { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings.filter({ $0.city == .siauliai_ }).count, 1)
-            XCTAssertEqual(showings.filter({ $0.venue == .forum_ }).count, 1)
-            XCTAssertEqual(showings.filter({ $0.venue == .atlantis }).count, 0)
-        })
-    }
-
-    func testPanevezysRoute_v1_2() throws {
-        Movie.create(showings: showings, on: sut.db)
-
-        try sut.test(.GET, "panevezys_", afterResponse:  { res in
-            XCTAssertEqual(res.status, .ok)
-
-            let movies = try res.content.decode([Movie].self)
-            XCTAssertEqual(movies.count, 1)
-
-            let service = try res.content.decode([ShowingService].self)
-            let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 1)
-            XCTAssertEqual(showings.filter({ $0.city == .panevezys_ }).count, 1)
-            XCTAssertEqual(showings.filter({ $0.venue == .apollo_ }).count, 1)
-        })
-    }
-
     func testUpdateRoute() throws {
         try sut.test(.GET, "update", afterResponse:  { res in
             XCTAssertEqual(res.status, .ok)
 
             let version = try res.content.decode(String.self)
 
-            XCTAssertEqual(version, "1.1.2")
+            XCTAssertEqual(version, "1.3")
         })
     }
 
