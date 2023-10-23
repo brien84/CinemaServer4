@@ -175,6 +175,6 @@ final class MovieOrganizerTests: XCTestCase {
 
         let movie = try Movie.query(on: app.db).first().wait()
 
-        XCTAssertEqual(movie!.poster, "\(Config.postersURL!)\(posterFileName)")
+        XCTAssertEqual(movie!.poster, "\(Config.apiURL)posters/\(posterFileName)")
     }
 }

@@ -51,7 +51,7 @@ private func databaseConfiguration(_ app: Application) {
 }
 
 struct Config {
-    static let postersURL = URL(string: "http://localhost:8080/posters/")
+    static let apiURL = URL(string: "http://localhost:8080/")!
 
     static let emailAddress: String? = nil
     static let sendgridKey: String? = nil

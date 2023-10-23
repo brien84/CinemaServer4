@@ -163,8 +163,8 @@ struct MovieOrganizer: MovieOrganization {
         let title = movie.originalTitle?.removeSpecialCharacters()
 
         if let path = paths.first(where: { $0.lastComponentWithoutExtension == title }) {
-            let url = Config.postersURL?.appendingPathComponent(path.lastPathComponent)
-            movie.poster = url?.absoluteString
+            let url = URL.postersURL.appendingPathComponent(path.lastPathComponent)
+            movie.poster = url.absoluteString
             return movie.update(on: db)
         } else {
             return db.eventLoop.makeSucceededFuture(())
@@ -193,6 +193,10 @@ private extension String {
 private extension URL {
     static var postersDirectory: URL {
         publicDirectory.appendingPathComponent("Posters")
+    }
+
+    static var postersURL: URL {
+        Config.apiURL.appendingPathComponent("posters")
     }
 
     static var publicDirectory: URL {
