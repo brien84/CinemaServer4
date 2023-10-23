@@ -28,7 +28,7 @@ struct MovieOrganizer: MovieOrganization {
     }
 
     private func mapGenres(on db: Database) -> EventLoopFuture<Void> {
-        Movie.query(on: db).all().flatMap { movies in
+        MovieProfile.query(on: db).all().flatMap { movies in
             movies.map { movie in
                 mapGenres(on: movie, on: db).flatMap {
                     movie.genres?.sort()
@@ -38,7 +38,7 @@ struct MovieOrganizer: MovieOrganization {
         }
     }
 
-    private func mapGenres(on movie: Movie, on db: Database) -> EventLoopFuture<Void> {
+    private func mapGenres(on movie: MovieProfile, on db: Database) -> EventLoopFuture<Void> {
         return GenreMapping.query(on: db).all().flatMap { mappings in
             mappings.map { mapping in
                 if let index = movie.genres?.firstIndex(of: mapping.genre) {
