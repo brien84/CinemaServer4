@@ -18,31 +18,25 @@ protocol MovieValidation {
 }
 
 final class MovieValidator: MovieValidation {
-    private var movies = [Movie]()
+    private var invalidMovies = [Movie]()
 
     func getReport() -> String {
         var report: String
 
-        if movies.isEmpty {
+        if invalidMovies.isEmpty {
             report = "<p>All movies passed validation!</p>"
         } else {
             report = "<p>Movies failed validation: </p>"
 
-            movies.sort {
-                guard let title0 = $0.originalTitle else { return false }
-                guard let title1 = $1.originalTitle else { return true }
+            let earliestShowings = invalidMovies.compactMap { movie in
+                movie.showings.sortedByEarliest().first
+            }.sortedByEarliest()
 
-                return title0 < title1
-            }
-
-            movies.forEach { movie in
-                if let originalTitle = movie.originalTitle {
-                    // For convenience purposes, first tries to get url from forumcinemas showing,
-                    // if one does not exist gets url from any showing.
-                    let forumShowings = movie.showings.filter({ $0.url.contains("forumcinemas") })
-                    let url = forumShowings.isEmpty ? movie.showings.first?.url : forumShowings.first?.url
-
-                    report.append(contentsOf: "<p><a href=\"\(url ?? "")\">\(originalTitle)</a></p>")
+            earliestShowings.forEach { showing in
+                if let originalTitle = showing.$movie.value?.originalTitle {
+                    let date = showing.date.formatted
+                    let url = showing.url
+                    report.append(contentsOf: "<p><a href=\"\(url)\">\(originalTitle) | \(date)</a></p>")
                 } else {
                     report.append(contentsOf: "<p>Movie is missing originalTitle.</p>")
                 }
@@ -53,12 +47,12 @@ final class MovieValidator: MovieValidation {
     }
 
     func validate(on db: Database) -> EventLoopFuture<Void> {
-        movies.removeAll()
+        invalidMovies.removeAll()
 
-        return Movie.query(on: db).with(\.$showings).all().flatMap { movies in
-            movies.map {
-                self.validate(movie: $0, on: db)
-            }.flatten(on: db.eventLoop)
+        let query = Movie.query(on: db).with(\.$showings) { $0.with(\.$movie) }
+
+        return query.all().flatMapEach(on: db.eventLoop) {
+            self.validate(movie: $0, on: db)
         }
     }
 
@@ -93,7 +87,7 @@ final class MovieValidator: MovieValidation {
 
             return db.eventLoop.makeSucceededFuture(())
         } catch {
-            movies.append(movie)
+            invalidMovies.append(movie)
             return movie.delete(on: db)
         }
     }
@@ -114,5 +108,11 @@ final class MovieValidator: MovieValidation {
         if let showingArray = property as? [Showing], showingArray.isEmpty {
             throw ValidationError.failed
         }
+    }
+}
+
+private extension Array where Element == Showing {
+    func sortedByEarliest() -> [Showing] {
+        self.sorted(by: { $0.date < $1.date })
     }
 }

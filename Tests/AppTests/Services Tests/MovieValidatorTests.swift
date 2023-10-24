@@ -273,44 +273,38 @@ final class MovieValidatorTests: XCTestCase {
         XCTAssertTrue(report.contains(url))
     }
 
-    func testReportIsSorted() throws {
-        Movie.create(originalTitle: "ZZZ", on: app.db)
-        Movie.create(originalTitle: "AAB", on: app.db)
-        Movie.create(originalTitle: nil, on: app.db)
-        Movie.create(originalTitle: "AAA", on: app.db)
-
-        try sut.validate(on: app.db).wait()
-
-        let report = sut.getReport()
-        XCTAssertEqual(report, "<p>Movies failed validation: </p>" +
-                               "<p><a href=\"\">AAA</a></p>" +
-                               "<p><a href=\"\">AAB</a></p>" +
-                               "<p><a href=\"\">ZZZ</a></p>" +
-                               "<p>Movie is missing originalTitle.</p>")
-    }
-
-    func testReporterPicksForumCinemasShowingURL() throws {
-        let apolloURL = "https://www.apollokinas.lt/websales/show/305141"
-        let atlantisURL = "https://www.atlantiscinemas.lt/velnio-sviesa?sdate=1670284800"
-        let cinamonURL = "https://cinamonkino.com/mega/seat-plan/190310353/lt"
-        let forumURL = "https://m.forumcinemas.lt/Websales/Show/797892/"
-        let multikinoURL = "https://multikino.lt/pirkti-bilieta/santrauka/1001/3078/140713"
-
-        let apolloShowing = Showing(city: .panevezys, url: apolloURL)
-        let atlantisShowing = Showing(city: .siauliai, url: atlantisURL)
-        let cinamonShowing = Showing(city: .vilnius, url: cinamonURL)
-        let forumShowing = Showing(city: .vilnius, url: forumURL)
-        let multiShowing = Showing(city: .vilnius, url: multikinoURL)
+    func testReportIsSortedByEarliestShowings() throws {
+        let now = Date()
 
         Movie.create(
-            originalTitle: "test",
-            showings: [apolloShowing, atlantisShowing, cinamonShowing, forumShowing, multiShowing],
+            originalTitle: "Movie A",
+            showings: [
+                Showing(date: now.advanced(by: 30), url: "URL-A1"),
+                Showing(date: now.advanced(by: 20), url: "URL-A2"),
+                Showing(date: now.advanced(by: 10), url: "URL-A3")
+            ],
+            on: app.db
+        )
+
+        Movie.create(
+            originalTitle: "Movie B",
+            showings: [
+                Showing(date: now.advanced(by: 0), url: "URL-B1"),
+                Showing(date: now.advanced(by: 10), url: "URL-B2"),
+                Showing(date: now.advanced(by: 20), url: "URL-B3")
+            ],
             on: app.db
         )
 
         try sut.validate(on: app.db).wait()
+
         let report = sut.getReport()
-        XCTAssertTrue(report.contains(forumURL))
+        XCTAssertEqual(
+            report,
+            "<p>Movies failed validation: </p>" +
+            "<p><a href=\"URL-B1\">Movie B | \(now.advanced(by: 0).formatted)</a></p>" +
+            "<p><a href=\"URL-A3\">Movie A | \(now.advanced(by: 10).formatted)</a></p>"
+        )
     }
 
     func testMoviesArrayIsClearedWhenValidationStarts() throws {
