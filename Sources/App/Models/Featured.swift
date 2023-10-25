@@ -30,7 +30,7 @@ final class Featured: Model, Content {
     var endDate: Date
 
     @Field(key: "image_url")
-    var imageURL: String
+    var imageURL: String?
 
     @OptionalParent(key: "movie_id")
     var movie: Movie?
