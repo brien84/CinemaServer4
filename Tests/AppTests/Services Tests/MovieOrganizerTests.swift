@@ -167,7 +167,7 @@ final class MovieOrganizerTests: XCTestCase {
     }
 
     func testSettingPoster() throws {
-        // Located in `Public/Posters`
+        // Located in `Public/Images/Posters`
         let posterFileName = "Example.webp"
         Movie.create(originalTitle: "Example", poster: nil, on: app.db)
 
@@ -175,6 +175,6 @@ final class MovieOrganizerTests: XCTestCase {
 
         let movie = try Movie.query(on: app.db).first().wait()
 
-        XCTAssertEqual(movie!.poster, "\(Config.apiURL)posters/\(posterFileName)")
+        XCTAssertEqual(movie!.poster, "\(Config.apiURL)images/posters/\(posterFileName)")
     }
 }

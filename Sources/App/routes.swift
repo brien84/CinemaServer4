@@ -8,10 +8,10 @@ enum SupportedVersion: String {
 }
 
 func routes(_ app: Application) throws {
-    app.get("posters", ":fileName") { req -> Response in
-        let fileName = req.parameters.get("fileName")
-        let path = "\(DirectoryConfiguration.detect().publicDirectory)Posters/" + (fileName ?? "")
-        return req.fileio.streamFile(at: path)
+    app.get("images", "posters", ":fileName") { req -> Response in
+        guard let fileName = req.parameters.get("fileName") else { return Response(status: .notFound) }
+        let path = Paths.postersDirectory.appendingPathExtension(fileName)
+        return req.fileio.streamFile(at: path.absoluteString)
     }
 
     app.get(":city", ":venues") { req in

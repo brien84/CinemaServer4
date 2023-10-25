@@ -56,3 +56,21 @@ struct Config {
     static let emailAddress: String? = nil
     static let sendgridKey: String? = nil
 }
+
+struct Paths {
+    static var publicDirectory: URL {
+        URL(fileURLWithPath: DirectoryConfiguration.detect().publicDirectory)
+    }
+
+    static var imagesDirectory: URL {
+        Paths.publicDirectory.appendingPathComponent("Images")
+    }
+
+    static var featuredDirectory: URL {
+        Paths.imagesDirectory.appendingPathComponent("Featured")
+    }
+
+    static var postersDirectory: URL {
+        Paths.imagesDirectory.appendingPathComponent("Posters")
+    }
+}

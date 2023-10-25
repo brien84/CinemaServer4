@@ -175,7 +175,7 @@ struct MovieOrganizer: MovieOrganization {
 private extension FileManager {
     func contentsOfPostersDirectory() -> [URL] {
         do {
-            return try contentsOfDirectory(at: .postersDirectory, includingPropertiesForKeys: nil)
+            return try contentsOfDirectory(at: Paths.postersDirectory, includingPropertiesForKeys: nil)
         } catch {
             fatalError("\(error)")
         }
@@ -191,16 +191,8 @@ private extension String {
 }
 
 private extension URL {
-    static var postersDirectory: URL {
-        publicDirectory.appendingPathComponent("Posters")
-    }
-
     static var postersURL: URL {
-        Config.apiURL.appendingPathComponent("posters")
-    }
-
-    static var publicDirectory: URL {
-        URL(fileURLWithPath: DirectoryConfiguration.detect().publicDirectory)
+        Config.apiURL.appendingPathComponent("images/posters")
     }
 
     /// Returns last path component of the `URL` without its file extension.
