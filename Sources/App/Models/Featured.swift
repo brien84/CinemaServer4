@@ -1,6 +1,6 @@
 //
 //  Featured.swift
-//  
+//
 //
 //  Created by Marius on 2023-10-22.
 //
@@ -53,5 +53,13 @@ struct CreateFeatured: Migration {
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
         database.schema(Featured.schema).delete()
+    }
+}
+
+extension Featured {
+    /// `Featured` is considered valid if its `startDate` is earlier
+    /// than current date and its `endDate` is later than the current date.
+    var isValid: Bool {
+        self.startDate < Date() && self.endDate > Date()
     }
 }
