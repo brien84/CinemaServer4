@@ -22,14 +22,14 @@ final class AtlantisTests: XCTestCase {
     }
 
     func testFetchingBadResponseThrowsError() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: nil)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: nil)
         sut = Atlantis(client: client)
 
         XCTAssertThrowsError(try sut.fetchMovies(on: app.db).wait())
     }
 
     func testFetching() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.valid)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.valid)
         sut = Atlantis(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -52,7 +52,7 @@ final class AtlantisTests: XCTestCase {
     }
 
     func testShowingWithInvalidTimeIsIgnored() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.invalidShowing)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidShowing)
         sut = Atlantis(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -64,7 +64,7 @@ final class AtlantisTests: XCTestCase {
     }
 
     func testParsingDoesNotFailWhenAPIContainsDateWithoutData() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.missingDate)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.missingDate)
         sut = Atlantis(client: client)
 
         try sut.fetchMovies(on: app.db).wait()

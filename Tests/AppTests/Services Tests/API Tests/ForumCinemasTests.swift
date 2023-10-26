@@ -22,14 +22,14 @@ final class ForumCinemasTests: XCTestCase {
     }
 
     func testFetchingBadResponseThrowsError() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: nil)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: nil)
         sut = ForumCinemas(client: client)
 
         XCTAssertThrowsError(try sut.fetchMovies(on: app.db).wait())
     }
 
     func testFetching() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.valid)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.valid)
         sut = ForumCinemas(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -53,7 +53,7 @@ final class ForumCinemasTests: XCTestCase {
     }
 
     func testFetchingFromAllAreas() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.allAreas)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.allAreas)
         sut = ForumCinemas(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -71,7 +71,7 @@ final class ForumCinemasTests: XCTestCase {
     }
 
     func testSetsMoviePropertiesToNilIfAPIPropertiesAreMissing() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.invalidMovie)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidMovie)
         sut = ForumCinemas(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -88,7 +88,7 @@ final class ForumCinemasTests: XCTestCase {
     }
 
     func testSkipsShowingIfAPIPropertiesAreMissing() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.invalidShowing)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidShowing)
         sut = ForumCinemas(client: client)
 
         try sut.fetchMovies(on: app.db).wait()

@@ -22,14 +22,14 @@ final class CinamonTests: XCTestCase {
     }
 
     func testFetchingBadResponseThrowsError() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: nil)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: nil)
         sut = Cinamon(client: client)
 
         XCTAssertThrowsError(try sut.fetchMovies(on: app.db).wait())
     }
 
     func testFetching() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.valid)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.valid)
         sut = Cinamon(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -53,7 +53,7 @@ final class CinamonTests: XCTestCase {
     }
 
     func testSetsMoviePropertiesToNilIfAPIPropertiesAreMissing() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.invalidMovie)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidMovie)
         sut = Cinamon(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -70,7 +70,7 @@ final class CinamonTests: XCTestCase {
     }
 
     func testSkipsShowingIfAPIPropertiesAreMissing() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.invalidShowing)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidShowing)
         sut = Cinamon(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -81,7 +81,7 @@ final class CinamonTests: XCTestCase {
     }
 
     func testSkipsMovieIfShowShowingsIfMatchingScreenIsNotFound() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.next(), data: Data.invalidScreens)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidScreens)
         sut = Cinamon(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
