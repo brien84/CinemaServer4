@@ -78,20 +78,32 @@ extension Movie: Equatable {
 
 struct CreateMovies: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
-        database.schema(Movie.schema)
-            .id()
-            .field("title", .string)
-            .field("original_title", .string)
-            .field("year", .string)
-            .field("duration", .string)
-            .field("age_rating", .string)
-            .field("genres", .array(of: .string))
-            .field("plot", .string)
-            .field("poster", .string)
+        let ageRating = database.enum("age_rating")
+            .case("V")
+            .case("N-7")
+            .case("N-13")
+            .case("N-16")
+            .case("N-18")
             .create()
+
+        return ageRating.flatMap { ageRating in
+            database.schema(Movie.schema)
+                .id()
+                .field("title", .string)
+                .field("original_title", .string)
+                .field("year", .string)
+                .field("duration", .string)
+                .field("age_rating", ageRating)
+                .field("genres", .array(of: .string))
+                .field("plot", .string)
+                .field("poster", .string)
+                .create()
+        }
     }
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
-        database.schema(Movie.schema).delete()
+        database.schema(Movie.schema).delete().flatMap {
+            database.enum("age_rating").delete()
+        }
     }
 }
