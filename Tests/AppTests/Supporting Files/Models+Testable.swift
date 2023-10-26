@@ -9,11 +9,63 @@
 import Fluent
 import Foundation
 
+extension Featured {
+    convenience init(
+        id: UUID? = UUID(),
+        label: String = "",
+        title: String = "",
+        originalTitle: String,
+        startDate: Date,
+        endDate: Date,
+        imageURL: String? = nil
+    ) {
+        self.init()
+        self.id = id
+        self.label = label
+        self.title = title
+        self.originalTitle = originalTitle
+        self.startDate = startDate
+        self.endDate = endDate
+        self.imageURL = imageURL
+    }
+
+    static func create(
+        id: UUID? = UUID(),
+        label: String = "",
+        title: String = "",
+        originalTitle: String = "",
+        startDate: Date = Date(),
+        endDate: Date = Date(),
+        imageURL: String? = nil,
+        on db: Database
+    ) -> Featured {
+        let featured = Featured(
+            id: id,
+            label: label,
+            title: title,
+            originalTitle: originalTitle,
+            startDate: startDate,
+            endDate: endDate,
+            imageURL: imageURL
+        )
+
+        try! featured.create(on: db).wait()
+        return featured
+    }
+}
+
 extension Movie {
     static func create(
-        title: String? = nil, originalTitle: String? = nil, year: String? = nil,
-        duration: String? = nil, ageRating: String? = nil, genres: [String]? = nil,
-        plot: String? = nil, poster: String? = nil, showings: [Showing]? = nil, on db: Database
+        title: String? = nil,
+        originalTitle: String? = nil,
+        year: String? = nil,
+        duration: String? = nil,
+        ageRating: String? = nil,
+        genres: [String]? = nil,
+        plot: String? = nil,
+        poster: String? = nil,
+        showings: [Showing]? = nil,
+        on db: Database
     ) {
         let movie = Movie(
             title: title,
@@ -31,10 +83,9 @@ extension Movie {
         if let showings = showings {
             try! movie.$showings.create(showings, on: db).wait()
         } else {
-            // Adds one `Showing`, so movies do not get deleted, while
-            // executing `cleanup()` method during `MovieOrganizer` tests.
+            // Adds a placeholder `Showing` to prevent the `Movie` object from being deleted
+            // when the `cleanup()` method is invoked during `MovieOrganizer` tests.
             let showings = [Showing(city: .vilnius, date: Date(), venue: .forum, is3D: true, url: "")]
-            
             try! movie.$showings.create(showings, on: db).wait()
         }
     }
@@ -42,9 +93,14 @@ extension Movie {
 
 extension MovieProfile {
     static func create(
-        title: String? = nil, originalTitle: String? = nil, year: String? = nil,
-        duration: String? = nil, ageRating: String? = nil, genres: [String]? = nil,
-        plot: String? = nil, on db: Database
+        title: String? = nil,
+        originalTitle: String? = nil,
+        year: String? = nil,
+        duration: String? = nil,
+        ageRating: String? = nil,
+        genres: [String]? = nil,
+        plot: String? = nil,
+        on db: Database
     ) {
         let profile = MovieProfile(
             title: title,
@@ -62,8 +118,11 @@ extension MovieProfile {
 
 extension Showing {
     convenience init(
-        city: City = .vilnius, date: Date = Date(),
-        venue: Venue = .forum, is3D: Bool = false, url: String = ""
+        city: City = .vilnius,
+        date: Date = Date(),
+        venue: Venue = .forum,
+        is3D: Bool = false,
+        url: String = ""
     ) {
         self.init()
         self.city = city
