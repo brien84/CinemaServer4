@@ -1,4 +1,5 @@
 @testable import App
+import Fluent
 import XCTVapor
 
 final class AppTests: XCTestCase {
@@ -12,10 +13,69 @@ final class AppTests: XCTestCase {
         sut.shutdown()
     }
 
-    func testPostersRoute() throws {
+    func testFeaturedImageRoute() throws {
+        try sut.test(.GET, "images/featured" + "/Example.webp", afterResponse: { res in
+            XCTAssertEqual(res.status, .ok)
+            XCTAssertEqual(res.content.contentType, HTTPMediaType.fileExtension("webp"))
+        })
+    }
+
+    func testPosterImageRoute() throws {
         try sut.test(.GET, "images/posters" + "/Example.webp", afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
             XCTAssertEqual(res.content.contentType, HTTPMediaType.fileExtension("webp"))
+        })
+    }
+
+    func testQueryReturnsFeaturedFromSpecifiedCityAndVenus() throws {
+        let startDate = Date()
+        let endDate = startDate.advanced(by: 10000)
+
+        let featured0 = Featured(originalTitle: "Test0", startDate: startDate, endDate: endDate)
+        let featured1 = Featured(originalTitle: "Test1", startDate: startDate, endDate: endDate)
+
+        Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .apollo)], on: sut.db)
+        let movie0 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test0").first().wait()
+        try! movie0!.$featured.create(featured0, on: sut.db).wait()
+
+        Movie.create(originalTitle: "Test1", showings: [Showing(city: .vilnius, venue: .multikino)], on: sut.db)
+        let movie1 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test1").first().wait()
+        try! movie1!.$featured.create(featured1, on: sut.db).wait()
+
+        try sut.test(.GET, constructFeaturedPath(.vilnius, [.multikino]), afterResponse: { res in
+            XCTAssertEqual(res.status, .ok)
+            let featured = try res.content.decode([Featured].self)
+            XCTAssertEqual(featured.count, 1)
+            XCTAssertEqual(featured.first!.originalTitle, "Test1")
+        })
+    }
+
+    func testQueryReturnsOnlyValidFeatured() throws {
+        let now = Date()
+
+        // invalid because `startDate` is in the future.
+        let featured0 = Featured(originalTitle: "Test0", startDate: now.advanced(by: 100), endDate: now.advanced(by: 101))
+        // invalind because `endDate` is in the past.
+        let featured1 = Featured(originalTitle: "Test1", startDate: now.advanced(by: -101), endDate: now.advanced(by: -100))
+        let featured2 = Featured(originalTitle: "Test2", startDate: now.advanced(by: -100), endDate: now.advanced(by: 100))
+
+        Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .apollo)], on: sut.db)
+        let movie0 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test0").first().wait()
+        try! movie0!.$featured.create(featured0, on: sut.db).wait()
+
+        Movie.create(originalTitle: "Test1", showings: [Showing(city: .vilnius, venue: .apollo)], on: sut.db)
+        let movie1 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test1").first().wait()
+        try! movie1!.$featured.create(featured1, on: sut.db).wait()
+
+        Movie.create(originalTitle: "Test2", showings: [Showing(city: .vilnius, venue: .apollo)], on: sut.db)
+        let movie2 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test2").first().wait()
+        try! movie2!.$featured.create(featured2, on: sut.db).wait()
+
+        try sut.test(.GET, constructFeaturedPath(.vilnius, [.apollo]), afterResponse: { res in
+            XCTAssertEqual(res.status, .ok)
+            let featured = try res.content.decode([Featured].self)
+            XCTAssertEqual(featured.count, 1)
+            XCTAssertEqual(featured.first!.originalTitle, "Test2")
         })
     }
 
@@ -31,7 +91,7 @@ final class AppTests: XCTestCase {
         })
     }
 
-    func testQueryReturnsShowingsOnlyFromSpecifiedCity() throws {
+    func testQueryReturnsShowingsFromSpecifiedCity() throws {
         Movie.create(showings: showings, on: sut.db)
 
         try sut.test(.GET, constructPath(.vilnius, [.apollo, .forum, .multikino]), afterResponse: { res in
@@ -47,7 +107,7 @@ final class AppTests: XCTestCase {
         })
     }
 
-    func testQueryReturnsShowingsOnlyFromSpecifiedVenues() throws {
+    func testQueryReturnsShowingsFromSpecifiedVenues() throws {
         Movie.create(showings: showings, on: sut.db)
 
         try sut.test(.GET, constructPath(.vilnius, [.apollo]), afterResponse: { res in
@@ -177,7 +237,17 @@ final class AppTests: XCTestCase {
 
     func constructPath(_ city: City?, _ venues: [Venue]?) -> String {
         """
-        \(city?.rawValue ?? "Kupiškis")/
+        \(city?.rawValue ?? "Miestas")/
+        \(venues?.map { String($0.rawValue) }.joined(separator: ",") ?? "forum;multi")
+        """
+        .replacingOccurrences(of: "\n", with: "")
+        .replacingOccurrences(of: " ", with: "%20")
+    }
+
+    func constructFeaturedPath(_ city: City?, _ venues: [Venue]?) -> String {
+        """
+        featured/
+        \(city?.rawValue ?? "Miestas")/
         \(venues?.map { String($0.rawValue) }.joined(separator: ",") ?? "forum;multi")
         """
         .replacingOccurrences(of: "\n", with: "")
