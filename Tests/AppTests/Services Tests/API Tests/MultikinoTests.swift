@@ -42,7 +42,7 @@ final class MultikinoTests: XCTestCase {
         XCTAssertEqual(movies[0].originalTitle, "originalTitle")
         XCTAssertEqual(movies[0].year, "2020")
         XCTAssertEqual(movies[0].duration, "119 min")
-        XCTAssertEqual(movies[0].ageRating, "N-13")
+        XCTAssertEqual(movies[0].ageRating, .n13)
         XCTAssertEqual(movies[0].genres, ["Trileris", "Veiksmo"])
 
         XCTAssertEqual(movies[0].showings[0].city, .vilnius)

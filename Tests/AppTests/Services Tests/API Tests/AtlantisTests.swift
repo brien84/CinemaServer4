@@ -41,7 +41,7 @@ final class AtlantisTests: XCTestCase {
 
         XCTAssertEqual(movies[0].title, "title3D")
         XCTAssertEqual(movies[0].originalTitle, "originalTitle")
-        XCTAssertEqual(movies[0].ageRating, "V")
+        XCTAssertEqual(movies[0].ageRating, .v)
         XCTAssertEqual(movies[0].genres, ["Trileris", "Siaubo"])
 
         XCTAssertEqual(movies[0].showings[0].city, .siauliai)

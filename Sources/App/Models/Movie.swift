@@ -27,7 +27,7 @@ final class Movie: Model, Content {
     var duration: String?
 
     @Field(key: "age_rating")
-    var ageRating: String?
+    var ageRating: AgeRating?
 
     @Field(key: "genres")
     var genres: [String]?
@@ -49,7 +49,7 @@ final class Movie: Model, Content {
         originalTitle: String?,
         year: String?,
         duration: String?,
-        ageRating: String?,
+        ageRating: AgeRating?,
         genres: [String]?,
         plot: String? = nil,
         poster: String? = nil

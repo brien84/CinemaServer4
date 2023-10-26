@@ -42,7 +42,7 @@ final class CinamonTests: XCTestCase {
         XCTAssertEqual(movies[0].originalTitle, "originalTitle")
         XCTAssertEqual(movies[0].year, "2020")
         XCTAssertEqual(movies[0].duration, "81 min")
-        XCTAssertEqual(movies[0].ageRating, "N-7")
+        XCTAssertEqual(movies[0].ageRating, .n7)
         XCTAssertEqual(movies[0].genres, ["Animacinis"])
 
         XCTAssertEqual(movies[0].showings[0].city, .kaunas)

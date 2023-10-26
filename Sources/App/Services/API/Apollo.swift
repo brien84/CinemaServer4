@@ -88,17 +88,6 @@ private extension Movie {
             return String(duration) + " min"
         }()
 
-        let ageRating: String? = {
-            guard var ageRating = showing.ageRating else { return nil }
-
-            // `N18` -> `N-18`
-            if ageRating.starts(with: "N") {
-                ageRating.insert("-", at: ageRating.index(ageRating.startIndex, offsetBy: 1))
-            }
-
-            return ageRating
-        }()
-
         // ` genre0, genre1 ` -> `[Genre0, Genre1]`
         let genres = showing.genres?.split(separator: ",").map { String($0).trimSpaces().firstCapitalized }
 
@@ -107,7 +96,7 @@ private extension Movie {
             originalTitle: showing.originalTitle,
             year: year,
             duration: duration,
-            ageRating: ageRating,
+            ageRating: AgeRating(rawValue: showing.ageRating),
             genres: genres
         )
     }

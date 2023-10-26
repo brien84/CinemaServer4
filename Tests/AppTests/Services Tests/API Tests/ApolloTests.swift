@@ -42,7 +42,7 @@ final class ApolloTests: XCTestCase {
         XCTAssertEqual(movies[0].originalTitle, "originalTitle")
         XCTAssertEqual(movies[0].year, "2020")
         XCTAssertEqual(movies[0].duration, "98 min")
-        XCTAssertEqual(movies[0].ageRating, "N-7")
+        XCTAssertEqual(movies[0].ageRating, .n7)
         XCTAssertEqual(movies[0].genres, ["Animacinis", "Drama"])
 
         XCTAssertEqual(movies[0].showings.filter { $0.city == .panevezys }.count, 1)

@@ -67,7 +67,7 @@ private extension Movie {
             originalTitle: String(showing.originalTitle),
             year: nil,
             duration: nil,
-            ageRating: showing.ageRating,
+            ageRating: AgeRating(rawValue: showing.ageRating),
             genres: showing.genres.split(separator: ",").map { String($0).trimSpaces() }
         )
     }

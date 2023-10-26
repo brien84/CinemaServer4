@@ -29,7 +29,7 @@ final class MovieProfile: Model, Content {
     var duration: String?
 
     @Field(key: "age_rating")
-    var ageRating: String?
+    var ageRating: AgeRating?
 
     @Field(key: "genres")
     var genres: [String]?
@@ -38,8 +38,12 @@ final class MovieProfile: Model, Content {
     var plot: String?
 
     convenience init(
-        title: String?, originalTitle: String?, year: String?,
-        duration: String?, ageRating: String?, genres: [String]?,
+        title: String?,
+        originalTitle: String?,
+        year: String?,
+        duration: String?,
+        ageRating: AgeRating?,
+        genres: [String]?,
         plot: String?
     ) {
         self.init()

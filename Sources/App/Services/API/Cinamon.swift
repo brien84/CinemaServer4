@@ -78,7 +78,7 @@ private extension Movie {
             originalTitle: movie.originalTitle,
             year: year,
             duration: duration,
-            ageRating: movie.ageRating,
+            ageRating: AgeRating(rawValue: movie.ageRating),
             genres: genres
         )
     }

@@ -60,7 +60,7 @@ extension Movie {
         originalTitle: String? = nil,
         year: String? = nil,
         duration: String? = nil,
-        ageRating: String? = nil,
+        ageRating: AgeRating? = nil,
         genres: [String]? = nil,
         plot: String? = nil,
         poster: String? = nil,
@@ -97,7 +97,7 @@ extension MovieProfile {
         originalTitle: String? = nil,
         year: String? = nil,
         duration: String? = nil,
-        ageRating: String? = nil,
+        ageRating: AgeRating? = nil,
         genres: [String]? = nil,
         plot: String? = nil,
         on db: Database

@@ -56,7 +56,7 @@ final class MovieOrganizerTests: XCTestCase {
         let originalTitle = "TestTitle"
         let year = "TestYear"
         let duration = "TestDuration"
-        let ageRating = "TestAgeRating"
+        let ageRating = AgeRating.v
         let genres = ["TestGenre"]
         let plot = "TestPlot"
 
@@ -102,7 +102,7 @@ final class MovieOrganizerTests: XCTestCase {
         let originalTitle = "Example"
         let year = "TestYear"
         let duration = "TestDuration"
-        let ageRating = "TestAgeRating"
+        let ageRating = AgeRating.v
         let genres = ["TestGenre"]
         let plot = "TestPlot"
         let posterFile = "\(originalTitle).webp"
