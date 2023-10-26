@@ -168,4 +168,25 @@ final class MovieOrganizerTests: XCTestCase {
         XCTAssertEqual(movies.count, 1)
         XCTAssertEqual(movies[0].originalTitle, "Movie0")
     }
+
+    func testMappingFeatured() throws {
+        let featured = Featured.create(id: UUID(), label: "test", title: "test", originalTitle: "Example", on: app.db)
+        let imageFile = "\(featured.originalTitle).webp"
+        let imageURL = Assets.featured.url.appendingPathComponent(imageFile).absoluteString
+        Movie.create(originalTitle: "Example", on: app.db)
+
+        _ = try sut.organize(on: app.db).wait()
+
+        let allFeatured = try Featured.query(on: app.db).with(\.$movie).all().wait()
+        let movie = try Movie.query(on: app.db).first().wait()
+
+        XCTAssertEqual(allFeatured.count, 1)
+        XCTAssertEqual(allFeatured[0].label, featured.label)
+        XCTAssertEqual(allFeatured[0].title, featured.title)
+        XCTAssertEqual(allFeatured[0].originalTitle, featured.originalTitle)
+        XCTAssertEqual(allFeatured[0].startDate, featured.startDate)
+        XCTAssertEqual(allFeatured[0].endDate, featured.endDate)
+        XCTAssertEqual(allFeatured[0].imageURL, imageURL)
+        XCTAssertEqual(allFeatured[0].movie?.id, movie!.id)
+    }
 }

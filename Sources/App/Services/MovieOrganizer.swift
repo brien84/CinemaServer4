@@ -18,7 +18,9 @@ struct MovieOrganizer: MovieOrganization {
             mapOriginalTitles(on: db).flatMap {
                 applyProfiles(on: db).flatMap {
                     mapMovieShowings(on: db).flatMap {
-                        cleanup(on: db)
+                        cleanup(on: db).flatMap {
+                            mapFeatured(on: db)
+                        }
                     }
                 }
             }
@@ -140,6 +142,30 @@ struct MovieOrganizer: MovieOrganization {
             .join(Showing.self, on: \Movie.$id == \Showing.$movie.$id, method: .left)
             .filter(Showing.self, \Showing.$movie.$id == .null)
             .all().flatMap { $0.delete(on: db) }
+    }
+
+    private func mapFeatured(on db: Database) -> EventLoopFuture<Void> {
+        Featured.query(on: db).all().flatMapEach(on: db.eventLoop) { featured in
+            mapFeatured(featured, on: db).flatMap {
+                featured.delete(on: db)
+            }
+        }
+    }
+
+    private func mapFeatured(_ featured: Featured, on db: Database) -> EventLoopFuture<Void> {
+        return Movie.query(on: db).filter(\.$originalTitle == featured.originalTitle).first().flatMap { movie in
+            guard let movie else { return db.eventLoop.makeSucceededFuture(()) }
+
+            let newFeatured = Featured()
+            newFeatured.id = UUID()
+            newFeatured.label = featured.label
+            newFeatured.title = featured.title
+            newFeatured.originalTitle = featured.originalTitle
+            newFeatured.startDate = featured.startDate
+            newFeatured.endDate = featured.endDate
+            newFeatured.imageURL = getURLForImage(named: featured.originalTitle, in: .featured)?.absoluteString
+            return movie.$featured.create(newFeatured, on: db)
+        }
     }
 
     private func getURLForImage(named name: String, in asset: Assets) -> URL? {
