@@ -116,7 +116,7 @@ final class MainControllerTests: XCTestCase {
         }
     }
 
-    class TestValidator: MovieValidation {
+    class TestValidator: ContentValidation {
         var isSuccess = true
 
         func getReport() -> String {

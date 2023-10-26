@@ -26,7 +26,7 @@ public func configure(_ app: Application) throws {
                             app: app,
                             fetcher: app.movieFetcher,
                             organizer: MovieOrganizer(),
-                            validator: MovieValidator(),
+                            validator: ContentValidator(),
                             sender: Config.sendgridKey == nil ? nil : app.emailSender
                          )
 

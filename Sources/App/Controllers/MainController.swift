@@ -12,14 +12,14 @@ final class MainController {
     private var app: Application
     private let fetcher: MovieFetching
     private let organizer: MovieOrganization
-    private let validator: MovieValidation
+    private let validator: ContentValidation
     private let sender: EmailSending?
 
     init(
         app: Application,
         fetcher: MovieFetching,
         organizer: MovieOrganization,
-        validator: MovieValidation,
+        validator: ContentValidation,
         sender: EmailSending?
     ) {
         self.app = app

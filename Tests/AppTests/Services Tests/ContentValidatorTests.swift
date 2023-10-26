@@ -1,5 +1,5 @@
 //
-//  MovieValidatorTests.swift
+//  ContentValidatorTests.swift
 //
 //
 //  Created by Marius on 2020-10-28.
@@ -8,13 +8,13 @@
 @testable import App
 import XCTVapor
 
-final class MovieValidatorTests: XCTestCase {
+final class ContentValidatorTests: XCTestCase {
     var app: Application!
-    var sut: MovieValidator!
+    var sut: ContentValidator!
 
     override func setUp() {
         app = try! Application.testable()
-        sut = MovieValidator()
+        sut = ContentValidator()
     }
 
     override func tearDown() {

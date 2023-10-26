@@ -1,5 +1,5 @@
 //
-//  MovieValidator.swift
+//  ContentValidator.swift
 //
 //
 //  Created by Marius on 2020-10-25.
@@ -12,12 +12,12 @@ enum ValidationError: Error {
     case failed
 }
 
-protocol MovieValidation {
+protocol ContentValidation {
     func getReport() -> String
     func validate(on db: Database) -> EventLoopFuture<Void>
 }
 
-final class MovieValidator: MovieValidation {
+final class ContentValidator: ContentValidation {
     private var invalidFeatured = [Featured]()
     private var invalidMovies = [Movie]()
 
