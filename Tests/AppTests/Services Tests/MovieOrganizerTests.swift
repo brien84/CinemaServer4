@@ -99,12 +99,14 @@ final class MovieOrganizerTests: XCTestCase {
 
     func testApplyingProfiles() throws {
         let title = "TestTitle"
-        let originalTitle = "TestTitle"
+        let originalTitle = "Example"
         let year = "TestYear"
         let duration = "TestDuration"
         let ageRating = "TestAgeRating"
         let genres = ["TestGenre"]
         let plot = "TestPlot"
+        let posterFile = "\(originalTitle).webp"
+        let posterURL = Assets.posters.url.appendingPathComponent(posterFile).absoluteString
 
         Movie.create(originalTitle: originalTitle, on: app.db)
 
@@ -131,6 +133,7 @@ final class MovieOrganizerTests: XCTestCase {
         XCTAssertEqual(movies[0].ageRating, ageRating)
         XCTAssertEqual(movies[0].genres, genres)
         XCTAssertEqual(movies[0].plot, plot)
+        XCTAssertEqual(movies[0].poster, posterURL)
     }
 
     func testMappingMovieShowings() throws {
@@ -164,17 +167,5 @@ final class MovieOrganizerTests: XCTestCase {
 
         XCTAssertEqual(movies.count, 1)
         XCTAssertEqual(movies[0].originalTitle, "Movie0")
-    }
-
-    func testSettingPoster() throws {
-        // Located in `Public/Images/Posters`
-        let posterFileName = "Example.webp"
-        Movie.create(originalTitle: "Example", poster: nil, on: app.db)
-
-        _ = try sut.organize(on: app.db).wait()
-
-        let movie = try Movie.query(on: app.db).first().wait()
-
-        XCTAssertEqual(movie!.poster, "\(Config.apiURL)images/posters/\(posterFileName)")
     }
 }

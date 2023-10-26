@@ -18,9 +18,7 @@ struct MovieOrganizer: MovieOrganization {
             mapOriginalTitles(on: db).flatMap {
                 applyProfiles(on: db).flatMap {
                     mapMovieShowings(on: db).flatMap {
-                        cleanup(on: db).flatMap {
-                            setPosters(on: db)
-                        }
+                        cleanup(on: db)
                     }
                 }
             }
@@ -100,7 +98,7 @@ struct MovieOrganizer: MovieOrganization {
         movie.ageRating = profile.ageRating
         movie.genres = profile.genres
         movie.plot = profile.plot
-
+        movie.poster = getURLForImage(named: movie.originalTitle ?? "", in: .posters)?.absoluteString
         return movie.update(on: db)
     }
 
@@ -126,9 +124,8 @@ struct MovieOrganizer: MovieOrganization {
             .join(Movie.self, on: \Showing.$movie.$id == \Movie.$id, method: .left)
             .filter(Movie.self, \.$originalTitle == originalTitle)
             .all().flatMap { showings in
-
                 guard let id = showings.first?.$movie.id
-                    else { return db.eventLoop.makeSucceededFuture(()) }
+                else { return db.eventLoop.makeSucceededFuture(()) }
 
                 return showings.map { showing in
                     showing.$movie.id = id
@@ -145,37 +142,18 @@ struct MovieOrganizer: MovieOrganization {
             .all().flatMap { $0.delete(on: db) }
     }
 
-    /// Sets the `poster` image for a `Movie` object.
-    ///
-    /// This function looks for an image file in the `postersDirectory` that has the same file name
-    /// as the `originalTitle` property of the `Movie` instance. If no matching image is found,
-    /// the `poster` property is left as `nil`.
-    private func setPosters(on db: Database) -> EventLoopFuture<Void> {
-        Movie.query(on: db).all().flatMap { movies in
-            let paths = FileManager().contentsOfPostersDirectory()
-            return movies.map { movie in
-                setPoster(to: movie, from: paths, on: db)
-            }.flatten(on: db.eventLoop)
-        }
-    }
-
-    private func setPoster(to movie: Movie, from paths: [URL], on db: Database) -> EventLoopFuture<Void> {
-        let title = movie.originalTitle?.removeSpecialCharacters()
-
-        if let path = paths.first(where: { $0.lastComponentWithoutExtension == title }) {
-            let url = URL.postersURL.appendingPathComponent(path.lastPathComponent)
-            movie.poster = url.absoluteString
-            return movie.update(on: db)
-        } else {
-            return db.eventLoop.makeSucceededFuture(())
-        }
+    private func getURLForImage(named name: String, in asset: Assets) -> URL? {
+        let name = name.removeSpecialCharacters()
+        let paths = FileManager().contentsOfDirectory(asset.directory)
+        guard let path = paths.first(where: { $0.lastComponentWithoutExtension == name }) else { return nil }
+        return asset.url.appendingPathComponent(path.lastPathComponent)
     }
 }
 
 private extension FileManager {
-    func contentsOfPostersDirectory() -> [URL] {
+    func contentsOfDirectory(_ directory: URL) -> [URL] {
         do {
-            return try contentsOfDirectory(at: Paths.postersDirectory, includingPropertiesForKeys: nil)
+            return try contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
         } catch {
             fatalError("\(error)")
         }
@@ -191,10 +169,6 @@ private extension String {
 }
 
 private extension URL {
-    static var postersURL: URL {
-        Config.apiURL.appendingPathComponent("images/posters")
-    }
-
     /// Returns last path component of the `URL` without its file extension.
     ///
     /// Example:

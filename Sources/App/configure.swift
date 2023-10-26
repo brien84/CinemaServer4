@@ -57,20 +57,29 @@ struct Config {
     static let sendgridKey: String? = nil
 }
 
-struct Paths {
-    static var publicDirectory: URL {
+enum Assets {
+    case featured
+    case posters
+
+    var directory: URL {
+        switch self {
+        case .featured:
+            return Self.publicDirectory.appendingPathComponent("Images/Featured")
+        case .posters:
+            return Self.publicDirectory.appendingPathComponent("Images/Posters")
+        }
+    }
+
+    var url: URL {
+        switch self {
+        case .featured:
+            return Config.apiURL.appendingPathComponent("images/featured")
+        case .posters:
+            return Config.apiURL.appendingPathComponent("images/posters")
+        }
+    }
+
+    private static var publicDirectory: URL {
         URL(fileURLWithPath: DirectoryConfiguration.detect().publicDirectory)
-    }
-
-    static var imagesDirectory: URL {
-        Paths.publicDirectory.appendingPathComponent("Images")
-    }
-
-    static var featuredDirectory: URL {
-        Paths.imagesDirectory.appendingPathComponent("Featured")
-    }
-
-    static var postersDirectory: URL {
-        Paths.imagesDirectory.appendingPathComponent("Posters")
     }
 }

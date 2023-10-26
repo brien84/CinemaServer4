@@ -8,10 +8,31 @@ enum SupportedVersion: String {
 }
 
 func routes(_ app: Application) throws {
+    app.get("images", "featured", ":fileName") { req -> Response in
+        guard let fileName = req.parameters.get("fileName") else { return Response(status: .notFound) }
+        let path = Assets.featured.directory.appendingPathExtension(fileName)
+        return req.fileio.streamFile(at: path.absoluteString)
+    }
+
     app.get("images", "posters", ":fileName") { req -> Response in
         guard let fileName = req.parameters.get("fileName") else { return Response(status: .notFound) }
-        let path = Paths.postersDirectory.appendingPathExtension(fileName)
+        let path = Assets.posters.directory.appendingPathExtension(fileName)
         return req.fileio.streamFile(at: path.absoluteString)
+    }
+
+    app.get("featured", ":city", ":venues") { req in
+        let city = try getCity(req.parameters)
+        let venues = try getVenues(req.parameters)
+
+        return queryMovies(in: [city], at: venues, on: req).mapEachCompact { movie -> Featured? in
+            guard let featured = movie.$featured.value.unsafelyUnwrapped else { return nil }
+
+            if featured.startDate < Date() && featured.endDate > Date() {
+                return featured
+            } else {
+                return nil
+            }
+        }
     }
 
     app.get(":city", ":venues") { req in
