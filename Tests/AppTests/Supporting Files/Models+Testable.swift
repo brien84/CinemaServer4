@@ -92,6 +92,25 @@ extension Movie {
 }
 
 extension MovieProfile {
+    convenience init(
+        title: String?,
+        originalTitle: String?,
+        year: String?,
+        duration: String?,
+        ageRating: AgeRating?,
+        genres: [String]?,
+        plot: String?
+    ) {
+        self.init()
+        self.title = title
+        self.originalTitle = originalTitle
+        self.year = year
+        self.duration = duration
+        self.ageRating = ageRating
+        self.genres = genres
+        self.plot = plot
+    }
+
     static func create(
         title: String? = nil,
         originalTitle: String? = nil,

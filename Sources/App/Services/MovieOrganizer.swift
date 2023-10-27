@@ -194,6 +194,19 @@ private extension String {
     }
 }
 
+private extension MovieProfile {
+    convenience init(from movie: Movie) {
+        self.init()
+        self.title = movie.title
+        self.originalTitle = movie.originalTitle
+        self.year = movie.year
+        self.duration = movie.duration
+        self.ageRating = movie.ageRating
+        self.genres = movie.genres
+        self.plot = movie.plot
+    }
+}
+
 private extension URL {
     /// Returns last path component of the `URL` without its file extension.
     ///

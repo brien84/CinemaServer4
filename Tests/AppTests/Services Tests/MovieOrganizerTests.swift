@@ -31,8 +31,8 @@ final class MovieOrganizerTests: XCTestCase {
         GenreMapping.create(genre: currentGenre, newGenre: newGenre, on: app.db)
 
         _ = try sut.organize(on: app.db).wait()
-        let movies = try Movie.query(on: app.db).all().wait()
 
+        let movies = try Movie.query(on: app.db).all().wait()
         XCTAssertEqual(movies.first!.genres, [newGenre])
     }
 
@@ -46,7 +46,6 @@ final class MovieOrganizerTests: XCTestCase {
         _ = try sut.organize(on: app.db).wait()
 
         let movies = try Movie.query(on: app.db).all().wait()
-
         XCTAssertEqual(movies.count, 1)
         XCTAssertEqual(movies[0].originalTitle, newTitle)
     }
@@ -75,7 +74,6 @@ final class MovieOrganizerTests: XCTestCase {
         _ = try sut.organize(on: app.db).wait()
 
         let profile = try MovieProfile.query(on: app.db).first().wait()
-
         XCTAssertEqual(profile?.title, title)
         XCTAssertEqual(profile?.originalTitle, originalTitle)
         XCTAssertEqual(profile?.year, year)
@@ -124,7 +122,6 @@ final class MovieOrganizerTests: XCTestCase {
         _ = try sut.organize(on: app.db).wait()
 
         let movies = try Movie.query(on: app.db).all().wait()
-
         XCTAssertEqual(movies.count, 1)
         XCTAssertEqual(movies[0].title, title)
         XCTAssertEqual(movies[0].originalTitle, originalTitle)
@@ -150,7 +147,6 @@ final class MovieOrganizerTests: XCTestCase {
         let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
         let movie0 = movies.first { $0.originalTitle == "Movie0" }
         let movie1 = movies.first { $0.originalTitle == "Movie1" }
-
         XCTAssertEqual(movie0?.showings.count, 1)
         XCTAssertEqual(movie1?.showings.count, 2)
     }
@@ -164,7 +160,6 @@ final class MovieOrganizerTests: XCTestCase {
         _ = try sut.organize(on: app.db).wait()
 
         let movies = try Movie.query(on: app.db).all().wait()
-
         XCTAssertEqual(movies.count, 1)
         XCTAssertEqual(movies[0].originalTitle, "Movie0")
     }
@@ -179,7 +174,6 @@ final class MovieOrganizerTests: XCTestCase {
 
         let allFeatured = try Featured.query(on: app.db).with(\.$movie).all().wait()
         let movie = try Movie.query(on: app.db).first().wait()
-
         XCTAssertEqual(allFeatured.count, 1)
         XCTAssertEqual(allFeatured[0].label, featured.label)
         XCTAssertEqual(allFeatured[0].title, featured.title)

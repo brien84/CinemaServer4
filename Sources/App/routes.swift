@@ -26,7 +26,7 @@ func routes(_ app: Application) throws {
 
         return queryMovies(in: [city], at: venues, on: req).mapEachCompact { movie -> Featured? in
             guard let featured = movie.$featured.value.unsafelyUnwrapped else { return nil }
-            return featured.isValid ? featured : nil
+            return featured.isActive ? featured : nil
         }
     }
 

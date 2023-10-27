@@ -36,36 +36,6 @@ final class MovieProfile: Model, Content {
 
     @Field(key: "plot")
     var plot: String?
-
-    convenience init(
-        title: String?,
-        originalTitle: String?,
-        year: String?,
-        duration: String?,
-        ageRating: AgeRating?,
-        genres: [String]?,
-        plot: String?
-    ) {
-        self.init()
-        self.title = title
-        self.originalTitle = originalTitle
-        self.year = year
-        self.duration = duration
-        self.ageRating = ageRating
-        self.genres = genres
-        self.plot = plot
-    }
-
-    convenience init(from movie: Movie) {
-        self.init()
-        self.title = movie.title
-        self.originalTitle = movie.originalTitle
-        self.year = movie.year
-        self.duration = movie.duration
-        self.ageRating = movie.ageRating
-        self.genres = movie.genres
-        self.plot = movie.plot
-    }
 }
 
 struct CreateMovieProfiles: Migration {

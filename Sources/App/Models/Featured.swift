@@ -34,6 +34,12 @@ final class Featured: Model, Content {
 
     @OptionalParent(key: "movie_id")
     var movie: Movie?
+
+    /// `Featured` is considered active if its `startDate` is earlier
+    /// than current date and its `endDate` is later than the current date.
+    var isActive: Bool {
+        self.startDate < Date() && self.endDate > Date()
+    }
 }
 
 struct CreateFeatured: Migration {
@@ -53,13 +59,5 @@ struct CreateFeatured: Migration {
 
     func revert(on database: Database) -> EventLoopFuture<Void> {
         database.schema(Featured.schema).delete()
-    }
-}
-
-extension Featured {
-    /// `Featured` is considered valid if its `startDate` is earlier
-    /// than current date and its `endDate` is later than the current date.
-    var isValid: Bool {
-        self.startDate < Date() && self.endDate > Date()
     }
 }

@@ -245,7 +245,7 @@ final class ContentValidatorTests: XCTestCase {
             originalTitle: nil,
             year: "test",
             duration: "test",
-            ageRating: "test",
+            ageRating: .v,
             genres: ["test"],
             plot: "test",
             poster: "test",
@@ -263,7 +263,6 @@ final class ContentValidatorTests: XCTestCase {
         let url = "url"
 
         let showing = Showing(city: .vilnius, url: url)
-
         Movie.create(originalTitle: originalTitle, showings: [showing], on: app.db)
 
         try sut.validate(on: app.db).wait()
