@@ -41,26 +41,70 @@ final class ContentValidatorTests: XCTestCase {
         XCTAssertEqual(count, 1)
     }
 
-    func testEmptyStringTriggersValidator() throws {
-        Movie.create(
-            title: "",
+    func testFeaturedWithValidDataPassesValidation() throws {
+        let movie = Movie(
+            title: "test",
             originalTitle: "test",
             year: "test",
             duration: "test",
             ageRating: .v,
             genres: ["test"],
             plot: "test",
-            poster: "test",
-            on: app.db
+            poster: "test"
         )
+
+        let featured = Featured(
+            id: UUID(),
+            label: "test",
+            title: "test",
+            originalTitle: "test",
+            startDate: Date(),
+            endDate: Date(),
+            imageURL: "test"
+        )
+
+        _ = try! movie.create(on: app.db).wait()
+        _ = try! movie.$showings.create([Showing(city: .vilnius)], on: app.db).wait()
+        _ = try! movie.$featured.create(featured, on: app.db).wait()
 
         try sut.validate(on: app.db).wait()
 
-        let count = try Movie.query(on: app.db).count().wait()
-        XCTAssertEqual(count, 0)
+        let movieID = try! Featured.query(on: app.db).with(\.$movie).first().wait()?.$movie.id
+        XCTAssertNotEqual(movieID, nil)
     }
 
-    func testValidatingTitleProperty() throws {
+    func testFeaturedWithInalidDataTriggersValidation() throws {
+        let movie = Movie(
+            title: "test",
+            originalTitle: "test",
+            year: "test",
+            duration: "test",
+            ageRating: .v,
+            genres: ["test"],
+            plot: "test",
+            poster: "test"
+        )
+
+        let featured = Featured(
+            id: UUID(),
+            label: "",
+            title: "test",
+            originalTitle: "test",
+            startDate: Date(),
+            endDate: Date(),
+            imageURL: "test"
+        )
+
+        _ = try! movie.create(on: app.db).wait()
+        _ = try! movie.$featured.create(featured, on: app.db).wait()
+
+        try sut.validate(on: app.db).wait()
+
+        let movieID = try! Featured.query(on: app.db).with(\.$movie).first().wait()?.$movie.id
+        XCTAssertEqual(movieID, nil)
+    }
+
+    func testNilPropertyThrowsValidationError() throws {
         Movie.create(
             title: nil,
             originalTitle: "test",
@@ -79,10 +123,10 @@ final class ContentValidatorTests: XCTestCase {
         XCTAssertEqual(count, 0)
     }
 
-    func testValidatingOriginalTitleProperty() throws {
+    func testEmptyStringThrowsValidationError() throws {
         Movie.create(
-            title: "test",
-            originalTitle: nil,
+            title: "",
+            originalTitle: "test",
             year: "test",
             duration: "test",
             ageRating: .v,
@@ -98,64 +142,7 @@ final class ContentValidatorTests: XCTestCase {
         XCTAssertEqual(count, 0)
     }
 
-    func testValidatingYearProperty() throws {
-        Movie.create(
-            title: "test",
-            originalTitle: "test",
-            year: nil,
-            duration: "test",
-            ageRating: .v,
-            genres: ["test"],
-            plot: "test",
-            poster: "test",
-            on: app.db
-        )
-
-        try sut.validate(on: app.db).wait()
-
-        let count = try Movie.query(on: app.db).count().wait()
-        XCTAssertEqual(count, 0)
-    }
-
-    func testValidatingDurationProperty() throws {
-        Movie.create(
-            title: "test",
-            originalTitle: "test",
-            year: "test",
-            duration: nil,
-            ageRating: .v,
-            genres: ["test"],
-            plot: "test",
-            poster: "test",
-            on: app.db
-        )
-
-        try sut.validate(on: app.db).wait()
-
-        let count = try Movie.query(on: app.db).count().wait()
-        XCTAssertEqual(count, 0)
-    }
-
-    func testValidatingAgeRatingProperty() throws {
-        Movie.create(
-            title: "test",
-            originalTitle: "test",
-            year: "test",
-            duration: "test",
-            ageRating: nil,
-            genres: ["test"],
-            plot: "test",
-            poster: "test",
-            on: app.db
-        )
-
-        try sut.validate(on: app.db).wait()
-
-        let count = try Movie.query(on: app.db).count().wait()
-        XCTAssertEqual(count, 0)
-    }
-
-    func testValidatingGenresProperty() throws {
+    func testEmptyStringArrayThrowsValidationError() throws {
         Movie.create(
             title: "test",
             originalTitle: "test",
@@ -174,45 +161,7 @@ final class ContentValidatorTests: XCTestCase {
         XCTAssertEqual(count, 0)
     }
 
-    func testValidatingPlotProperty() throws {
-        Movie.create(
-            title: "test",
-            originalTitle: "test",
-            year: "test",
-            duration: "test",
-            ageRating: .v,
-            genres: ["test"],
-            plot: nil,
-            poster: "test",
-            on: app.db
-        )
-
-        try sut.validate(on: app.db).wait()
-
-        let count = try Movie.query(on: app.db).count().wait()
-        XCTAssertEqual(count, 0)
-    }
-
-    func testValidatingPosterProperty() throws {
-        Movie.create(
-            title: "test",
-            originalTitle: "test",
-            year: "test",
-            duration: "test",
-            ageRating: .v,
-            genres: ["test"],
-            plot: "test",
-            poster: nil,
-            on: app.db
-        )
-
-        try sut.validate(on: app.db).wait()
-
-        let count = try Movie.query(on: app.db).count().wait()
-        XCTAssertEqual(count, 0)
-    }
-
-    func testValidatingShowingsProperty() throws {
+    func testEmptyShowingsArrayThrowsValidationError() throws {
         Movie.create(
             title: "test",
             originalTitle: "test",
@@ -232,14 +181,17 @@ final class ContentValidatorTests: XCTestCase {
         XCTAssertEqual(count, 0)
     }
 
-    func testReportContentWhenAllMoviesPassValidation() throws {
+    func testReportContentWhenAllContentPassValidation() throws {
         try sut.validate(on: app.db).wait()
 
         let report = sut.getReport()
-        XCTAssertEqual(report, "<p>All movies passed validation!</p>")
+        XCTAssertEqual(
+            report,
+            "<p>All movies passed validation!</p><p>-----</p><p>All featured passed validation!</p>"
+        )
     }
 
-    func testReportContentWhenOriginalTitleIsMissing() throws {
+    func testMovieReportContentWhenOriginalTitleIsMissing() throws {
         Movie.create(
             title: "test",
             originalTitle: nil,
@@ -254,11 +206,14 @@ final class ContentValidatorTests: XCTestCase {
 
         try sut.validate(on: app.db).wait()
 
-        let report = sut.getReport()
-        XCTAssertEqual(report, "<p>Movies failed validation: </p>" + "<p>Movie is missing originalTitle.</p>")
+        let report = sut.getMovieReport()
+        XCTAssertEqual(
+            report,
+            "<p>Movies failed validation: </p>" + "<p>Movie is missing originalTitle.</p>"
+        )
     }
 
-    func testFailedValidationReportContainsOriginalTitleAndURL() throws {
+    func testFailedMovieValidationReportContainsOriginalTitleAndURL() throws {
         let originalTitle = "title"
         let url = "url"
 
@@ -272,7 +227,7 @@ final class ContentValidatorTests: XCTestCase {
         XCTAssertTrue(report.contains(url))
     }
 
-    func testReportIsSortedByEarliestShowings() throws {
+    func testMovieReportIsSortedByEarliestShowings() throws {
         let now = Date()
 
         Movie.create(
@@ -297,7 +252,7 @@ final class ContentValidatorTests: XCTestCase {
 
         try sut.validate(on: app.db).wait()
 
-        let report = sut.getReport()
+        let report = sut.getMovieReport()
         XCTAssertEqual(
             report,
             "<p>Movies failed validation: </p>" +
@@ -306,18 +261,32 @@ final class ContentValidatorTests: XCTestCase {
         )
     }
 
-    func testMoviesArrayIsClearedWhenValidationStarts() throws {
+    func testValidationReportResetsValidationStarts() throws {
         let originalTitle0 = "title0"
         let originalTitle1 = "title1"
 
         Movie.create(originalTitle: originalTitle0, on: app.db)
         try sut.validate(on: app.db).wait()
 
+        let report0 = sut.getReport()
+        XCTAssertTrue(report0.contains(originalTitle0))
+        XCTAssertFalse(report0.contains(originalTitle1))
+
         Movie.create(originalTitle: originalTitle1, on: app.db)
         try sut.validate(on: app.db).wait()
 
-        let report = sut.getReport()
-        XCTAssertFalse(report.contains(originalTitle0))
-        XCTAssertTrue(report.contains(originalTitle1))
+        let report1 = sut.getReport()
+        XCTAssertFalse(report1.contains(originalTitle0))
+        XCTAssertTrue(report1.contains(originalTitle1))
+    }
+}
+
+private extension ContentValidator {
+    func getFeaturedReport() -> String? {
+        self.getReport().slice(from: "<p>-----</p>", to: nil, isSlicingBackwards: true)
+    }
+
+    func getMovieReport() -> String? {
+        self.getReport().slice(from: nil, to: "<p>-----</p>")
     }
 }
