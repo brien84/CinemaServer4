@@ -79,6 +79,34 @@ final class AppTests: XCTestCase {
         })
     }
 
+    func testQueryReturnsFeaturedSortedByLatestStartDate() throws {
+        let now = Date()
+        let endDate = now.advanced(by: 10000)
+
+        let featured0 = Featured(originalTitle: "Test0", startDate: now.advanced(by: -50), endDate: endDate)
+        let featured1 = Featured(originalTitle: "Test1", startDate: now.advanced(by: -10), endDate: endDate)
+        let featured2 = Featured(originalTitle: "Test2", startDate: now.advanced(by: -30), endDate: endDate)
+
+        Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
+        let movie0 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test0").first().wait()
+        try! movie0!.$featured.create(featured0, on: sut.db).wait()
+
+        Movie.create(originalTitle: "Test1", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
+        let movie1 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test1").first().wait()
+        try! movie1!.$featured.create(featured1, on: sut.db).wait()
+
+        Movie.create(originalTitle: "Test2", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
+        let movie2 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test2").first().wait()
+        try! movie2!.$featured.create(featured2, on: sut.db).wait()
+
+        try sut.test(.GET, constructFeaturedPath(.vilnius, [.forum]), afterResponse: { res in
+            XCTAssertEqual(res.status, .ok)
+            let featured = try res.content.decode([Featured].self)
+            XCTAssertEqual(featured.count, 3)
+            XCTAssertEqual(featured, [featured1, featured2, featured0])
+        })
+    }
+
     func testUnknownCityParameterThrowsBadRequestError() throws {
         try sut.test(.GET, constructPath(nil, [.forum]), afterResponse: { res in
             XCTAssertEqual(res.status, HTTPResponseStatus.badRequest)
