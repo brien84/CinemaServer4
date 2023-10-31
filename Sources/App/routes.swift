@@ -1,9 +1,7 @@
 import Fluent
 import Vapor
 
-enum SupportedVersion: String {
-    case v1_3 = "1.3"
-
+enum SupportedVersion {
     static let error = Abort(.custom(code: 469, reasonPhrase: "Version is not supported!"))
 }
 
@@ -87,6 +85,13 @@ func routes(_ app: Application) throws {
     app.get("siauliai") { req -> EventLoopFuture<[Movie]> in
         queryLegacyMovies(in: [.siauliai], at: [.forum], on: req)
     }
+}
+
+/// Checks if the version specified in the `Request` headers is equal or higher than the required version.
+private func isRequestCompatible(_ request: Request, withRequiredVersion version: String) -> Bool {
+    guard let requestVersion = request.headers["iOS-Client-Version"].first else { return false }
+    let result = version.compare(requestVersion, options: .numeric)
+    return result == .orderedAscending || result == .orderedSame
 }
 
 private func getCity(_ parameters: Parameters) throws -> City {
