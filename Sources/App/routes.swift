@@ -31,12 +31,22 @@ func routes(_ app: Application) throws {
     app.get(":city", ":venues") { req in
         let city = try getCity(req.parameters)
         let venues = try getVenues(req.parameters)
-        return queryMovies(in: [city], at: venues, on: req)
+
+        if checkIfLegacyQueryInVilniusRequired(city: city, venues: venues, on: req) {
+            return queryLegacyMoviesInVilnius(at: venues, on: req)
+        } else {
+            return queryMovies(in: [city], at: venues, on: req)
+        }
     }
 
     app.get("vilnius", ":venues") { req -> EventLoopFuture<[Movie]> in
         let venues = try getVenues(req.parameters)
-        return queryMovies(in: [.vilnius], at: venues, on: req)
+
+        if checkIfLegacyQueryInVilniusRequired(city: .vilnius, venues: venues, on: req) {
+            return queryLegacyMoviesInVilnius(at: venues, on: req)
+        } else {
+            return queryMovies(in: [.vilnius], at: venues, on: req)
+        }
     }
 
     app.get("kaunas", ":venues") { req -> EventLoopFuture<[Movie]> in
@@ -113,6 +123,31 @@ private func queryMovies(in cities: [City], at venues: [Venue], on req: Request)
         return movie.showings.count > .zero ? movie : nil
     }
 }
+
+// MARK: v1.4 - Deprecated
+
+func checkIfLegacyQueryInVilniusRequired(city: City, venues: [Venue], on req: Request) -> Bool {
+    guard city == .vilnius else { return false }
+    guard venues.contains(.apollo) else { return false }
+    guard !isRequestCompatible(req, withRequiredVersion: "1.4.1") else { return false }
+    return true
+}
+
+/// Handles queries which contain `Venue.apollo` in `City.vilnius` for client version 1.4 and earlier.
+func queryLegacyMoviesInVilnius(at venues: [Venue], on req: Request) -> EventLoopFuture<[Movie]> {
+    var venues = venues
+    venues.append(.apolloAkropolis)
+    return queryMovies(in: [.vilnius], at: venues, on: req).mapEach { movie in
+        movie.showings.forEach { showing in
+            if showing.venue == .apolloAkropolis {
+                showing.venue = .apollo
+            }
+        }
+        return movie
+    }
+}
+
+// MARK: v1.1.2 - Deprecated
 
 private func queryLegacyMovies(in cities: [City], at venues: [Venue], on req: Request) -> EventLoopFuture<[Movie]> {
     queryMovies(in: cities, at: venues, on: req).mapEach { movie in
