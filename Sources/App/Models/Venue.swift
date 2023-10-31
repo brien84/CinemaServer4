@@ -9,6 +9,8 @@ import Foundation
 
 enum Venue: String, Codable {
     case apollo
+    case apolloAkropolis
+    case apolloOutlet
     case atlantis
     case cinamon
     case forum
@@ -19,5 +21,5 @@ enum Venue: String, Codable {
     case apollo_ = "Apollo"
     case cinamon_ = "Cinamon"
     case forum_ = "Forum Cinemas"
-    case multikino_  = "Multikino"
+    case multikino_ = "Multikino"
 }
