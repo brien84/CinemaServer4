@@ -107,11 +107,12 @@ private extension Showing {
         guard let city = showing.area?.city else { return nil }
         guard let date = showing.date?.convertToDate() else { return nil }
         guard let url = showing.url else { return nil }
+        guard let venue = showing.area?.venue else { return nil }
 
         self.init(
             city: city,
             date: date,
-            venue: .apollo,
+            venue: venue,
             is3D: showing.is3D?.contains("3D") ?? false,
             url: url.sanitizeHTTP()
         )
@@ -156,13 +157,27 @@ private struct APIService: Decodable {
     enum Area: Int, CaseIterable {
         case panevezys = 1018
         case vilnius = 1019
+        case outlet = 1024
 
         var city: City {
             switch self {
-            case .vilnius:
-                return .vilnius
             case .panevezys:
                 return .panevezys
+            case .vilnius:
+                return .vilnius
+            case .outlet:
+                return .vilnius
+            }
+        }
+
+        var venue: Venue {
+            switch self {
+            case .panevezys:
+                return .apollo
+            case .vilnius:
+                return .apolloAkropolis
+            case .outlet:
+                return .apolloOutlet
             }
         }
 
@@ -172,6 +187,8 @@ private struct APIService: Decodable {
                 return URI("https://www.apollokinas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(Self.panevezys.rawValue)")
             case .vilnius:
                 return URI("https://www.apollokinas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(Self.vilnius.rawValue)")
+            case .outlet:
+                return URI("https://www.apollokinas.lt/xml/Schedule/?format=json&nrOfDays=31&area=\(Self.outlet.rawValue)")
             }
         }
     }
