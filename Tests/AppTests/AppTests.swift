@@ -34,7 +34,7 @@ final class AppTests: XCTestCase {
         let featured0 = Featured(originalTitle: "Test0", startDate: startDate, endDate: endDate)
         let featured1 = Featured(originalTitle: "Test1", startDate: startDate, endDate: endDate)
 
-        Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .apollo)], on: sut.db)
+        Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
         let movie0 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test0").first().wait()
         try! movie0!.$featured.create(featured0, on: sut.db).wait()
 
@@ -59,19 +59,19 @@ final class AppTests: XCTestCase {
         let featured1 = Featured(originalTitle: "Test1", startDate: now.advanced(by: -101), endDate: now.advanced(by: -100))
         let featured2 = Featured(originalTitle: "Test2", startDate: now.advanced(by: -100), endDate: now.advanced(by: 100))
 
-        Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .apollo)], on: sut.db)
+        Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
         let movie0 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test0").first().wait()
         try! movie0!.$featured.create(featured0, on: sut.db).wait()
 
-        Movie.create(originalTitle: "Test1", showings: [Showing(city: .vilnius, venue: .apollo)], on: sut.db)
+        Movie.create(originalTitle: "Test1", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
         let movie1 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test1").first().wait()
         try! movie1!.$featured.create(featured1, on: sut.db).wait()
 
-        Movie.create(originalTitle: "Test2", showings: [Showing(city: .vilnius, venue: .apollo)], on: sut.db)
+        Movie.create(originalTitle: "Test2", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
         let movie2 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test2").first().wait()
         try! movie2!.$featured.create(featured2, on: sut.db).wait()
 
-        try sut.test(.GET, constructFeaturedPath(.vilnius, [.apollo]), afterResponse: { res in
+        try sut.test(.GET, constructFeaturedPath(.vilnius, [.forum]), afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
             let featured = try res.content.decode([Featured].self)
             XCTAssertEqual(featured.count, 1)
@@ -94,7 +94,8 @@ final class AppTests: XCTestCase {
     func testQueryReturnsShowingsFromSpecifiedCity() throws {
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, constructPath(.vilnius, [.apollo, .forum, .multikino]), afterResponse: { res in
+        let venues: [Venue] = [.apolloAkropolis, .apolloOutlet, .forum, .multikino]
+        try sut.test(.GET, constructPath(.vilnius, venues), afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
 
             let movies = try res.content.decode([Movie].self)
@@ -102,15 +103,15 @@ final class AppTests: XCTestCase {
 
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
-            XCTAssertEqual(showings.count, 3)
-            XCTAssertEqual(showings.filter({ $0.city == .vilnius }).count, 3)
+            XCTAssertEqual(showings.count, 4)
+            XCTAssertEqual(showings.filter({ $0.city == .vilnius }).count, 4)
         })
     }
 
     func testQueryReturnsShowingsFromSpecifiedVenues() throws {
         Movie.create(showings: showings, on: sut.db)
 
-        try sut.test(.GET, constructPath(.vilnius, [.apollo]), afterResponse: { res in
+        try sut.test(.GET, constructPath(.vilnius, [.forum]), afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
 
             let movies = try res.content.decode([Movie].self)
@@ -119,6 +120,26 @@ final class AppTests: XCTestCase {
             let service = try res.content.decode([ShowingService].self)
             let showings = service.flatMap { $0.showings }
             XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.filter({ $0.venue == .forum }).count, 1)
+        })
+    }
+
+    // MARK: v1.4 - Deprecated
+
+    func testLegacyQueryInVilnius() throws {
+        Movie.create(showings: [Showing(city: .vilnius, venue: .apolloAkropolis)], on: sut.db)
+
+        let headers = HTTPHeaders([("iOS-Client-Version", "1.4")])
+        try sut.test(.GET, constructPath(.vilnius, [.apollo]), headers: headers, afterResponse: { res in
+            XCTAssertEqual(res.status, .ok)
+
+            let movies = try res.content.decode([Movie].self)
+            XCTAssertEqual(movies.count, 1)
+            
+            let service = try res.content.decode([ShowingService].self)
+            let showings = service.flatMap { $0.showings }
+            XCTAssertEqual(showings.count, 1)
+            XCTAssertEqual(showings.filter({ $0.city == .vilnius }).count, 1)
             XCTAssertEqual(showings.filter({ $0.venue == .apollo }).count, 1)
         })
     }
@@ -255,7 +276,8 @@ final class AppTests: XCTestCase {
     }
 
     let showings = [
-        Showing(city: .vilnius, venue: .apollo),
+        Showing(city: .vilnius, venue: .apolloAkropolis),
+        Showing(city: .vilnius, venue: .apolloOutlet),
         Showing(city: .vilnius, venue: .forum),
         Showing(city: .vilnius, venue: .multikino),
         Showing(city: .kaunas, venue: .cinamon),
