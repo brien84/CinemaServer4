@@ -42,6 +42,12 @@ final class Featured: Model, Content {
     }
 }
 
+extension Featured: Equatable {
+    static func == (lhs: Featured, rhs: Featured) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 struct CreateFeatured: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         database.schema(Featured.schema)
