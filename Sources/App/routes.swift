@@ -8,14 +8,14 @@ enum SupportedVersion {
 func routes(_ app: Application) throws {
     app.get("images", "featured", ":fileName") { req -> Response in
         guard let fileName = req.parameters.get("fileName") else { return Response(status: .notFound) }
-        let path = Assets.featured.directory.appendingPathExtension(fileName)
-        return req.fileio.streamFile(at: path.absoluteString)
+        let path = Assets.featured.directory.appendingPathComponent(fileName).path
+        return req.fileio.streamFile(at: path)
     }
 
     app.get("images", "posters", ":fileName") { req -> Response in
         guard let fileName = req.parameters.get("fileName") else { return Response(status: .notFound) }
-        let path = Assets.posters.directory.appendingPathExtension(fileName)
-        return req.fileio.streamFile(at: path.absoluteString)
+        let path = Assets.posters.directory.appendingPathComponent(fileName).path
+        return req.fileio.streamFile(at: path)
     }
 
     app.get("featured", ":city", ":venues") { req in
