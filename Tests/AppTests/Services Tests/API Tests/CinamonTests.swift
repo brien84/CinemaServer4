@@ -80,7 +80,7 @@ final class CinamonTests: XCTestCase {
         XCTAssertEqual(movies[0].showings.count, 0)
     }
 
-    func testSkipsMovieIfShowShowingsIfMatchingScreenIsNotFound() throws {
+    func testSkipsMovieIfShowShowingsOfMatchingScreenIsNotFound() throws {
         let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidScreens)
         sut = Cinamon(client: client)
 
