@@ -35,225 +35,93 @@ final class AtlantisTests: XCTestCase {
         try sut.fetchMovies(on: app.db).wait()
 
         let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
-        XCTAssertEqual(movies.count, 3)
+        XCTAssertEqual(movies.count, 2)
         let showings = try Showing.query(on: app.db).all().wait()
-        XCTAssertEqual(showings.count, 4)
+        XCTAssertEqual(showings.count, 6)
 
-        XCTAssertEqual(movies[0].title, "title3D")
-        XCTAssertEqual(movies[0].originalTitle, "originalTitle")
-        XCTAssertEqual(movies[0].ageRating, .v)
-        XCTAssertEqual(movies[0].genres, ["Trileris", "Siaubo"])
+        XCTAssertEqual(movies[0].title, "Pavadinimas")
+        XCTAssertEqual(movies[0].originalTitle, "Title")
+        XCTAssertEqual(movies[0].genres, ["Komedija"])
+        XCTAssertEqual(movies[0].duration, "110 min")
 
         XCTAssertEqual(movies[0].showings[0].city, .siauliai)
-        XCTAssertEqual(movies[0].showings[0].date, "2022-12-10 11:45".convertToDate())
+        XCTAssertEqual(movies[0].showings[0].date, "2023-11-21T13:40:00.000Z".convertToDate())
         XCTAssertEqual(movies[0].showings[0].venue, .atlantis)
         XCTAssertEqual(movies[0].showings[0].is3D, true)
-        XCTAssertEqual(movies[0].showings[0].url, "https://www.atlantiscinemas.lt/?sdate=1670284800")
+        XCTAssertEqual(movies[0].showings[0].url, "https://www.atlantiscinemas.lt/kasa/seansas/9a9e2093-5cd4-4b4e-8c86-bd8fb568df54")
     }
 
-    func testShowingWithInvalidTimeIsIgnored() throws {
+    func testSkipsShowingIfAPIPropertiesAreMissing() throws {
         let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidShowing)
         sut = Atlantis(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
 
         let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
-        XCTAssertEqual(movies.count, 1)
+        XCTAssertEqual(movies.count, 2)
         let showings = try Showing.query(on: app.db).all().wait()
-        XCTAssertEqual(showings.count, 1)
-    }
-
-    func testParsingDoesNotFailWhenAPIContainsDateWithoutData() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.missingDate)
-        sut = Atlantis(client: client)
-
-        try sut.fetchMovies(on: app.db).wait()
-
-        let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
-        XCTAssertEqual(movies.count, 1)
-        let showings = try Showing.query(on: app.db).all().wait()
-        XCTAssertEqual(showings.count, 1)
-        XCTAssertEqual(movies[0].showings[0].date, "2022-12-22 10:00".convertToDate())
+        XCTAssertEqual(showings.count, 4)
     }
 
     // MARK: Test Helpers
 
     struct Data {
         static var valid = """
-        <dl class="tabs" id="movies">
-        <dt id="2022-12-10"><span><strong>Šiandien</strong><span class="month">Gruodžio</span> <span class="day">10 d.</span></span></dt>
-        <dd><ul class="movies_list">
-
-        <li class="movie">
-        <div class="movie-ticket">
-        <div class="movie-info-header">
-        <div class="genre">Trileris, Siaubo</div>
-        <div class="age-class">V</div>
-        <div class="clearfix"></div>
-        </div><a href="/lilas-lilas-krokodilas-dubliuotas-lietuviskai?sdate=1670630400""></a>
-        <div class="movie-info"><div class="movie-info-details">
-        <a href="/lilas-lilas-krokodilas-dubliuotas-lietuviskai?sdate=1670630400">
-        <h3>title3D<small>originalTitle</small></h3></a>
-        <div class="buy-button"><a class="btn btn-info" href="/?sdate=1670284800">Pirkti bilietą</a></div>
-        <div class="short-description">
-        <p>Primų šeimai persikėlus į Niujorką, jų sūnus Džošas sunkiai pritampa naujoje vietoje.</p>
-        </div>
-        <div class="movie-sessions">
-        <div class="sessions-title">
-        <strong>Šiandien</strong><span class="month">Gruodžio</span> <span class="day">10 d.</span>
-        </div>
-        <div class="sessions">
-        <div class="session">
-        <time>11:45</time>
-        <span>Lietuvių k.</span>
-        </div>
-        <div class="session">
-        <time>14:00</time>
-        <span>Lietuvių k.</span>
-        </div>
-        <div class="clearfix"></div>
-        </div></div></div></div><div class="clearfix"></div></div>
-        </li>
-
-        <li class="movie">
-        <div class="movie-ticket">
-        <div class="movie-info-header">
-        <div class="genre">Animacinis filmas visai šeimai</div>
-        <div class="age-class">V</div>
-        <div class="clearfix"></div>
-        </div><a href="/keistas-pasaulis?sdate=1670630400" class="movie-cover" style="background:"></a>
-        <div class="movie-info"><div class="movie-info-details">
-        <a href="/keistas-pasaulis?sdate=1670630400">
-        <h3>Keistas pasaulis<small>Strange World</small></h3></a>
-        <div class="buy-button"><a class="btn btn-info" href="/?sdate=1670630400">Pirkti bilietą</a></div>
-        <div class="short-description">
-        <p>Originali kino studijos „Disney“ veiksmo kupina animacija.</p>
-        </div>
-        <div class="movie-sessions">
-        <div class="sessions-title">
-        <strong>Šiandien</strong><span class="month">Gruodžio</span> <span class="day">10 d.</span>
-        </div>
-        <div class="sessions">
-        <div class="session">
-        <time>13:20</time>
-        <span>Lietuvių k.</span>
-        </div>
-        <div class="clearfix"></div>
-        </div></div></div></div><div class="clearfix"></div></div>
-        </li>
-
-        </ul><div class="clearfix"></div></dd>
-
-        <dt id="2022-12-11"><span><strong>Rytoj</strong><span class="month">Gruodžio</span> <span class="day">11 d.</span></span></dt>
-        <dd><ul class="movies_list">
-
-        <li class="movie">
-        <div class="movie-ticket">
-        <div class="movie-info-header">
-        <div class="genre">Animacinis filmas visai šeimai</div>
-        <div class="age-class">V</div>
-        <div class="clearfix"></div>
-        </div><a href="/keistas-pasaulis?sdate=1670716800" class="movie-cover" style="background:"></a>
-        <div class="movie-info"><div class="movie-info-details">
-        <a href="/keistas-pasaulis?sdate=1670716800">
-        <h3>Rojaus miestas<small>Paradise City</small></h3></a>
-        <div class="buy-button"><a class="btn btn-info" href="/?sdate=1670716800">Pirkti bilietą</a></div>
-        <div class="short-description">
-        <p>Originali kino studijos „Disney“ veiksmo kupina animacija supažindina.</p>
-        </div>
-        <div class="movie-sessions">
-        <div class="sessions-title">
-        <strong>Rytoj</strong><span class="month">Gruodžio</span> <span class="day">11 d.</span>
-        </div>
-        <div class="sessions">
-        <div class="session">
-        <time>10:00</time>
-        <span>Lietuvių k.</span></div>
-        <div class="clearfix"></div>
-        </div></div></div></div><div class="clearfix"></div></div>
-        </li>
-
-        </ul><div class="clearfix"></div></dd>
+        {
+            "data":[
+                {
+                    "origin_title":"Title",
+                    "title":"Pavadinimas",
+                    "runtime":110,
+                    "genres":[{"title":"Komedija"}],
+                    "sessions":[
+                        {"uuid":"9a9e2093-5cd4-4b4e-8c86-bd8fb568df54","screening_type":"3d","starts_at":"2023-11-21T13:40:00.000Z"},
+                        {"uuid":"9a9e20cc-b191-481c-8a60-5de6d8ba4e48","screening_type":"2d","starts_at":"2023-11-22T13:40:00.000Z"},
+                        {"uuid":"9a9e2106-52bb-485c-9cd7-dd43e889529e","screening_type":"2d","starts_at":"2023-11-23T13:40:00.000Z"}
+                    ]
+                },
+                {
+                    "origin_title":"Title",
+                    "title":"Pavadinimas",
+                    "runtime":100,
+                    "genres":[{"title":"Drama"},{"title":"Fantastinis"}],
+                    "sessions":[
+                        {"uuid":"9aa8aab2-f01c-46c8-bdde-56cba2a7a2dd","screening_type":"2d","starts_at":"2023-11-24T16:05:00.000Z"},
+                        {"uuid":"9aa8aab2-f93e-4320-bf33-510f73dae92c","screening_type":"2d","starts_at":"2023-11-25T16:05:00.000Z"},
+                        {"uuid":"9aa8aab3-016e-4cfa-898d-0dd99d7b84c0","screening_type":"2d","starts_at":"2023-11-26T16:05:00.000Z"}
+                    ]
+                }
+            ]
+        }
         """.data(using: .utf8)!
 
         static var invalidShowing = """
-        <dl class="tabs" id="movies">
-
-        <dt id="2022-12-11"><span><strong>Rytoj</strong><span class="month">Gruodžio</span> <span class="day">11 d.</span></span></dt>
-        <dd><ul class="movies_list">
-
-        <li class="movie">
-        <div class="movie-ticket">
-        <div class="movie-info-header">
-        <div class="genre">Nuotykių filmas visai šeimai</div>
-        <div class="age-class">V</div>
-        <div class="clearfix"></div>
-        </div><a href="/lilas-lilas-krokodilas-dubliuotas-lietuviskai?sdate=1670630400""></a>
-        <div class="movie-info"><div class="movie-info-details">
-        <a href="/lilas-lilas-krokodilas-dubliuotas-lietuviskai?sdate=1670630400">
-        <h3>title3D<small>originalTitle</small></h3></a>
-        <div class="buy-button"><a class="btn btn-info" href="/?sdate=1670284800">Pirkti bilietą</a></div>
-        <div class="short-description">
-        <p>Primų šeimai persikėlus į Niujorką, jų sūnus Džošas sunkiai pritampa naujoje vietoje.</p>
-        </div>
-        <div class="movie-sessions">
-        <div class="sessions-title">
-        <strong>Šiandien</strong><span class="month">Gruodžio</span> <span class="day">10 d.</span>
-        </div>
-        <div class="sessions">
-        <div class="session">
-        <time>INVALID-VALUE-TEST-FAIL</time>
-        <span>Lietuvių k.</span>
-        </div>
-        <div class="session">
-        <time>14:00</time>
-        <span>Lietuvių k.</span>
-        </div>
-        <div class="clearfix"></div>
-        </div></div></div></div><div class="clearfix"></div></div>
-        </li>
-
-        </ul><div class="clearfix"></div></dd>
-
-        """.data(using: .utf8)!
-
-        static var missingDate = """
-        <dl class="tabs" id="movies">
-        <dt id="2022-12-09"><span><strong>Penktadienis</strong><span class="month">Gruodžio</span> <span class="day">09 d.</span></span></dt>
-        <dd>
-        <div class="no-sessions">Šiuo metu negalima įsigyti bilietų 2022-12-09 dienai</div>
-        </dd>
-
-        <dt id="2022-12-10"><span><strong>Rytoj</strong><span class="month">Gruodžio</span> <span class="day">10 d.</span></span></dt>
-        <dd><ul class="movies_list">
-
-        <li class="movie">
-        <div class="movie-ticket">
-        <div class="movie-info-header">
-        <div class="genre">Animacinis filmas visai šeimai</div>
-        <div class="age-class">V</div>
-        <div class="clearfix"></div>
-        </div><a href="/keistas-pasaulis?sdate=1671667200" class="movie-cover" style="background:"></a>
-        <div class="movie-info"><div class="movie-info-details">
-        <a href="/keistas-pasaulis?sdate=1671667200">
-        <h3>Rojaus miestas<small>Paradise City</small></h3></a>
-        <div class="buy-button"><a class="btn btn-info" href="/?sdate=1671667200">Pirkti bilietą</a></div>
-        <div class="short-description">
-        <p>Originali kino studijos „Disney“ veiksmo kupina animacija supažindina.</p>
-        </div>
-        <div class="movie-sessions">
-        <div class="sessions-title">
-        <strong>Rytoj</strong><span class="month">Gruodžio</span> <span class="day">11 d.</span>
-        </div>
-        <div class="sessions">
-        <div class="session">
-        <time>10:00</time>
-        <span>Lietuvių k.</span></div>
-        <div class="clearfix"></div>
-        </div></div></div></div><div class="clearfix"></div></div>
-        </li>
-
-        </ul><div class="clearfix"></div></dd>
+        {
+            "data":[
+                {
+                    "origin_title":"Title",
+                    "title":"Pavadinimas",
+                    "runtime":110,
+                    "genres":[{"title":"Komedija"}],
+                    "sessions":[
+                        {"uuid":"9a9e2093-5cd4-4b4e-8c86-bd8fb568df54","screening_type":"3d","starts_at":"2023-11-21T13:40:00.000Z"},
+                        {"uuid":"9a9e20cc-b191-481c-8a60-5de6d8ba4e48","screening_type":"2d","starts_at":"2023-11-22T13:40:00.000Z"},
+                        {"uuid":"9a9e2106-52bb-485c-9cd7-dd43e889529e","screening_type":"2d","starts_at":"2023-11-23T13:40:00.000Z"}
+                    ]
+                },
+                {
+                    "origin_title":"Title",
+                    "title":"Pavadinimas",
+                    "runtime":100,
+                    "genres":[{"title":"Drama"},{"title":"Fantastinis"}],
+                    "sessions":[
+                        {"uuid":"9aa8aab2-f01c-46c8-bdde-56cba2a7a2dd","screening_type":"2d","starts_at":""},
+                        {"uuid":"9aa8aab2-f93e-4320-bf33-510f73dae92c","screening_type":"2d","starts_at":""},
+                        {"uuid":"9aa8aab3-016e-4cfa-898d-0dd99d7b84c0","screening_type":"2d","starts_at":"2023-11-26T16:05:00.000Z"}
+                    ]
+                }
+            ]
+        }
         """.data(using: .utf8)!
     }
 }

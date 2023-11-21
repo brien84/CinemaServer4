@@ -13,9 +13,7 @@ extension String {
 
     func convertToDate() -> Date? {
         let dateFormatter = DateFormatter()
-
-        guard let timeZone = TimeZone(identifier: "Europe/Vilnius") else { fatalError("TimeZone not found!") }
-        dateFormatter.timeZone = timeZone
+        dateFormatter.timeZone = TimeZone(identifier: "Europe/Vilnius")
 
         // ForumCinemas, Multikino, Apollo format: 2019-09-26T17:30:00
         dateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss"
@@ -29,8 +27,9 @@ extension String {
             return date
         }
 
-        // Atlantis format: 2019-09-26 17:30
-        dateFormatter.dateFormat = "yyyy'-'MM'-'dd' 'HH':'mm"
+        // Atlantis format: 2019-09-26T17:30:00.000Z
+        dateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z"
+        dateFormatter.timeZone = TimeZone(identifier: "GMT")
         if let date = dateFormatter.date(from: self) {
             return date
         }
