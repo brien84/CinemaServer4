@@ -99,6 +99,7 @@ struct MovieOrganizer: MovieOrganization {
         movie.duration = profile.duration
         movie.ageRating = profile.ageRating
         movie.genres = profile.genres
+        movie.metadata = profile.metadata
         movie.plot = profile.plot
         movie.poster = getURLForImage(named: movie.originalTitle ?? "", in: .posters)?.absoluteString
         return movie.update(on: db)

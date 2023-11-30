@@ -102,6 +102,7 @@ final class MovieOrganizerTests: XCTestCase {
         let duration = "TestDuration"
         let ageRating = AgeRating.v
         let genres = ["TestGenre"]
+        let metadata = ["TestMetadata"]
         let plot = "TestPlot"
         let posterFile = "\(originalTitle).webp"
         let posterURL = Assets.posters.url.appendingPathComponent(posterFile).absoluteString
@@ -115,6 +116,7 @@ final class MovieOrganizerTests: XCTestCase {
             duration: duration,
             ageRating: ageRating,
             genres: genres,
+            metadata: metadata,
             plot: plot,
             on: app.db
         )
@@ -129,6 +131,7 @@ final class MovieOrganizerTests: XCTestCase {
         XCTAssertEqual(movies[0].duration, duration)
         XCTAssertEqual(movies[0].ageRating, ageRating)
         XCTAssertEqual(movies[0].genres, genres)
+        XCTAssertEqual(movies[0].metadata, metadata)
         XCTAssertEqual(movies[0].plot, plot)
         XCTAssertEqual(movies[0].poster, posterURL)
     }

@@ -62,6 +62,7 @@ extension Movie {
         duration: String? = nil,
         ageRating: AgeRating? = nil,
         genres: [String]? = nil,
+        metadata: [String]? = nil,
         plot: String? = nil,
         poster: String? = nil,
         showings: [Showing]? = nil,
@@ -74,6 +75,7 @@ extension Movie {
             duration: duration,
             ageRating: ageRating,
             genres: genres,
+            metadata: metadata,
             plot: plot,
             poster: poster
         )
@@ -99,6 +101,7 @@ extension MovieProfile {
         duration: String?,
         ageRating: AgeRating?,
         genres: [String]?,
+        metadata: [String]?,
         plot: String?
     ) {
         self.init()
@@ -108,6 +111,7 @@ extension MovieProfile {
         self.duration = duration
         self.ageRating = ageRating
         self.genres = genres
+        self.metadata = metadata
         self.plot = plot
     }
 
@@ -118,6 +122,7 @@ extension MovieProfile {
         duration: String? = nil,
         ageRating: AgeRating? = nil,
         genres: [String]? = nil,
+        metadata: [String]? = nil,
         plot: String? = nil,
         on db: Database
     ) {
@@ -128,6 +133,7 @@ extension MovieProfile {
             duration: duration,
             ageRating: ageRating,
             genres: genres,
+            metadata: metadata,
             plot: plot
         )
 

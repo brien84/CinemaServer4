@@ -34,6 +34,9 @@ final class MovieProfile: Model, Content {
     @Field(key: "genres")
     var genres: [String]?
 
+    @Field(key: "metadata")
+    var metadata: [String]?
+
     @Field(key: "plot")
     var plot: String?
 }
@@ -48,6 +51,7 @@ struct CreateMovieProfiles: Migration {
             .field("duration", .string)
             .field("age_rating", .string)
             .field("genres", .array(of: .string))
+            .field("metadata", .array(of: .string))
             .field("plot", .string)
             .create()
     }
