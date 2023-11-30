@@ -31,8 +31,8 @@ final class AppTests: XCTestCase {
         let startDate = Date()
         let endDate = startDate.advanced(by: 10000)
 
-        let featured0 = Featured(originalTitle: "Test0", startDate: startDate, endDate: endDate)
-        let featured1 = Featured(originalTitle: "Test1", startDate: startDate, endDate: endDate)
+        let featured0 = Featured(originalTitle: "Test0", startDate: startDate, endDate: endDate, imageURL: "")
+        let featured1 = Featured(originalTitle: "Test1", startDate: startDate, endDate: endDate, imageURL: "")
 
         Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
         let movie0 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test0").first().wait()
@@ -54,10 +54,35 @@ final class AppTests: XCTestCase {
         let now = Date()
 
         // invalid because `startDate` is in the future.
-        let featured0 = Featured(originalTitle: "Test0", startDate: now.advanced(by: 100), endDate: now.advanced(by: 101))
+        let featured0 = Featured(
+            originalTitle: "Test0",
+            startDate: now.advanced(by: 100),
+            endDate: now.advanced(by: 101),
+            imageURL: ""
+        )
+
         // invalind because `endDate` is in the past.
-        let featured1 = Featured(originalTitle: "Test1", startDate: now.advanced(by: -101), endDate: now.advanced(by: -100))
-        let featured2 = Featured(originalTitle: "Test2", startDate: now.advanced(by: -100), endDate: now.advanced(by: 100))
+        let featured1 = Featured(
+            originalTitle: "Test1",
+            startDate: now.advanced(by: -101),
+            endDate: now.advanced(by: -100),
+            imageURL: ""
+        )
+
+        // invalind because `imageURL` is nil.
+        let featured2 = Featured(
+            originalTitle: "Test2",
+            startDate: now.advanced(by: -100),
+            endDate: now.advanced(by: 100),
+            imageURL: nil
+        )
+
+        let featured3 = Featured(
+            originalTitle: "Test3",
+            startDate: now.advanced(by: -100),
+            endDate: now.advanced(by: 100),
+            imageURL: ""
+        )
 
         Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
         let movie0 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test0").first().wait()
@@ -71,11 +96,15 @@ final class AppTests: XCTestCase {
         let movie2 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test2").first().wait()
         try! movie2!.$featured.create(featured2, on: sut.db).wait()
 
+        Movie.create(originalTitle: "Test3", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
+        let movie3 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test3").first().wait()
+        try! movie3!.$featured.create(featured3, on: sut.db).wait()
+
         try sut.test(.GET, constructFeaturedPath(.vilnius, [.forum]), afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
             let featured = try res.content.decode([Featured].self)
             XCTAssertEqual(featured.count, 1)
-            XCTAssertEqual(featured.first!.originalTitle, "Test2")
+            XCTAssertEqual(featured.first!.originalTitle, "Test3")
         })
     }
 
@@ -83,9 +112,9 @@ final class AppTests: XCTestCase {
         let now = Date()
         let endDate = now.advanced(by: 10000)
 
-        let featured0 = Featured(originalTitle: "Test0", startDate: now.advanced(by: -50), endDate: endDate)
-        let featured1 = Featured(originalTitle: "Test1", startDate: now.advanced(by: -10), endDate: endDate)
-        let featured2 = Featured(originalTitle: "Test2", startDate: now.advanced(by: -30), endDate: endDate)
+        let featured0 = Featured(originalTitle: "Test0", startDate: now.advanced(by: -50), endDate: endDate, imageURL: "")
+        let featured1 = Featured(originalTitle: "Test1", startDate: now.advanced(by: -10), endDate: endDate, imageURL: "")
+        let featured2 = Featured(originalTitle: "Test2", startDate: now.advanced(by: -30), endDate: endDate, imageURL: "")
 
         Movie.create(originalTitle: "Test0", showings: [Showing(city: .vilnius, venue: .forum)], on: sut.db)
         let movie0 = try! Movie.query(on: sut.db).filter(\.$originalTitle == "Test0").first().wait()

@@ -24,6 +24,7 @@ func routes(_ app: Application) throws {
 
         return queryMovies(in: [city], at: venues, on: req).mapEachCompact { movie -> Featured? in
             guard let featured = movie.$featured.value.unsafelyUnwrapped else { return nil }
+            guard featured.imageURL != nil else { return nil }
             return featured.isActive ? featured : nil
         }.map { featured in
             return featured.sorted(by: { $0.startDate > $1.startDate })
