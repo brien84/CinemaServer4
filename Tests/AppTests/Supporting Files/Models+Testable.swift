@@ -64,6 +64,7 @@ extension Movie {
         genres: [String]? = nil,
         metadata: [String]? = nil,
         plot: String? = nil,
+        trailer: String? = nil,
         poster: String? = nil,
         showings: [Showing]? = nil,
         on db: Database
@@ -77,6 +78,7 @@ extension Movie {
             genres: genres,
             metadata: metadata,
             plot: plot,
+            trailer: trailer,
             poster: poster
         )
 
@@ -102,7 +104,8 @@ extension MovieProfile {
         ageRating: AgeRating?,
         genres: [String]?,
         metadata: [String]?,
-        plot: String?
+        plot: String?,
+        trailer: String?
     ) {
         self.init()
         self.title = title
@@ -113,6 +116,7 @@ extension MovieProfile {
         self.genres = genres
         self.metadata = metadata
         self.plot = plot
+        self.trailer = trailer
     }
 
     static func create(
@@ -124,6 +128,7 @@ extension MovieProfile {
         genres: [String]? = nil,
         metadata: [String]? = nil,
         plot: String? = nil,
+        trailer: String? = nil,
         on db: Database
     ) {
         let profile = MovieProfile(
@@ -134,7 +139,8 @@ extension MovieProfile {
             ageRating: ageRating,
             genres: genres,
             metadata: metadata,
-            plot: plot
+            plot: plot,
+            trailer: trailer
         )
 
         try! profile.create(on: db).wait()

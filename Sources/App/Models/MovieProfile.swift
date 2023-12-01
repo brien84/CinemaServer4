@@ -39,6 +39,9 @@ final class MovieProfile: Model, Content {
 
     @Field(key: "plot")
     var plot: String?
+
+    @Field(key: "trailer")
+    var trailer: String?
 }
 
 struct CreateMovieProfiles: Migration {
@@ -53,6 +56,7 @@ struct CreateMovieProfiles: Migration {
             .field("genres", .array(of: .string))
             .field("metadata", .array(of: .string))
             .field("plot", .string)
+            .field("trailer", .string)
             .create()
     }
 

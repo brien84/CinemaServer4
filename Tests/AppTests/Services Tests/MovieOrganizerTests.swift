@@ -57,7 +57,9 @@ final class MovieOrganizerTests: XCTestCase {
         let duration = "TestDuration"
         let ageRating = AgeRating.v
         let genres = ["TestGenre"]
+        let metadata = ["TestMeta"]
         let plot = "TestPlot"
+        let trailer = "TestTrailer"
 
         Movie.create(
             title: title,
@@ -66,7 +68,9 @@ final class MovieOrganizerTests: XCTestCase {
             duration: duration,
             ageRating: ageRating,
             genres: genres,
+            metadata: metadata,
             plot: plot,
+            trailer: trailer,
             poster: "",
             on: app.db
         )
@@ -80,7 +84,9 @@ final class MovieOrganizerTests: XCTestCase {
         XCTAssertEqual(profile?.duration, duration)
         XCTAssertEqual(profile?.ageRating, ageRating)
         XCTAssertEqual(profile?.genres, genres)
+        XCTAssertEqual(profile?.metadata, metadata)
         XCTAssertEqual(profile?.plot, plot)
+        XCTAssertEqual(profile?.trailer, trailer)
     }
 
     func testNewProfileIsNotCreatedIfOneAlreadyExists() throws {
@@ -104,6 +110,7 @@ final class MovieOrganizerTests: XCTestCase {
         let genres = ["TestGenre"]
         let metadata = ["TestMetadata"]
         let plot = "TestPlot"
+        let trailer = "TestTrailer"
         let posterFile = "\(originalTitle).webp"
         let posterURL = Assets.posters.url.appendingPathComponent(posterFile).absoluteString
 
@@ -118,6 +125,7 @@ final class MovieOrganizerTests: XCTestCase {
             genres: genres,
             metadata: metadata,
             plot: plot,
+            trailer: trailer,
             on: app.db
         )
 
@@ -133,6 +141,7 @@ final class MovieOrganizerTests: XCTestCase {
         XCTAssertEqual(movies[0].genres, genres)
         XCTAssertEqual(movies[0].metadata, metadata)
         XCTAssertEqual(movies[0].plot, plot)
+        XCTAssertEqual(movies[0].trailer, trailer)
         XCTAssertEqual(movies[0].poster, posterURL)
     }
 

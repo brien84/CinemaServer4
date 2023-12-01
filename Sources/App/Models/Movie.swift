@@ -38,6 +38,9 @@ final class Movie: Model, Content {
     @Field(key: "plot")
     var plot: String?
 
+    @Field(key: "trailer")
+    var trailer: String?
+
     @Field(key: "poster")
     var poster: String?
 
@@ -56,6 +59,7 @@ final class Movie: Model, Content {
         genres: [String]?,
         metadata: [String]? = nil,
         plot: String? = nil,
+        trailer: String? = nil,
         poster: String? = nil
     ) {
         self.init()
@@ -67,6 +71,7 @@ final class Movie: Model, Content {
         self.genres = genres
         self.metadata = metadata
         self.plot = plot
+        self.trailer = trailer
         self.poster = poster
     }
 }
@@ -102,6 +107,7 @@ struct CreateMovies: Migration {
                 .field("genres", .array(of: .string))
                 .field("metadata", .array(of: .string))
                 .field("plot", .string)
+                .field("trailer", .string)
                 .field("poster", .string)
                 .create()
         }

@@ -101,6 +101,7 @@ struct MovieOrganizer: MovieOrganization {
         movie.genres = profile.genres
         movie.metadata = profile.metadata
         movie.plot = profile.plot
+        movie.trailer = profile.trailer
         movie.poster = getURLForImage(named: movie.originalTitle ?? "", in: .posters)?.absoluteString
         return movie.update(on: db)
     }
@@ -204,7 +205,9 @@ private extension MovieProfile {
         self.duration = movie.duration
         self.ageRating = movie.ageRating
         self.genres = movie.genres
+        self.metadata = movie.metadata
         self.plot = movie.plot
+        self.trailer = movie.trailer
     }
 }
 
