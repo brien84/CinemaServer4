@@ -73,7 +73,7 @@ final class ContentValidatorTests: XCTestCase {
         XCTAssertNotEqual(movieID, nil)
     }
 
-    func testFeaturedWithInalidDataTriggersValidation() throws {
+    func testFeaturedWithInvalidDataTriggersValidation() throws {
         let movie = Movie(
             title: "test",
             originalTitle: "test",
