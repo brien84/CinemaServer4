@@ -90,6 +90,13 @@ final class AtlantisTests: XCTestCase {
                         {"uuid":"9aa8aab2-f93e-4320-bf33-510f73dae92c","screening_type":"2d","starts_at":"2023-11-25T16:05:00.000Z"},
                         {"uuid":"9aa8aab3-016e-4cfa-898d-0dd99d7b84c0","screening_type":"2d","starts_at":"2023-11-26T16:05:00.000Z"}
                     ]
+                },
+                {
+                    "origin_title":"Title",
+                    "title":"Pavadinimas",
+                    "runtime":100,
+                    "genres":[{"title":"Drama"},{"title":"Fantastinis"}],
+                    "sessions":[]
                 }
             ]
         }

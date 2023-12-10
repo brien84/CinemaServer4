@@ -30,6 +30,7 @@ struct Atlantis: MovieAPI {
         service.movies.map { serviceMovie in
             let movie = Movie(from: serviceMovie)
             let showings = serviceMovie.showings.compactMap { Showing(from: $0) }
+            if showings.isEmpty { return db.eventLoop.makeSucceededVoidFuture() }
 
             return movie.create(on: db).flatMap {
                 movie.$showings.create(showings, on: db)
