@@ -10,10 +10,16 @@ import Vapor
 final class ClientStub: Client {
     var eventLoop: EventLoop
     var data: Data?
+    var dataForResponse: ((ClientRequest) -> Data?)?
 
     init(eventLoop: EventLoop, data: Data?) {
         self.eventLoop = eventLoop
         self.data = data
+    }
+
+    init(eventLoop: EventLoop, dataForResponse: @escaping (ClientRequest) -> Data) {
+        self.eventLoop = eventLoop
+        self.dataForResponse = dataForResponse
     }
 
     func delegating(to eventLoop: EventLoop) -> Client {
@@ -22,6 +28,10 @@ final class ClientStub: Client {
     }
 
     func send(_ request: ClientRequest) -> EventLoopFuture<ClientResponse> {
+        if let dataForResponse {
+            data = dataForResponse(request)
+        }
+
         let response: ClientResponse
 
         if let data = data {
