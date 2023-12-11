@@ -29,7 +29,14 @@ final class CinamonTests: XCTestCase {
     }
 
     func testFetching() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.valid)
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any()) { request in
+            if request.url.string.contains("page") {
+                return Data.dates
+            }
+
+            return Data.valid
+        }
+
         sut = Cinamon(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
@@ -40,7 +47,6 @@ final class CinamonTests: XCTestCase {
 
         XCTAssertEqual(movies[0].title, "title")
         XCTAssertEqual(movies[0].originalTitle, "originalTitle")
-        XCTAssertEqual(movies[0].year, "2020")
         XCTAssertEqual(movies[0].duration, "81 min")
         XCTAssertEqual(movies[0].ageRating, .n7)
         XCTAssertEqual(movies[0].genres, ["Animacinis"])
@@ -49,169 +55,73 @@ final class CinamonTests: XCTestCase {
         XCTAssertEqual(movies[0].showings[0].date, "2020-09-15 10:15:00".convertToDate())
         XCTAssertEqual(movies[0].showings[0].venue, .cinamon)
         XCTAssertEqual(movies[0].showings[0].is3D, true)
-        XCTAssertEqual(movies[0].showings[0].url, "https://cinamonkino.com/mega/seat-plan/1855951372/lt")
+        XCTAssertEqual(movies[0].showings[0].url, "https://cinamonkino.com/mega/seat-plan/140593226/lt")
     }
 
-    func testSetsMoviePropertiesToNilIfAPIPropertiesAreMissing() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidMovie)
+    func testMovieIsSkippedIfWebSalesAreNotAllowed() throws {
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any()) { request in
+            if request.url.string.contains("page") {
+                return Data.dates
+            }
+
+            return Data.noWebSales
+        }
+
         sut = Cinamon(client: client)
 
         try sut.fetchMovies(on: app.db).wait()
 
         let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
-        XCTAssertEqual(movies.count, 1)
-        XCTAssertEqual(movies[0].showings.count, 1)
-
-        XCTAssertEqual(movies[0].title, nil)
-        XCTAssertEqual(movies[0].year, nil)
-        XCTAssertEqual(movies[0].duration, nil)
-        XCTAssertEqual(movies[0].ageRating, nil)
-        XCTAssertEqual(movies[0].genres, nil)
-    }
-
-    func testSkipsShowingIfAPIPropertiesAreMissing() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidShowing)
-        sut = Cinamon(client: client)
-
-        try sut.fetchMovies(on: app.db).wait()
-
-        let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
-        XCTAssertEqual(movies.count, 1)
-        XCTAssertEqual(movies[0].showings.count, 0)
-    }
-
-    func testSkipsMovieIfShowShowingsOfMatchingScreenIsNotFound() throws {
-        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.invalidScreens)
-        sut = Cinamon(client: client)
-
-        try sut.fetchMovies(on: app.db).wait()
-
-        let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
-        XCTAssertEqual(movies.count, 1)
-        XCTAssertEqual(movies[0].showings.count, 0)
+        XCTAssertEqual(movies.count, 0)
     }
 
     // MARK: Test Helpers
 
     struct Data {
+        static var dates = """
+        {
+            "calendar_dates": [
+                "2023-12-11"
+            ]
+        }
+        """.data(using: .utf8)!
+
         static var valid = """
-            {
-                "movies": [
-                    {
+            [
+                {
+                    "pid": 140593226,
+                    "showtime": "2020-09-15 10:15:00",
+                    "allow_web_sales": 1,
+                    "is_3d": true,
+                    "film": {
+                        "pid": 622191926,
                         "name": "title",
                         "original_name": "originalTitle",
-                        "premiere_date": "2020-08-28",
                         "runtime": 81,
                         "rating": "N-7",
-                        "genre": {
-                            "name": " Animacinis "
-                        },
-
-                        "sessions": [
-                            {
-                                "pid": 1855951372,
-                                "screen_name": "Salė 5",
-                                "showtime": "2020-09-15 10:15:00",
-                                "is_3d": true
-                            }
-                        ]
+                        "genre": { "name": "Animacinis" }
                     }
-                ],
-
-                "screens": [
-                    "Salė 5"
-                ]
-            }
+                }
+            ]
         """.data(using: .utf8)!
 
-        static var invalidMovie = """
-            {
-                "movies": [
-                    {
-                        "name": null,
+        static var noWebSales = """
+            [
+                {
+                    "pid": 140593226,
+                    "showtime": "2020-09-15 10:15:00",
+                    "allow_web_sales": 0,
+                    "is_3d": true,
+                    "film": {
+                        "pid": 622191926,
+                        "name": "title",
                         "original_name": "originalTitle",
-                        "premiere_date": null,
-                        "runtime": null,
-                        "rating": null,
-                        "genre": {
-                            "name": null
-                        },
-
-                        "sessions": [
-                            {
-                                "pid": 1855951372,
-                                "screen_name": "Salė 5",
-                                "showtime": "2020-09-15 10:15:00",
-                                "is_3d": true
-                            }
-                        ]
-                    }
-                ],
-
-                "screens": [
-                    "Salė 5"
-                ]
-            }
-        """.data(using: .utf8)!
-
-        static var invalidShowing = """
-            {
-                "movies": [
-                    {
-                        "name": null,
-                        "original_name": "originalTitle",
-                        "premiere_date": "2020-08-28",
                         "runtime": 81,
                         "rating": "N-7",
-                        "genre": {
-                            "name": " Animacinis "
-                        },
-
-                        "sessions": [
-                            {
-                                "pid": null,
-                                "screen_name": "Salė 5",
-                                "showtime": "2020-09-15 10:15:00",
-                                "is_3d": true
-                            }
-                        ]
+                        "genre": { "name": "Animacinis" }
                     }
-                ],
-
-                "screens": [
-                    "Salė 5"
-                ]
-            }
-        """.data(using: .utf8)!
-
-        static var invalidScreens = """
-            {
-                "movies": [
-                    {
-                        "name": null,
-                        "original_name": "originalTitle",
-                        "premiere_date": "2020-08-28",
-                        "runtime": 81,
-                        "rating": "N-7",
-                        "genre": {
-                            "name": " Animacinis "
-                        },
-
-                        "sessions": [
-                            {
-                                "pid": 1855951372,
-                                "screen_name": "Salė 5",
-                                "showtime": "2020-09-15 10:15:00",
-                                "is_3d": true
-                            }
-                        ]
-                    }
-                ],
-
-                "screens": [
-                    "Salė 69"
-                ]
-            }
+                }
+            ]
         """.data(using: .utf8)!
     }
 }

@@ -16,32 +16,57 @@ struct Cinamon: MovieAPI {
     }
 
     func fetchMovies(on db: Database) -> EventLoopFuture<Void> {
-        client.get(.api).flatMap { res in
-            do {
-                let service = try JSONDecoder().decode(APIService.self, from: res.body ?? ByteBuffer())
-                return createMovies(from: service, on: db)
-            } catch {
-                return client.eventLoop.makeFailedFuture(APIError(api: Cinamon.self, error: error))
-            }
+        fetchAPIShowings().flatMap { showings in
+            createMovies(from: showings, on: db)
         }
     }
 
-    private func createMovies(from service: APIService, on db: Database) -> EventLoopFuture<Void> {
-        service.movies.map { serviceMovie in
-            let movie = Movie(from: serviceMovie)
+    private func createMovies(from APIShowings: [APIShowing], on db: Database) -> EventLoopFuture<Void> {
+        var APIShowings = APIShowings
 
-            let showings = serviceMovie.showings.compactMap { cinamonShowing -> Showing? in
-                guard let screen = cinamonShowing.screen else { return nil }
-                // If `service.screens` does not contain `cinamonShowing.screen`,
-                // it means that the showing is not shown in our location, thus should be discarded.
-                guard service.screens.contains(screen) else { return nil }
-                return Showing(from: cinamonShowing)
+        if let APIShowing = APIShowings.first {
+            let sameTitleShowings = APIShowings.filter { $0.movie.title == APIShowing.movie.title }
+            APIShowings = APIShowings.filter { $0.movie.title != APIShowing.movie.title }
+
+            let movie = Movie(from: APIShowing)
+            let showings = sameTitleShowings.compactMap { Showing(from: $0) }
+
+            if showings.isEmpty {
+                return createMovies(from: APIShowings, on: db)
             }
 
             return movie.create(on: db).flatMap {
-                movie.$showings.create(showings, on: db)
+                movie.$showings.create(showings, on: db).flatMap {
+                    createMovies(from: APIShowings, on: db)
+                }
             }
-        }.flatten(on: db.eventLoop)
+        } else {
+            return db.eventLoop.makeSucceededVoidFuture()
+        }
+    }
+
+    private func fetchAPIShowings() -> EventLoopFuture<[APIShowing]> {
+        fetchURLService().flatMap { service in
+            service.urls.map { url in
+                client.get(url).flatMapThrowing { res in
+                    do {
+                        return try JSONDecoder().decode([APIShowing].self, from: res.body ?? ByteBuffer())
+                    } catch {
+                        throw APIError(api: Cinamon.self, error: error)
+                    }
+                }
+            }.flatten(on: client.eventLoop).map { $0.flatMap { $0 } }
+        }
+    }
+
+    private func fetchURLService() -> EventLoopFuture<URLService> {
+        client.get(URLService.api).flatMapThrowing { res in
+            do {
+                return try JSONDecoder().decode(URLService.self, from: res.body ?? ByteBuffer())
+            } catch {
+                throw APIError(api: Cinamon.self, error: error)
+            }
+        }
     }
 }
 
@@ -54,7 +79,9 @@ extension Application {
 // MARK: - Decodable Helpers
 
 private extension Movie {
-    convenience init(from movie: APIService.Movie) {
+    convenience init(from showing: APIShowing) {
+        let movie = showing.movie
+
         // `2020-01-01` -> `2020`
         let year: String? = {
             guard let substring = movie.year?.split(separator: "-").first else { return nil }
@@ -85,7 +112,8 @@ private extension Movie {
 }
 
 private extension Showing {
-    convenience init?(from showing: APIService.Movie.Showing) {
+    convenience init?(from showing: APIShowing) {
+        guard showing.allowSales == 1 else { return nil }
         guard let date = showing.showtime?.convertToDate() else { return nil }
         guard let is3D = showing.is3D else { return nil }
         guard let pid = showing.pid else { return nil }
@@ -100,18 +128,35 @@ private extension Showing {
     }
 }
 
-private extension URI {
-    static var api: URI {
-        URI(string: "https://cinamonkino.com/api/page/movies?cinema_id=77139293&timezone=Europe%2FTallinn&locale=lt")
+private struct URLService: Decodable {
+    static let api = URI(string: "https://cinamonkino.com/api/page/schedule?cinema_id=77139293&timezone=Europe%2FTallinn&locale=lt")
+    private let dates: [String]
+
+    var urls: [URI] {
+        dates.map {
+            "https://cinamonkino.com/api/schedule?cinema_id=77139293&timezone=Europe%2FTallinn&locale=lt&date=\($0)&include=film.genre,relatedAttributes"
+        }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case dates = "calendar_dates"
     }
 }
 
-private struct APIService: Decodable {
-    let movies: [Movie]
+private struct APIShowing: Decodable {
+    let pid: Int?
+    let showtime: String?
+    let allowSales: Int?
+    let is3D: Bool?
+    let movie: APIShowing.Movie
 
-    // `screens` contain local theater IDs, which we use to filter out local showings,
-    // since API returns showings from theaters across multiple countries.
-    let screens: [String]
+    private enum CodingKeys: String, CodingKey {
+        case pid
+        case showtime
+        case allowSales = "allow_web_sales"
+        case is3D = "is_3d"
+        case movie = "film"
+    }
 
     struct Movie: Decodable {
         let title: String?
@@ -120,11 +165,6 @@ private struct APIService: Decodable {
         let duration: Int?
         let ageRating: String?
         let genre: Genre?
-        let showings: [Showing]
-
-        struct Genre: Decodable {
-            let name: String?
-        }
 
         private enum CodingKeys: String, CodingKey {
             case title = "name"
@@ -133,21 +173,10 @@ private struct APIService: Decodable {
             case duration = "runtime"
             case ageRating = "rating"
             case genre
-            case showings = "sessions"
         }
 
-        struct Showing: Decodable {
-            let pid: Int?
-            let screen: String?
-            let showtime: String?
-            let is3D: Bool?
-
-            private enum CodingKeys: String, CodingKey {
-                case pid
-                case screen = "screen_name"
-                case showtime
-                case is3D = "is_3d"
-            }
+        struct Genre: Decodable {
+            let name: String?
         }
     }
 }
