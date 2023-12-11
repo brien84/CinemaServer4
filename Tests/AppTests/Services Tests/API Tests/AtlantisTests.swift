@@ -63,6 +63,16 @@ final class AtlantisTests: XCTestCase {
         XCTAssertEqual(showings.count, 4)
     }
 
+    func testSkipsShowingsIfSalesAreNotAllowed() throws {
+        let client = ClientStub(eventLoop: app.eventLoopGroup.any(), data: Data.salesNotAllowed)
+        sut = Atlantis(client: client)
+
+        try sut.fetchMovies(on: app.db).wait()
+
+        let movies = try Movie.query(on: app.db).with(\.$showings).all().wait()
+        XCTAssertEqual(movies.count, 0)
+    }
+
     // MARK: Test Helpers
 
     struct Data {
@@ -75,9 +85,9 @@ final class AtlantisTests: XCTestCase {
                     "runtime":110,
                     "genres":[{"title":"Komedija"}],
                     "sessions":[
-                        {"uuid":"9a9e2093-5cd4-4b4e-8c86-bd8fb568df54","screening_type":"3d","starts_at":"2023-11-21T13:40:00.000Z"},
-                        {"uuid":"9a9e20cc-b191-481c-8a60-5de6d8ba4e48","screening_type":"2d","starts_at":"2023-11-22T13:40:00.000Z"},
-                        {"uuid":"9a9e2106-52bb-485c-9cd7-dd43e889529e","screening_type":"2d","starts_at":"2023-11-23T13:40:00.000Z"}
+                        {"uuid":"9a9e2093-5cd4-4b4e-8c86-bd8fb568df54","screening_type":"3d","starts_at":"2023-11-21T13:40:00.000Z","allow_sales_web":true},
+                        {"uuid":"9a9e20cc-b191-481c-8a60-5de6d8ba4e48","screening_type":"2d","starts_at":"2023-11-22T13:40:00.000Z","allow_sales_web":true},
+                        {"uuid":"9a9e2106-52bb-485c-9cd7-dd43e889529e","screening_type":"2d","starts_at":"2023-11-23T13:40:00.000Z","allow_sales_web":true}
                     ]
                 },
                 {
@@ -86,9 +96,9 @@ final class AtlantisTests: XCTestCase {
                     "runtime":100,
                     "genres":[{"title":"Drama"},{"title":"Fantastinis"}],
                     "sessions":[
-                        {"uuid":"9aa8aab2-f01c-46c8-bdde-56cba2a7a2dd","screening_type":"2d","starts_at":"2023-11-24T16:05:00.000Z"},
-                        {"uuid":"9aa8aab2-f93e-4320-bf33-510f73dae92c","screening_type":"2d","starts_at":"2023-11-25T16:05:00.000Z"},
-                        {"uuid":"9aa8aab3-016e-4cfa-898d-0dd99d7b84c0","screening_type":"2d","starts_at":"2023-11-26T16:05:00.000Z"}
+                        {"uuid":"9aa8aab2-f01c-46c8-bdde-56cba2a7a2dd","screening_type":"2d","starts_at":"2023-11-24T16:05:00.000Z","allow_sales_web":true},
+                        {"uuid":"9aa8aab2-f93e-4320-bf33-510f73dae92c","screening_type":"2d","starts_at":"2023-11-25T16:05:00.000Z","allow_sales_web":true},
+                        {"uuid":"9aa8aab3-016e-4cfa-898d-0dd99d7b84c0","screening_type":"2d","starts_at":"2023-11-26T16:05:00.000Z","allow_sales_web":true}
                     ]
                 },
                 {
@@ -111,9 +121,9 @@ final class AtlantisTests: XCTestCase {
                     "runtime":110,
                     "genres":[{"title":"Komedija"}],
                     "sessions":[
-                        {"uuid":"9a9e2093-5cd4-4b4e-8c86-bd8fb568df54","screening_type":"3d","starts_at":"2023-11-21T13:40:00.000Z"},
-                        {"uuid":"9a9e20cc-b191-481c-8a60-5de6d8ba4e48","screening_type":"2d","starts_at":"2023-11-22T13:40:00.000Z"},
-                        {"uuid":"9a9e2106-52bb-485c-9cd7-dd43e889529e","screening_type":"2d","starts_at":"2023-11-23T13:40:00.000Z"}
+                        {"uuid":"9a9e2093-5cd4-4b4e-8c86-bd8fb568df54","screening_type":"3d","starts_at":"2023-11-21T13:40:00.000Z","allow_sales_web":true},
+                        {"uuid":"9a9e20cc-b191-481c-8a60-5de6d8ba4e48","screening_type":"2d","starts_at":"2023-11-22T13:40:00.000Z","allow_sales_web":true},
+                        {"uuid":"9a9e2106-52bb-485c-9cd7-dd43e889529e","screening_type":"2d","starts_at":"2023-11-23T13:40:00.000Z","allow_sales_web":true}
                     ]
                 },
                 {
@@ -122,9 +132,27 @@ final class AtlantisTests: XCTestCase {
                     "runtime":100,
                     "genres":[{"title":"Drama"},{"title":"Fantastinis"}],
                     "sessions":[
-                        {"uuid":"9aa8aab2-f01c-46c8-bdde-56cba2a7a2dd","screening_type":"2d","starts_at":""},
-                        {"uuid":"9aa8aab2-f93e-4320-bf33-510f73dae92c","screening_type":"2d","starts_at":""},
-                        {"uuid":"9aa8aab3-016e-4cfa-898d-0dd99d7b84c0","screening_type":"2d","starts_at":"2023-11-26T16:05:00.000Z"}
+                        {"uuid":"9aa8aab2-f01c-46c8-bdde-56cba2a7a2dd","screening_type":"2d","starts_at":"","allow_sales_web":true},
+                        {"uuid":"9aa8aab2-f93e-4320-bf33-510f73dae92c","screening_type":"2d","starts_at":"","allow_sales_web":true},
+                        {"uuid":"9aa8aab3-016e-4cfa-898d-0dd99d7b84c0","screening_type":"2d","starts_at":"2023-11-26T16:05:00.000Z","allow_sales_web":true}
+                    ]
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        static var salesNotAllowed = """
+        {
+            "data":[
+                {
+                    "origin_title":"Title",
+                    "title":"Pavadinimas",
+                    "runtime":110,
+                    "genres":[{"title":"Komedija"}],
+                    "sessions":[
+                        {"uuid":"9a9e2093-5cd4-4b4e-8c86-bd8fb568df54","screening_type":"3d","starts_at":"2023-11-21T13:40:00.000Z","allow_sales_web":false},
+                        {"uuid":"9a9e20cc-b191-481c-8a60-5de6d8ba4e48","screening_type":"2d","starts_at":"2023-11-22T13:40:00.000Z","allow_sales_web":false},
+                        {"uuid":"9a9e2106-52bb-485c-9cd7-dd43e889529e","screening_type":"2d","starts_at":"2023-11-23T13:40:00.000Z","allow_sales_web":false}
                     ]
                 }
             ]

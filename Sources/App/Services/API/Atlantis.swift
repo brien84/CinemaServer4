@@ -62,6 +62,7 @@ private extension Movie {
 
 private extension Showing {
     convenience init?(from showing: APIService.Movie.Showing) {
+        guard showing.salesAllowed else { return nil }
         guard let date = showing.date?.convertToDate() else { return nil }
         guard let uuid = showing.uuid else { return nil }
 
@@ -106,11 +107,13 @@ private struct APIService: Decodable {
         struct Showing: Decodable {
             let uuid: String?
             let date: String?
+            let salesAllowed: Bool
             let screeningType: String?
 
             private enum CodingKeys: String, CodingKey {
                 case uuid
                 case date = "starts_at"
+                case salesAllowed = "allow_sales_web"
                 case screeningType = "screening_type"
             }
         }
